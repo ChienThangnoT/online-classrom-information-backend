@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\LMSystem.Library\LMSystem.Library.csproj" />
     <ProjectReference Include="..\LMSystem.Repository\LMSystem.Repository.csproj" />
   </ItemGroup>
