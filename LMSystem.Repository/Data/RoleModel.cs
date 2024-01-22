@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMSystem.Repository.Interfaces
+namespace LMSystem.Repository.Data
 {
-    internal class TestIInterface
+    public enum RoleModel
     {
+        Admin,
+        Staff,
+        Student,
+        Parent
     }
 }
