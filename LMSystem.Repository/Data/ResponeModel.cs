@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Repository.Data
 {
-    internal class TestData
+    public class ResponeModel
     {
+        public string Status { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }
