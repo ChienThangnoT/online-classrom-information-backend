@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Repository.Data
 {
-    internal class TestData
+    public enum RoleModel
     {
+        Admin,
+        Staff,
+        Student,
+        Parent
     }
 }
