@@ -160,7 +160,7 @@ namespace LMSystem.Repository.Repositories
                 {
                     var authClaims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Email, model.AccountEmail),
+                        new Claim(ClaimTypes.Name, model.AccountEmail),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
 

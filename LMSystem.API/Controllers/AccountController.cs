@@ -13,12 +13,12 @@ namespace LMSystem.API.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        //private readonly IAccountService _accountService;
-        private readonly IAccountRepository _accountRepository;
+        private readonly IAccountService _accountService;
+        //private readonly IAccountRepository _accountRepository;
 
-        public AccountController(IAccountRepository accountRepository)
+        public AccountController(IAccountService accountRepository)
         {
-            _accountRepository = accountRepository;
+            _accountService = accountRepository;
         }
 
         [HttpPost("SignUp")]
@@ -28,7 +28,7 @@ namespace LMSystem.API.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _accountRepository.SignUpAccountAsync(signUpModel);
+                    var result = await _accountService.SignUpAccountAsync(signUpModel);
                     if (result.Status.Equals("Success"))
                     {
                         return Ok(result);
@@ -45,7 +45,7 @@ namespace LMSystem.API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _accountRepository.SignInAccountAsync(signInModel);
+                var result = await _accountService.SignInAccountAsync(signInModel);
                 if (result.Status.Equals(false))
                 {
                     return Unauthorized();
@@ -60,7 +60,7 @@ namespace LMSystem.API.Controllers
         public async Task<IActionResult> RefreshToken(TokenModel model)
         {
 
-                var result = await _accountRepository.RefreshToken(model);
+                var result = await _accountService.RefreshToken(model);
                 if (result.Status.Equals(false))
                 {
                     return BadRequest(result);
@@ -71,7 +71,7 @@ namespace LMSystem.API.Controllers
         [HttpGet("{email}")]
         public async Task<ActionResult<AccountModel>> GetAccountById(string email)
         {
-            var data = await _accountRepository.GetAccountByEmail(email);
+            var data = await _accountService.GetAccountByEmail(email);
             if (data != null)
             {
                 return Ok(data);
