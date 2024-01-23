@@ -43,7 +43,7 @@ builder.Services.AddSwaggerGen(opt =>
                     Id="Bearer"
                 }
             },
-            new string[]{}
+            Array.Empty<string>()
         }
     });
 });
@@ -60,6 +60,26 @@ builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
 });
 
+
+
+//--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
+
+//config database to deploy on azure
+//var connection = String.Empty;
+//if (builder.Environment.IsDevelopment())
+//{
+//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
+//    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+//}
+//else
+//{
+//    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+//}
+//// Config SQLAzure
+//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+//    options.UseSqlServer(connection));
+
+// ------------------- OPEN COMMENT CHAT KOO ---------------------------
 
 //add cors
 builder.Services.AddCors(options =>
@@ -100,21 +120,19 @@ builder.Services
 builder.Services.AddAutoMapper(typeof(AutomapperProfile).Assembly);
 
 //Add Dependenci Injection, Life cycle DI: AddSingleton(), AddTransisent(), AddScoped()
-builder.Services.AddScoped<IAccountRepository,AccountRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "LM Online Information System");
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LM Online Information System");
+});
+
 
 //use cors
 app.UseCors("app-cors");
