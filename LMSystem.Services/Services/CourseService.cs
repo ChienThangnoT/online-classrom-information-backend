@@ -25,9 +25,10 @@ namespace LMSystem.Services.Services
             return await _courseRepository.GetCoursesWithFilters(filterParams);
         }
 
-        public async Task<IEnumerable<Course>> GetTopFavoriteCoursesForAccount(string accountId)
+        public async Task<IEnumerable<Course>> GetTopFavoriteCourses()
         {
-            return await _courseRepository.GetTopFavoriteCoursesForAccount(accountId);
+            return await _courseRepository.GetTopFavoriteCourses();
         }
+
     }
 }
