@@ -3,6 +3,7 @@ using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -43,12 +44,9 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
-            var account = await userManager.FindByEmailAsync(email);
-            if (account != null)
-            {
-                return _mapper.Map<AccountModel>(account);
-            }
-            return null;
+            var account = await _context.Account
+                .SingleOrDefaultAsync(a => a.UserName == email && a.Status == "Is Active");
+            return _mapper.Map<AccountModel>(account);
         }
 
         public async Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel)
@@ -223,7 +221,7 @@ namespace LMSystem.Repository.Repositories
                         BirthDate = model.BirthDate,
                         Status = "Is Active",
                         UserName = model.AccountEmail,
-                        
+
                         Email = model.AccountEmail,
                         PhoneNumber = model.AccountPhone
                     };
