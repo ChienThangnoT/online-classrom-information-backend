@@ -1,6 +1,6 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
-using LMSystem.Repository.Repositoris;
+using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using System;
 using System.Collections.Generic;
