@@ -18,7 +18,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("SelectCourselistPagination")]
-        public async Task<IActionResult> CourselistPagination([FromQuery] CourseFilterParameters filterParams)
+        public async Task<IActionResult> GetCourses([FromQuery] CourseFilterParameters filterParams)
         {
             var courses = await _courseService.GetFilteredCourses(filterParams);
             if (courses == null)

@@ -20,13 +20,17 @@ namespace LMSystem.Repository.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<Course>> GetAllCourses()
+        {
+            return await _context.Courses.ToListAsync();
+        }
         public async Task<IEnumerable<Course>> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             var query = _context.Courses.AsQueryable();
 
-            if (!string.IsNullOrEmpty(filterParams.CategoryId))
+            if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
-                query = query.Where(c => c.CourseCategories.Any(cc => cc.CategoryId == filterParams.CategoryId));
+                query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
             }
 
             if (filterParams.MinPrice.HasValue)
@@ -39,6 +43,7 @@ namespace LMSystem.Repository.Repositories
                 query = query.Where(c => c.Price <= filterParams.MaxPrice.Value);
             }
 
+            // Apply pagination
             return await query
                 .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
                 .Take(filterParams.PageSize)

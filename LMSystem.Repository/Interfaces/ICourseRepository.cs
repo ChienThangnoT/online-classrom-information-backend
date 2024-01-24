@@ -11,5 +11,6 @@ namespace LMSystem.Repository.Interfaces
     public interface ICourseRepository
     {
         public Task<IEnumerable<Course>> GetCoursesWithFilters(CourseFilterParameters filterParams);
+
     }
 }
