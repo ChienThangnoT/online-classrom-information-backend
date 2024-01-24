@@ -29,10 +29,10 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
 
-        [HttpGet("top-favorites/{accountId}")]
-        public async Task<IActionResult> GetTopFavoriteCoursesForAccount(string accountId)
+        [HttpGet("top-favorites")]
+        public async Task<IActionResult> GetTopFavoriteCourses()
         {
-            var courses = await _courseService.GetTopFavoriteCoursesForAccount(accountId);
+            var courses = await _courseService.GetTopFavoriteCourses();
             return Ok(courses);
         }
     }
