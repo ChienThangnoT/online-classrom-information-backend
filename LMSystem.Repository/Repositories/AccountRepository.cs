@@ -56,7 +56,7 @@ namespace LMSystem.Repository.Repositories
                 return new AuthenticationResponseModel
                 {
                     Status = false,
-                    Message = "Yêu cầu không hợp lệ!"
+                    Message = "Request not valid!"
                 };
             }
 
@@ -141,7 +141,7 @@ namespace LMSystem.Repository.Repositories
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Token không hợp lệ!");
+                throw new SecurityTokenException("Token unavailabel!");
             return principal;
         }
 
@@ -190,7 +190,7 @@ namespace LMSystem.Repository.Repositories
                     return new AuthenticationResponseModel
                     {
                         Status = true,
-                        Message = "Đăng nhập thành công!",
+                        Message = "Login successfully!",
                         JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                         Expired = token.ValidTo,
                         JwtRefreshToken = refreshToken,
@@ -259,6 +259,34 @@ namespace LMSystem.Repository.Repositories
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel model)
+        {
+            var account = await userManager.FindByEmailAsync(model.Email);
+            if (account == null)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Can not find your account!"
+                };
+            }
+            var result = await userManager.ChangePasswordAsync(account, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Cannot change pass"
+                };
+            }
+
+            return new ResponeModel
+            {
+                Status = "Success",
+                Message = "Change password successfully!"
+            };
         }
     }
 }

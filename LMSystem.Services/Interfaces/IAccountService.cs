@@ -16,5 +16,6 @@ namespace LMSystem.Services.Interfaces
 
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account);
         public Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel);
+        public Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel model);
     }
 }
