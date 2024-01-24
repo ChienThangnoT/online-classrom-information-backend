@@ -122,10 +122,8 @@ builder.Services.AddAutoMapper(typeof(AutomapperProfile).Assembly);
 //Add Dependenci Injection, Life cycle DI: AddSingleton(), AddTransisent(), AddScoped()
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-builder.Services.AddScoped<ICourseService, CourseService>();
-
-
+builder.Services.AddScoped<IWishListRepository, WishListRepository>();
+builder.Services.AddScoped<IWishListService, WishListService>();
 
 var app = builder.Build();
 

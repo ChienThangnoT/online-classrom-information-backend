@@ -1,5 +1,6 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
+using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using System;
@@ -27,6 +28,12 @@ namespace LMSystem.Services.Services
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
             var result = await _repo.GetAccountByEmail(email);
+            return result;
+        }
+
+        public async Task<Account> GetAccountById(string id)
+        {
+            var result = await _repo.GetAccountById(id);
             return result;
         }
 

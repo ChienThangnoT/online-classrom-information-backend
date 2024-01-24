@@ -44,9 +44,17 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
-            var account = await _context.Account
-                .SingleOrDefaultAsync(a => a.UserName == email && a.Status == "Is Active");
-            return _mapper.Map<AccountModel>(account);
+            var account = await userManager.FindByEmailAsync(email);
+            if (account != null)
+            {
+                return _mapper.Map<AccountModel>(account);
+            }
+            return null;
+        }
+        public async Task<Account> GetAccountById(string id)
+        {
+            var account = await userManager.FindByIdAsync(id);
+            return account;
         }
 
         public async Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel)
