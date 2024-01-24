@@ -2,6 +2,7 @@
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Repository.Repositories
 {
-    public class CourseRepository: ICourseRepository
+    public class CourseRepository : ICourseRepository
     {
         // Assuming you have a DbContext or similar for data access
         private readonly LMOnlineSystemDbContext _context;
@@ -48,6 +49,42 @@ namespace LMSystem.Repository.Repositories
                 .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
                 .Take(filterParams.PageSize)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Course>> GetTopFavoriteCoursesForAccount(string accountId)
+        {
+            // Get courses the account is enrolled in
+            var enrolledCourseIds = await _context.RegistrationCourses
+                .Where(rc => rc.AccountId == accountId)
+                .Select(rc => rc.CourseId)
+                .ToListAsync();
+
+            // Get top courses based on number of registrations
+            var topCourses = await _context.RegistrationCourses
+                .Where(rc => enrolledCourseIds.Contains(rc.CourseId))
+                .GroupBy(rc => rc.CourseId)
+                .OrderByDescending(g => g.Count())
+                .Select(g => g.Key)
+                .Take(10)
+                .ToListAsync();
+
+            var courses = await _context.Courses
+                .Where(c => topCourses.Contains(c.CourseId))
+                .ToListAsync();
+
+            // Fill up with random courses if necessary
+            if (courses.Count < 10)
+            {
+                var additionalCourses = await _context.Courses
+                    .Where(c => !topCourses.Contains(c.CourseId))
+                    .OrderBy(c => Guid.NewGuid())
+                    .Take(10 - courses.Count)
+                    .ToListAsync();
+
+                courses.AddRange(additionalCourses);
+            }
+
+            return courses;
         }
     }
 }

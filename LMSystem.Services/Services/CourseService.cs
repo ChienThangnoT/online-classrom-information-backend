@@ -3,6 +3,7 @@ using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,11 @@ namespace LMSystem.Services.Services
         public async Task<IEnumerable<Course>> GetFilteredCourses(CourseFilterParameters filterParams)
         {
             return await _courseRepository.GetCoursesWithFilters(filterParams);
-        } 
+        }
+
+        public async Task<IEnumerable<Course>> GetTopFavoriteCoursesForAccount(string accountId)
+        {
+            return await _courseRepository.GetTopFavoriteCoursesForAccount(accountId);
+        }
     }
 }
