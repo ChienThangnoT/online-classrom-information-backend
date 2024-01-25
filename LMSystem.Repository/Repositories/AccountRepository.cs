@@ -44,13 +44,11 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
-            var account = await userManager.FindByEmailAsync(email);
-            if (account != null)
-            {
-                return _mapper.Map<AccountModel>(account);
-            }
-            return null;
+            var account = await userManager.FindByNameAsync(email);
+            var result =  _mapper.Map<AccountModel>(account);
+            return result;
         }
+
         public async Task<Account> GetAccountById(string id)
         {
             var account = await userManager.FindByIdAsync(id);

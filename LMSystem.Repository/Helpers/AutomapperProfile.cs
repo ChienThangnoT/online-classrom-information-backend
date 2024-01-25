@@ -14,7 +14,7 @@ namespace LMSystem.Repository.Helpers
         public AutomapperProfile()
         {
             CreateMap<AccountModel, Account>().ReverseMap();
-            CreateMap<WishListModel, WishListModel>().ReverseMap();  
+            CreateMap<WishListModel, WishList>().ReverseMap();  
         }
     }
 }
