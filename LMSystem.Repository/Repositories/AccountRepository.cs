@@ -155,8 +155,8 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AuthenticationResponseModel> SignInAccountAsync(SignInModel model)
         {
-            var result = await signInManager.PasswordSignInAsync(model.AccountEmail, model.AccountPassword, false, false);
-            var account = await userManager.FindByNameAsync(model.AccountEmail);
+            var result = await signInManager.PasswordSignInAsync(model.AccountPassword, model.AccountPassword, false, false);
+            //var account = await userManager.FindByNameAsync(model.AccountEmail);
 
             if (result.Succeeded)
             {
@@ -190,10 +190,10 @@ namespace LMSystem.Repository.Repositories
 
                     _ = int.TryParse(configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
 
-                    account.RefreshToken = refreshToken;
-                    account.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+                    user.RefreshToken = refreshToken;
+                    user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
 
-                    await userManager.UpdateAsync(account);
+                    await userManager.UpdateAsync(user);
 
                     return new AuthenticationResponseModel
                     {

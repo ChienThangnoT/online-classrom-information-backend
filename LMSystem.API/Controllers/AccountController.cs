@@ -89,7 +89,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("{email}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<AccountModel>> GetAccountByEmail(string email)
         {
             var data = await _accountService.GetAccountByEmail(email);
