@@ -19,17 +19,17 @@ namespace LMSystem.Services.Services
             _wishListRepository = wishListRepository;
         }
 
-        public async Task<ResponeModel> AddWishList(string accountId, string courseId)
+        public async Task<ResponeModel> AddWishList(string accountId, int courseId)
         {
             return await _wishListRepository.AddWishList(accountId, courseId);
         }
 
-        public async Task<ResponeModel> DeleteWishListByCourseId(string courseId, string accountId)
+        public async Task<ResponeModel> DeleteWishListByCourseId(int courseId, string accountId)
         {
             return await _wishListRepository.DeleteWishListByCourseId(courseId, accountId);
         }
 
-        public async Task<ResponeModel> DeleteWishListByWishListId(string wishListId)
+        public async Task<ResponeModel> DeleteWishListByWishListId(int wishListId)
         {
             return await _wishListRepository.DeleteWishListByWishListId(wishListId);
         }

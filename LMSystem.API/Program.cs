@@ -1,3 +1,4 @@
+using LMSystem.API;
 using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
@@ -12,12 +13,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -77,7 +81,7 @@ else
 {
     connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
 }
-// config sqlazure
+//config sqlazure
 builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
     options.UseSqlServer(connection));
 
@@ -121,13 +125,10 @@ builder.Services
 // add automapper
 builder.Services.AddAutoMapper(typeof(AutomapperProfile).Assembly);
 
-//Add Dependenci Injection, Life cycle DI: AddSingleton(), AddTransisent(), AddScoped()
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<IWishListRepository, WishListRepository>();
-builder.Services.AddScoped<IWishListService, WishListService>();
+
+//Add DJ
+builder.Services.AddApiWebService();
+
 
 
 var app = builder.Build();

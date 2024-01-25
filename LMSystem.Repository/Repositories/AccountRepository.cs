@@ -45,7 +45,7 @@ namespace LMSystem.Repository.Repositories
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
             var account = await userManager.FindByNameAsync(email);
-            var result =  _mapper.Map<AccountModel>(account);
+            var result = _mapper.Map<AccountModel>(account);
             return result;
         }
 

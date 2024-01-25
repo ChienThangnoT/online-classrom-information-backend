@@ -13,5 +13,6 @@ namespace LMSystem.Repository.Interfaces
         public Task<IEnumerable<Course>> GetCoursesWithFilters(CourseFilterParameters filterParams);
         public Task<IEnumerable<Course>> GetTopFavoriteCourses();
 
+        public Task<Course> GetCourseDetailByIdAsync(int courseId);
     }
 }
