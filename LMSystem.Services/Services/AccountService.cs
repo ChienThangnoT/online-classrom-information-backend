@@ -64,5 +64,10 @@ namespace LMSystem.Services.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
+        {
+            return await _repo.UpdateAccountProfile(updateProfileModel,accountId);    
+        }
     }
 }

@@ -26,16 +26,16 @@ namespace LMSystem.API.Controllers
         {
             //try
             //{
-                if (ModelState.IsValid)
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.SignUpAccountAsync(signUpModel);
+                if (result.Status.Equals("Success"))
                 {
-                    var result = await _accountService.SignUpAccountAsync(signUpModel);
-                    if (result.Status.Equals("Success"))
-                    {
-                        return Ok(result);
-                    }
-                    return BadRequest(result);
+                    return Ok(result);
                 }
-                return ValidationProblem(ModelState);
+                return BadRequest(result);
+            }
+            return ValidationProblem(ModelState);
             //}
             //catch { return BadRequest(); }
         }
@@ -60,13 +60,13 @@ namespace LMSystem.API.Controllers
         public async Task<IActionResult> RefreshToken(TokenModel model)
         {
 
-                var result = await _accountService.RefreshToken(model);
-                if (result.Status.Equals(false))
-                {
-                    return BadRequest(result);
-                }
-                return Ok(result);
+            var result = await _accountService.RefreshToken(model);
+            if (result.Status.Equals(false))
+            {
+                return BadRequest(result);
             }
+            return Ok(result);
+        }
 
         [HttpGet("{email}")]
         public async Task<ActionResult<AccountModel>> GetAccountById(string email)
@@ -80,6 +80,20 @@ namespace LMSystem.API.Controllers
             {
                 return NotFound();
             }
+        }
+        [HttpPost("UpdateProfile")]
+        public async Task<ActionResult> UpdateProfile(UpdateProfileModel updateProfileModel, string accountId)
+        {
+            var account = await _accountService.GetAccountById(accountId);
+
+            var response = await _accountService.UpdateAccountProfile(updateProfileModel,accountId);
+
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+
+            return Ok(response);
         }
     }
 }
