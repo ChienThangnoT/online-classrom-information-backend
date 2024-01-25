@@ -30,9 +30,9 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("top-favorites")]
-        public async Task<IActionResult> GetTopFavoriteCourses()
+        public async Task<IActionResult> GetTopFavoriteCourses(int numberOfCourses)
         {
-            var courses = await _courseService.GetTopFavoriteCourses();
+            var courses = await _courseService.GetTopFavoriteCourses(numberOfCourses);
             return Ok(courses);
         }
     }
