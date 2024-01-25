@@ -78,6 +78,19 @@ builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
 //// Config SQLAzure
 //builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
 //    options.UseSqlServer(connection));
+//var connection = string.Empty;
+//if (builder.Environment.IsDevelopment())
+//{
+//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.development.json");
+//    connection = builder.Configuration.GetConnectionString("azure_sql_connectionstring");
+//}
+//else
+//{
+//    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
+//}
+//// config sqlazure
+//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+//    options.UseSqlServer(connection));
 
 // ------------------- OPEN COMMENT CHAT KOO ---------------------------
 

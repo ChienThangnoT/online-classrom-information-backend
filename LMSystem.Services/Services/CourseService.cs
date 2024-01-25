@@ -30,5 +30,9 @@ namespace LMSystem.Services.Services
             return await _courseRepository.GetTopFavoriteCourses();
         }
 
+        public async Task<Course> GetCourseDetailByIdAsync(string courseId)
+        {
+            return await _courseRepository.GetCourseDetailByIdAsync(courseId);
+        }
     }
 }

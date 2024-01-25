@@ -25,6 +25,18 @@ namespace LMSystem.Repository.Repositories
         {
             return await _context.Courses.ToListAsync();
         }
+
+        public async Task<Course> GetCourseDetailByIdAsync(string courseId)
+        {
+            var course = await _context.Courses
+            .Include(c => c.Sections)
+            .ThenInclude(s => s.Steps)
+            .FirstOrDefaultAsync(c => c.CourseId == courseId);
+
+            return course;
+        }
+
+
         public async Task<IEnumerable<Course>> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             var query = _context.Courses.AsQueryable();
