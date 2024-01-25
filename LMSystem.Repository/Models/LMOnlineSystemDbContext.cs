@@ -42,9 +42,9 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
     public virtual DbSet<WishList> WishLists { get; set; }
 
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("Server=LAPTOP-9COIMEED;uid=sa;pwd=12345;database=LMOnlineSystemDB;TrustServerCertificate=True");
+    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+    //        => optionsBuilder.UseSqlServer("Server=LAPTOP-9COIMEED;uid=sa;pwd=12345;database=LMOnlineSystemDB;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -72,10 +72,8 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.ToTable("Category");
 
             entity.Property(e => e.Description)
-                .IsRequired()
                 .HasMaxLength(450);
             entity.Property(e => e.Name)
-                .IsRequired()
                 .HasMaxLength(155);
         });
 
@@ -85,26 +83,20 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
             entity.Property(e => e.CreateAt).HasColumnType("datetime");
             entity.Property(e => e.Description)
-                .IsRequired()
                 .HasMaxLength(255);
             entity.Property(e => e.ImageUrl)
-                .IsRequired()
                 .HasMaxLength(255)
                 .HasColumnName("ImageURL");
             entity.Property(e => e.KnowdledgeDescription)
-                .IsRequired()
                 .HasMaxLength(450);
             entity.Property(e => e.PublicAt).HasColumnType("datetime");
             entity.Property(e => e.Title)
-                .IsRequired()
                 .HasMaxLength(255)
                 .HasColumnName("title");
             entity.Property(e => e.TotalDuration)
-                .IsRequired()
                 .HasMaxLength(155);
             entity.Property(e => e.UpdateAt).HasColumnType("datetime");
             entity.Property(e => e.VideoPreviewUrl)
-                .IsRequired()
                 .HasMaxLength(255)
                 .HasColumnName("VideoPreviewURL");
         });
@@ -117,8 +109,8 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
             entity.HasIndex(e => e.CourseId, "IX_CourseCategory_CourseId");
 
-            entity.Property(e => e.CategoryId).IsRequired();
-            entity.Property(e => e.CourseId).IsRequired();
+            entity.Property(e => e.CategoryId);
+            entity.Property(e => e.CourseId);
 
             entity.HasOne(d => d.Category).WithMany(p => p.CourseCategories)
                 .HasForeignKey(d => d.CategoryId)
@@ -135,9 +127,8 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
             entity.HasIndex(e => e.AccountId, "IX_Notification_AccountId");
 
-            entity.Property(e => e.AccountId).IsRequired();
+            entity.Property(e => e.AccountId);
             entity.Property(e => e.Message)
-                .IsRequired()
                 .HasMaxLength(450);
             entity.Property(e => e.SendDate).HasColumnType("datetime");
 
@@ -154,23 +145,18 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
             entity.HasIndex(e => e.CourseId, "IX_Order_CourseId");
 
-            entity.Property(e => e.AccountId).IsRequired();
+            entity.Property(e => e.AccountId);
             entity.Property(e => e.AccountName)
-                .IsRequired()
                 .HasMaxLength(155);
-            entity.Property(e => e.CourseId).IsRequired();
+            entity.Property(e => e.CourseId);
             entity.Property(e => e.CurrencyCode)
-                .IsRequired()
                 .HasMaxLength(55);
             entity.Property(e => e.PaymentDate).HasColumnType("datetime");
             entity.Property(e => e.PaymentMethod)
-                .IsRequired()
                 .HasMaxLength(155);
             entity.Property(e => e.Status)
-                .IsRequired()
                 .HasMaxLength(55);
             entity.Property(e => e.TransactionNo)
-                .IsRequired()
                 .HasMaxLength(155);
 
             entity.HasOne(d => d.Account).WithMany(p => p.Orders)
@@ -191,10 +177,9 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.HasIndex(e => e.RegistrationId, "IX_RatingCourse_RegistrationId");
 
             entity.Property(e => e.CommentContent)
-                .IsRequired()
                 .HasMaxLength(255);
             entity.Property(e => e.RatingDate).HasColumnType("datetime");
-            entity.Property(e => e.RegistrationId).IsRequired();
+            entity.Property(e => e.RegistrationId);
 
             entity.HasOne(d => d.Registration).WithMany(p => p.RatingCourses)
                 .HasForeignKey(d => d.RegistrationId)
@@ -211,8 +196,8 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
             entity.HasIndex(e => e.CourseId, "IX_RegistrationCourse_CourseId");
 
-            entity.Property(e => e.AccountId).IsRequired();
-            entity.Property(e => e.CourseId).IsRequired();
+            entity.Property(e => e.AccountId);
+            entity.Property(e => e.CourseId);
             entity.Property(e => e.EnrollmentDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.Account).WithMany(p => p.RegistrationCourses)
@@ -235,17 +220,13 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.Property(e => e.AccountId).IsRequired();
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.Description)
-                .IsRequired()
                 .HasMaxLength(450);
             entity.Property(e => e.ProcessingDate).HasColumnType("datetime");
             entity.Property(e => e.ReportStatus)
-                .IsRequired()
                 .HasMaxLength(50);
             entity.Property(e => e.Title)
-                .IsRequired()
                 .HasMaxLength(155);
             entity.Property(e => e.Type)
-                .IsRequired()
                 .HasMaxLength(50);
 
             entity.HasOne(d => d.Account).WithMany(p => p.ReportProblems)
@@ -259,9 +240,8 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
             entity.HasIndex(e => e.CourseId, "IX_Section_CourseId");
 
-            entity.Property(e => e.CourseId).IsRequired();
+            entity.Property(e => e.CourseId);
             entity.Property(e => e.Title)
-                .IsRequired()
                 .HasMaxLength(155);
 
             entity.HasOne(d => d.Course).WithMany(p => p.Sections)
@@ -275,15 +255,12 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
             entity.HasIndex(e => e.SectionId, "IX_Step_SectionId");
 
-            entity.Property(e => e.SectionId).IsRequired();
+            entity.Property(e => e.SectionId);
             entity.Property(e => e.StepDescription)
-                .IsRequired()
                 .HasMaxLength(450);
             entity.Property(e => e.Title)
-                .IsRequired()
                 .HasMaxLength(155);
             entity.Property(e => e.VideoUrl)
-                .IsRequired()
                 .HasMaxLength(255);
 
             entity.HasOne(d => d.Section).WithMany(p => p.Steps)
@@ -300,7 +277,7 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.HasIndex(e => e.RegistrationId, "IX_StepCompleted_RegistrationId");
 
             entity.Property(e => e.DateCompleted).HasColumnType("datetime");
-            entity.Property(e => e.RegistrationId).IsRequired();
+            entity.Property(e => e.RegistrationId);
 
             entity.HasOne(d => d.Registration).WithMany(p => p.StepCompleteds).HasForeignKey(d => d.RegistrationId);
         });
@@ -313,8 +290,8 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
             entity.HasIndex(e => e.CourseId, "IX_WishList_CourseId");
 
-            entity.Property(e => e.AccountId).IsRequired();
-            entity.Property(e => e.CourseId).IsRequired();
+            entity.Property(e => e.AccountId);
+            entity.Property(e => e.CourseId);
 
             entity.HasOne(d => d.Account).WithMany(p => p.WishLists)
                 .HasForeignKey(d => d.AccountId)

@@ -8,10 +8,10 @@ namespace LMSystem.Repository.Data
 {
     public class WishListModel
     {
-        public string WishListId { get; set; }
+        public string? WishListId { get; set; }
 
-        public string CourseId { get; set; }
+        public string? CourseId { get; set; }
 
-        public string AccountId { get; set; }
+        public string? AccountId { get; set; }
     }
 }

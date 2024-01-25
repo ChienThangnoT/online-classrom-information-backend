@@ -7,6 +7,8 @@ using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -65,30 +67,17 @@ builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
 //--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
 
 //config database to deploy on azure
-//var connection = String.Empty;
-//if (builder.Environment.IsDevelopment())
-//{
-//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
-//    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-//}
-//else
-//{
-//    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
-//}
-//// Config SQLAzure
-//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
-//    options.UseSqlServer(connection));
-//var connection = string.Empty;
-//if (builder.Environment.IsDevelopment())
-//{
-//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.development.json");
-//    connection = builder.Configuration.GetConnectionString("azure_sql_connectionstring");
-//}
-//else
-//{
-//    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
-//}
-//// config sqlazure
+var connection = string.Empty;
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.development.json");
+    connection = builder.Configuration.GetConnectionString("azure_sql_connectionstring");
+}
+else
+{
+    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
+}
+// config sqlazure
 //builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
 //    options.UseSqlServer(connection));
 

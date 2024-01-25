@@ -44,13 +44,11 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
-            var account = await userManager.FindByEmailAsync(email);
-            if (account != null)
-            {
-                return _mapper.Map<AccountModel>(account);
-            }
-            return null;
+            var account = await userManager.FindByNameAsync(email);
+            var result = _mapper.Map<AccountModel>(account);
+            return result;
         }
+
         public async Task<Account> GetAccountById(string id)
         {
             var account = await userManager.FindByIdAsync(id);
@@ -155,8 +153,8 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AuthenticationResponseModel> SignInAccountAsync(SignInModel model)
         {
-            var result = await signInManager.PasswordSignInAsync(model.AccountPassword, model.AccountPassword, false, false);
-            //var account = await userManager.FindByNameAsync(model.AccountEmail);
+            var result = await signInManager.PasswordSignInAsync(model.AccountEmail, model.AccountPassword, false, false);
+            var account = await userManager.FindByNameAsync(model.AccountEmail);
 
             if (result.Succeeded)
             {
@@ -190,10 +188,10 @@ namespace LMSystem.Repository.Repositories
 
                     _ = int.TryParse(configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
 
-                    user.RefreshToken = refreshToken;
-                    user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+                    account.RefreshToken = refreshToken;
+                    account.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
 
-                    await userManager.UpdateAsync(user);
+                    await userManager.UpdateAsync(account);
 
                     return new AuthenticationResponseModel
                     {

@@ -26,16 +26,16 @@ namespace LMSystem.API.Controllers
         {
             //try
             //{
-                if (ModelState.IsValid)
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.SignUpAccountAsync(signUpModel);
+                if (result.Status.Equals("Success"))
                 {
-                    var result = await _accountService.SignUpAccountAsync(signUpModel);
-                    if (result.Status.Equals("Success"))
-                    {
-                        return Ok(result);
-                    }
-                    return BadRequest(result);
+                    return Ok(result);
                 }
-                return ValidationProblem(ModelState);
+                return BadRequest(result);
+            }
+            return ValidationProblem(ModelState);
             //}
             //catch { return BadRequest(); }
         }
@@ -89,7 +89,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("{email}")]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<AccountModel>> GetAccountByEmail(string email)
         {
             var data = await _accountService.GetAccountByEmail(email);
