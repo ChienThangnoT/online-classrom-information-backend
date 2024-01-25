@@ -3,6 +3,7 @@ using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -50,6 +51,11 @@ namespace LMSystem.Repository.Repositories
             }
             return null;
         }
+        public async Task<Account> GetAccountById(string id)
+        {
+            var account = await userManager.FindByIdAsync(id);
+            return account;
+        }
 
         public async Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel)
         {
@@ -58,7 +64,7 @@ namespace LMSystem.Repository.Repositories
                 return new AuthenticationResponseModel
                 {
                     Status = false,
-                    Message = "Yêu cầu không hợp lệ!"
+                    Message = "Request not valid!"
                 };
             }
 
@@ -143,7 +149,7 @@ namespace LMSystem.Repository.Repositories
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Token không hợp lệ!");
+                throw new SecurityTokenException("Token unavailabel!");
             return principal;
         }
 
@@ -192,7 +198,7 @@ namespace LMSystem.Repository.Repositories
                     return new AuthenticationResponseModel
                     {
                         Status = true,
-                        Message = "Đăng nhập thành công!",
+                        Message = "Login successfully!",
                         JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                         Expired = token.ValidTo,
                         JwtRefreshToken = refreshToken,
@@ -223,7 +229,7 @@ namespace LMSystem.Repository.Repositories
                         BirthDate = model.BirthDate,
                         Status = "Is Active",
                         UserName = model.AccountEmail,
-                        
+
                         Email = model.AccountEmail,
                         PhoneNumber = model.AccountPhone
                     };
@@ -261,6 +267,34 @@ namespace LMSystem.Repository.Repositories
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel model)
+        {
+            var account = await userManager.FindByEmailAsync(model.Email);
+            if (account == null)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Can not find your account!"
+                };
+            }
+            var result = await userManager.ChangePasswordAsync(account, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Cannot change pass"
+                };
+            }
+
+            return new ResponeModel
+            {
+                Status = "Success",
+                Message = "Change password successfully!"
+            };
         }
     }
 }

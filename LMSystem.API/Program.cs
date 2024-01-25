@@ -122,11 +122,15 @@ builder.Services.AddAutoMapper(typeof(AutomapperProfile).Assembly);
 //Add Dependenci Injection, Life cycle DI: AddSingleton(), AddTransisent(), AddScoped()
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IWishListRepository, WishListRepository>();
+builder.Services.AddScoped<IWishListService, WishListService>();
 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.0
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
