@@ -68,8 +68,29 @@ namespace LMSystem.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("ChangePassword")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = await _accountService.ChangePasswordAsync(model);
+                    if (result.Status.Equals("Success"))
+                    {
+                        return Ok(result);
+                    }
+                    return BadRequest(result);
+                }
+                return ValidationProblem(ModelState);
+            }
+            catch { return BadRequest(); }
+        }
+
         [HttpGet("{email}")]
-        public async Task<ActionResult<AccountModel>> GetAccountById(string email)
+        [Authorize]
+        public async Task<ActionResult<AccountModel>> GetAccountByEmail(string email)
         {
             var data = await _accountService.GetAccountByEmail(email);
             if (data != null)

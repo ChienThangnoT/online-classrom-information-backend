@@ -44,13 +44,11 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
-            var account = await userManager.FindByEmailAsync(email);
-            if (account != null)
-            {
-                return _mapper.Map<AccountModel>(account);
-            }
-            return null;
+            var account = await userManager.FindByNameAsync(email);
+            var result =  _mapper.Map<AccountModel>(account);
+            return result;
         }
+
         public async Task<Account> GetAccountById(string id)
         {
             var account = await userManager.FindByIdAsync(id);
@@ -64,7 +62,7 @@ namespace LMSystem.Repository.Repositories
                 return new AuthenticationResponseModel
                 {
                     Status = false,
-                    Message = "Yêu cầu không hợp lệ!"
+                    Message = "Request not valid!"
                 };
             }
 
@@ -149,7 +147,7 @@ namespace LMSystem.Repository.Repositories
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Token không hợp lệ!");
+                throw new SecurityTokenException("Token unavailabel!");
             return principal;
         }
 
@@ -198,7 +196,7 @@ namespace LMSystem.Repository.Repositories
                     return new AuthenticationResponseModel
                     {
                         Status = true,
-                        Message = "Đăng nhập thành công!",
+                        Message = "Login successfully!",
                         JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                         Expired = token.ValidTo,
                         JwtRefreshToken = refreshToken,
@@ -217,50 +215,50 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<ResponeModel> SignUpAccountAsync(SignUpModel model)
         {
-            //try
-            //{
-            var exsistAccount = await userManager.FindByNameAsync(model.AccountEmail);
-            if (exsistAccount == null)
+            try
             {
-                var user = new Account
+                var exsistAccount = await userManager.FindByNameAsync(model.AccountEmail);
+                if (exsistAccount == null)
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    BirthDate = model.BirthDate,
-                    Status = "Is Active",
-                    UserName = model.AccountEmail,
+                    var user = new Account
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        BirthDate = model.BirthDate,
+                        Status = "Is Active",
+                        UserName = model.AccountEmail,
 
-                    Email = model.AccountEmail,
-                    PhoneNumber = model.AccountPhone
-                };
-                var result = await userManager.CreateAsync(user, model.AccountPassword);
-                string errorMessage = null;
-                if (result.Succeeded)
-                {
-                    if (!await roleManager.RoleExistsAsync(RoleModel.Student.ToString()))
+                        Email = model.AccountEmail,
+                        PhoneNumber = model.AccountPhone
+                    };
+                    var result = await userManager.CreateAsync(user, model.AccountPassword);
+                    string errorMessage = null;
+                    if (result.Succeeded)
                     {
-                        await roleManager.CreateAsync(new IdentityRole(RoleModel.Student.ToString()));
+                        if (!await roleManager.RoleExistsAsync(RoleModel.Student.ToString()))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole(RoleModel.Student.ToString()));
+                        }
+                        if (await roleManager.RoleExistsAsync(RoleModel.Student.ToString()))
+                        {
+                            await userManager.AddToRoleAsync(user, RoleModel.Student.ToString());
+                        }
+                        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                        return new ResponeModel { Status = "Success", Message = "Create account successfull" };
                     }
-                    if (await roleManager.RoleExistsAsync(RoleModel.Student.ToString()))
+                    foreach (var ex in result.Errors)
                     {
-                        await userManager.AddToRoleAsync(user, RoleModel.Student.ToString());
+                        errorMessage = ex.Description;
                     }
-                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                    return new ResponeModel { Status = "Success", Message = "Create account successfull" };
+                    return new ResponeModel { Status = "Error", Message = errorMessage };
                 }
-                foreach (var ex in result.Errors)
-                {
-                    errorMessage = ex.Description;
-                }
-                return new ResponeModel { Status = "Error", Message = errorMessage };
             }
-            //}
-            //catch (Exception ex)
-            //{
-            //    // Log or print the exception details
-            //    Console.WriteLine($"Exception: {ex.Message}");
-            //    return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
-            //}
+            catch (Exception ex)
+            {
+                // Log or print the exception details
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
+            }
             return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
         }
 
@@ -268,7 +266,7 @@ namespace LMSystem.Repository.Repositories
         {
             throw new NotImplementedException();
         }
-
+        
         public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             try
@@ -304,6 +302,33 @@ namespace LMSystem.Repository.Repositories
             account.ProfileImg = updateProfileModel.ProfileImg;
             account.Sex = updateProfileModel.Sex;
             return account;
+        }
+        public async Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel model)
+        {
+            var account = await userManager.FindByEmailAsync(model.Email);
+            if (account == null)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Can not find your account!"
+                };
+            }
+            var result = await userManager.ChangePasswordAsync(account, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Cannot change pass"
+                };
+            }
+
+            return new ResponeModel
+            {
+                Status = "Success",
+                Message = "Change password successfully!"
+            };
         }
     }
 }
