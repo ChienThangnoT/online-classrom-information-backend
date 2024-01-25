@@ -19,6 +19,12 @@ namespace LMSystem.Services.Services
             _repo = repo;            
         }
 
+        public Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel model)
+        {
+            var result = _repo.ChangePasswordAsync(model);
+            return result;
+        }
+
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
             var result = await _repo.GetAccountByEmail(email);
