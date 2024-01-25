@@ -50,6 +50,11 @@ namespace LMSystem.Repository.Repositories
             }
             return null;
         }
+        public async Task<Account> GetAccountById(string id)
+        {
+            var account = await userManager.FindByIdAsync(id);
+            return account;
+        }
 
         public async Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel)
         {
@@ -211,50 +216,50 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<ResponeModel> SignUpAccountAsync(SignUpModel model)
         {
-            try
+            //try
+            //{
+            var exsistAccount = await userManager.FindByNameAsync(model.AccountEmail);
+            if (exsistAccount == null)
             {
-                var exsistAccount = await userManager.FindByNameAsync(model.AccountEmail);
-                if (exsistAccount == null)
+                var user = new Account
                 {
-                    var user = new Account
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    BirthDate = model.BirthDate,
+                    Status = "Is Active",
+                    UserName = model.AccountEmail,
+
+                    Email = model.AccountEmail,
+                    PhoneNumber = model.AccountPhone
+                };
+                var result = await userManager.CreateAsync(user, model.AccountPassword);
+                string errorMessage = null;
+                if (result.Succeeded)
+                {
+                    if (!await roleManager.RoleExistsAsync(RoleModel.Student.ToString()))
                     {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        BirthDate = model.BirthDate,
-                        Status = "Is Active",
-                        UserName = model.AccountEmail,
-                        
-                        Email = model.AccountEmail,
-                        PhoneNumber = model.AccountPhone
-                    };
-                    var result = await userManager.CreateAsync(user, model.AccountPassword);
-                    string errorMessage = null;
-                    if (result.Succeeded)
-                    {
-                        if (!await roleManager.RoleExistsAsync(RoleModel.Student.ToString()))
-                        {
-                            await roleManager.CreateAsync(new IdentityRole(RoleModel.Student.ToString()));
-                        }
-                        if (await roleManager.RoleExistsAsync(RoleModel.Student.ToString()))
-                        {
-                            await userManager.AddToRoleAsync(user, RoleModel.Student.ToString());
-                        }
-                        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                        return new ResponeModel { Status = "Success", Message = "Create account successfull" };
+                        await roleManager.CreateAsync(new IdentityRole(RoleModel.Student.ToString()));
                     }
-                    foreach (var ex in result.Errors)
+                    if (await roleManager.RoleExistsAsync(RoleModel.Student.ToString()))
                     {
-                        errorMessage = ex.Description;
+                        await userManager.AddToRoleAsync(user, RoleModel.Student.ToString());
                     }
-                    return new ResponeModel { Status = "Error", Message = errorMessage };
+                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    return new ResponeModel { Status = "Success", Message = "Create account successfull" };
                 }
+                foreach (var ex in result.Errors)
+                {
+                    errorMessage = ex.Description;
+                }
+                return new ResponeModel { Status = "Error", Message = errorMessage };
             }
-            catch (Exception ex)
-            {
-                // Log or print the exception details
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    // Log or print the exception details
+            //    Console.WriteLine($"Exception: {ex.Message}");
+            //    return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
+            //}
             return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
         }
 
