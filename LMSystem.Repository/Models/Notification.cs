@@ -5,9 +5,9 @@ namespace LMSystem.Repository.Models;
 
 public partial class Notification
 {
-    public string? NotificationId { get; set; }
+    public int NotificationId { get; set; }
 
-    public string? AccountId { get; set; }
+    public string AccountId { get; set; }
 
     public string? Message { get; set; }
 

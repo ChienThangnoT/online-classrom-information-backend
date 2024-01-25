@@ -5,11 +5,11 @@ namespace LMSystem.Repository.Models;
 
 public partial class WishList
 {
-    public string? WishListId { get; set; }
+    public int WishListId { get; set; }
 
-    public string? CourseId { get; set; }
+    public int CourseId { get; set; }
 
-    public string? AccountId { get; set; }
+    public string AccountId { get; set; }
 
     public virtual Account? Account { get; set; }
 

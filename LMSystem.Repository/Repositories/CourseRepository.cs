@@ -26,7 +26,7 @@ namespace LMSystem.Repository.Repositories
             return await _context.Courses.ToListAsync();
         }
 
-        public async Task<Course> GetCourseDetailByIdAsync(string courseId)
+        public async Task<Course> GetCourseDetailByIdAsync(int courseId)
         {
             var course = await _context.Courses
             .Include(c => c.Sections)
@@ -43,7 +43,7 @@ namespace LMSystem.Repository.Repositories
 
             if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
-                query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
+                //query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds == cc.CategoryId));
             }
 
             if (filterParams.MinPrice.HasValue)

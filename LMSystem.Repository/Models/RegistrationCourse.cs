@@ -5,11 +5,11 @@ namespace LMSystem.Repository.Models;
 
 public partial class RegistrationCourse
 {
-    public string? RegistrationId { get; set; }
+    public int RegistrationId { get; set; }
 
-    public string? CourseId { get; set; }
+    public int CourseId { get; set; }
 
-    public string? AccountId { get; set; }
+    public string AccountId { get; set; }
 
     public DateTime? EnrollmentDate { get; set; }
 

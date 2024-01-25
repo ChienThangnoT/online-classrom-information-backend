@@ -5,9 +5,9 @@ namespace LMSystem.Repository.Models;
 
 public partial class Section
 {
-    public string? SectionId { get; set; }
+    public int SectionId { get; set; }
 
-    public string? CourseId { get; set; }
+    public int CourseId { get; set; }
 
     public string? Title { get; set; }
 

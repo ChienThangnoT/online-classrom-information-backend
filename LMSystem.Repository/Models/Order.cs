@@ -5,11 +5,11 @@ namespace LMSystem.Repository.Models;
 
 public partial class Order
 {
-    public string? OrderId { get; set; }
+    public int OrderId { get; set; }
 
-    public string? AccountId { get; set; }
+    public string AccountId { get; set; }
 
-    public string? CourseId { get; set; }
+    public int CourseId { get; set; }
 
     public double? TotalPrice { get; set; }
 

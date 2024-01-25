@@ -37,7 +37,7 @@ namespace LMSystem.API.Controllers
         }
         
         [HttpGet("GetCourseDetailById")]
-        public async Task<IActionResult> GetCourseDetailById(string courseId)
+        public async Task<IActionResult> GetCourseDetailById(int courseId)
         {
             var courses = await _courseService.GetCourseDetailByIdAsync(courseId);
             if (courses == null)

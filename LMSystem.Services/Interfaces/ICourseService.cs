@@ -12,6 +12,6 @@ namespace LMSystem.Services.Interfaces
     {
         public Task<IEnumerable<Course>> GetFilteredCourses(CourseFilterParameters filterParams);
         public Task<IEnumerable<Course>> GetTopFavoriteCourses();
-        public Task<Course> GetCourseDetailByIdAsync(string courseId);
+        public Task<Course> GetCourseDetailByIdAsync(int courseId);
     }
 }

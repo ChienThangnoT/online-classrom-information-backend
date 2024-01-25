@@ -5,9 +5,9 @@ namespace LMSystem.Repository.Models;
 
 public partial class ReportProblem
 {
-    public string? ReportId { get; set; }
+    public int ReportId { get; set; }
 
-    public string? AccountId { get; set; }
+    public string AccountId { get; set; }
 
     public string? Type { get; set; }
 

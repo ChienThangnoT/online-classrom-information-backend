@@ -5,7 +5,7 @@ namespace LMSystem.Repository.Models;
 
 public partial class Category
 {
-    public string? CatgoryId { get; set; }
+    public int CatgoryId { get; set; }
 
     public string? Name { get; set; }
 

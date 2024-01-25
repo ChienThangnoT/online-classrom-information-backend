@@ -8,7 +8,7 @@ namespace LMSystem.Repository.Data
 {
     public class CourseFilterParameters
     {
-        public List<string> CategoryIds { get; set; } = new List<string>();
+        public List<int> CategoryIds { get; set; } = new List<int>();
         public double? MinPrice { get; set; }
         public double? MaxPrice { get; set; }
         public int PageNumber { get; set; } = 1;

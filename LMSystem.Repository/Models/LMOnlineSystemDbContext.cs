@@ -41,6 +41,9 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
     public virtual DbSet<StepCompleted> StepCompleteds { get; set; }
 
     public virtual DbSet<WishList> WishLists { get; set; }
+    public virtual DbSet<Quiz> Quizzes { get; set; }
+    public virtual DbSet<Question> Questions { get; set; }
+
 
     //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -48,11 +51,14 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Account>().ToTable("Accounts");
+
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_AspNetUsers");
+            entity.HasKey(e => e.Id).HasName("PK_Account");
 
-            entity.ToTable("AspNetUsers");
+            entity.ToTable("Accounts");
             entity.Property(e => e.Biography).HasMaxLength(255);
             entity.Property(e => e.FirstName).HasMaxLength(155);
             entity.Property(e => e.LastName).HasMaxLength(155);
@@ -79,30 +85,33 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
         modelBuilder.Entity<Course>(entity =>
         {
+            entity.HasKey(e => e.CourseId);
+
             entity.ToTable("Course");
 
             entity.Property(e => e.CreateAt).HasColumnType("datetime");
             entity.Property(e => e.Description)
                 .HasMaxLength(255);
             entity.Property(e => e.ImageUrl)
-                .HasMaxLength(255)
+                .HasMaxLength(450)
                 .HasColumnName("ImageURL");
             entity.Property(e => e.KnowdledgeDescription)
                 .HasMaxLength(450);
             entity.Property(e => e.PublicAt).HasColumnType("datetime");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
-                .HasColumnName("title");
+                .HasColumnName("Title");
             entity.Property(e => e.TotalDuration)
                 .HasMaxLength(155);
             entity.Property(e => e.UpdateAt).HasColumnType("datetime");
             entity.Property(e => e.VideoPreviewUrl)
-                .HasMaxLength(255)
+                .HasMaxLength(450)
                 .HasColumnName("VideoPreviewURL");
         });
 
         modelBuilder.Entity<CourseCategory>(entity =>
         {
+            entity.HasKey(e => e.CourseCategoryId);
             entity.ToTable("CourseCategory");
 
             entity.HasIndex(e => e.CategoryId, "IX_CourseCategory_CategoryId");
@@ -123,6 +132,7 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
         modelBuilder.Entity<Notification>(entity =>
         {
+            entity.HasKey(e => e.NotificationId);
             entity.ToTable("Notification");
 
             entity.HasIndex(e => e.AccountId, "IX_Notification_AccountId");
@@ -139,6 +149,7 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
         modelBuilder.Entity<Order>(entity =>
         {
+            entity.HasKey(e => e.OrderId);
             entity.ToTable("Order");
 
             entity.HasIndex(e => e.AccountId, "IX_Order_AccountId");
@@ -236,6 +247,7 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
         modelBuilder.Entity<Section>(entity =>
         {
+            entity.HasKey(e => e.SectionId);
             entity.ToTable("Section");
 
             entity.HasIndex(e => e.CourseId, "IX_Section_CourseId");
@@ -251,6 +263,7 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
         modelBuilder.Entity<Step>(entity =>
         {
+            entity.HasKey(e => e.StepId);
             entity.ToTable("Step");
 
             entity.HasIndex(e => e.SectionId, "IX_Step_SectionId");
@@ -284,6 +297,7 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
 
         modelBuilder.Entity<WishList>(entity =>
         {
+            entity.HasKey(e => e.WishListId);
             entity.ToTable("WishList");
 
             entity.HasIndex(e => e.AccountId, "IX_WishList_AccountId");
@@ -301,8 +315,46 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
                 .HasForeignKey(d => d.CourseId)
                 .HasConstraintName("FK_WishList_Course");
         });
+        
+        modelBuilder.Entity<Quiz>(entity =>
+        {
+            entity.HasKey(e => e.QuizId);
+            entity.ToTable("Quiz");
 
-        base.OnModelCreating(modelBuilder);
+
+            entity.HasIndex(e => e.StepId, "IX_Quiz_StepId");
+            
+            entity.Property(e => e.Title).HasMaxLength(150);
+
+            entity.Property(e => e.Description).HasMaxLength(250);
+
+
+            entity.HasOne(d => d.Step).WithMany(p => p.Quizzes)
+                .HasForeignKey(d => d.StepId)
+                .HasConstraintName("FK_Quiz_Step");
+        });
+        
+        modelBuilder.Entity<Question>(entity =>
+        {
+            entity.HasKey(e => e.QuestionId);
+            entity.ToTable("Question");
+
+
+            entity.HasIndex(e => e.QuizId, "IX_Question_QuizId");
+            
+            entity.Property(e => e.Title).HasMaxLength(250);
+            entity.Property(e => e.Anwser1).HasMaxLength(250);
+            entity.Property(e => e.Anwser2).HasMaxLength(250);
+            entity.Property(e => e.Anwser3).HasMaxLength(250);
+            entity.Property(e => e.Anwser4).HasMaxLength(250);
+            entity.Property(e => e.AnwserCorrect).HasMaxLength(250);
+
+            entity.HasOne(d => d.Quiz).WithMany(p => p.Question)
+                .HasForeignKey(d => d.QuizId)
+                .HasConstraintName("FK_Question_Quiz");
+        });
+
+        //base.OnModelCreating(modelBuilder);
         //OnModelCreatingPartial(modelBuilder);
     }
 

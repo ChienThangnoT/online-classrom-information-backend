@@ -5,7 +5,7 @@ namespace LMSystem.Repository.Models;
 
 public partial class Course
 {
-    public string? CourseId { get; set; }
+    public int CourseId { get; set; }
 
     public string? Description { get; set; }
 
@@ -27,7 +27,7 @@ public partial class Course
 
     public DateTime? UpdateAt { get; set; }
 
-    public string? TotalDuration { get; set; }
+    public int TotalDuration { get; set; }
 
     public bool? CourseIsActive { get; set; }
 

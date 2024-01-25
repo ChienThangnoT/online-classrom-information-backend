@@ -8,9 +8,9 @@ namespace LMSystem.Repository.Data
 {
     public class WishListModel
     {
-        public string? WishListId { get; set; }
+        public int WishListId { get; set; }
 
-        public string? CourseId { get; set; }
+        public int CourseId { get; set; }
 
         public string? AccountId { get; set; }
     }
