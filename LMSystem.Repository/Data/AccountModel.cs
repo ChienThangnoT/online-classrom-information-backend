@@ -9,6 +9,8 @@ namespace LMSystem.Repository.Data
 {
     public class AccountModel
     {
+        public string AccountId { get; set; }
+
         [Required(ErrorMessage = "First name is required!")]
         [Display(Name = "Name")]
         public string FirstName { get; set; }
