@@ -51,28 +51,20 @@ namespace LMSystem.Repository.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Course>> GetTopFavoriteCoursesForAccount(string accountId)
+        public async Task<IEnumerable<Course>> GetTopFavoriteCourses()
         {
-            // Get courses the account is enrolled in
-            var enrolledCourseIds = await _context.RegistrationCourses
-                .Where(rc => rc.AccountId == accountId)
-                .Select(rc => rc.CourseId)
-                .ToListAsync();
-
-            // Get top courses based on number of registrations
             var topCourses = await _context.RegistrationCourses
-                .Where(rc => enrolledCourseIds.Contains(rc.CourseId))
-                .GroupBy(rc => rc.CourseId)
-                .OrderByDescending(g => g.Count())
-                .Select(g => g.Key)
-                .Take(10)
-                .ToListAsync();
+             .GroupBy(rc => rc.CourseId)
+             .OrderByDescending(g => g.Count())
+             .Take(10)
+             .Select(g => g.Key)
+             .ToListAsync();
 
             var courses = await _context.Courses
                 .Where(c => topCourses.Contains(c.CourseId))
                 .ToListAsync();
 
-            // Fill up with random courses if necessary
+            // If there are less than 10 courses, fill the gap with random courses
             if (courses.Count < 10)
             {
                 var additionalCourses = await _context.Courses
