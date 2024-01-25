@@ -23,9 +23,9 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("AddWishList")]
-        public async Task<IActionResult> AddToWishlist(string courseId, string id)
+        public async Task<IActionResult> AddToWishlist(string courseId, string accountId)
         {
-            var account = await _accountService.GetAccountById(id);
+            var account = await _accountService.GetAccountById(accountId);
 
             var response = await _wishListService.AddWishList(account.Id, courseId);
 
@@ -66,9 +66,9 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("GetWishListByAccountId")]
-        public async Task<IActionResult> GetWishListByAccountId(string id)
+        public async Task<IActionResult> GetWishListByAccountId(string accountId)
         {
-            var account = await _accountService.GetAccountById(id);
+            var account = await _accountService.GetAccountById(accountId);
 
             var response = await _wishListService.GetWishListByAccountId(account.Id);
 
