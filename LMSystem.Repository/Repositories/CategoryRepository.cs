@@ -21,6 +21,11 @@ namespace LMSystem.Repository.Repositories
         {
             try
             {
+                if (_context.Categories.Any(c => c.Name == model.CategoryName))
+                {
+                    return new ResponeModel { Status = "Error", Message = "Category name must be unique" };
+                }
+
                 var category = new Category
                 {
                     Name = model.CategoryName,
@@ -30,7 +35,7 @@ namespace LMSystem.Repository.Repositories
                 _context.Categories.Add(category);
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added category successfully" , Data = category.CatgoryId.ToString()};
+                return new ResponeModel { Status = "Success", Message = "Added category successfully" , DataObject = category};
             }
             catch (Exception ex)
             {

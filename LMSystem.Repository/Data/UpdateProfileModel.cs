@@ -15,11 +15,6 @@ namespace LMSystem.Repository.Data
         [Display(Name = "Name")]
         public string LastName { get; set; }
 
-        [Display(Name = "Email")]
-        [DataType(DataType.EmailAddress, ErrorMessage = "Invalid Email!")]
-        [RegularExpression(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", ErrorMessage = "Invalid Email!")]
-        public string Email { get; set; }
-
         [Display(Name = "Phone Number")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid Phone Number!")]
         [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Invalid Phone Number!")]

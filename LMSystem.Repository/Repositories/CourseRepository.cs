@@ -44,7 +44,19 @@ namespace LMSystem.Repository.Repositories
                 _context.Courses.Add(course);
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added course successfully" };
+                foreach (var categoryId in addCourseModel.CategoryList)
+                {
+                    var courseCategory = new CourseCategory
+                    {
+                        CourseId = course.CourseId,
+                        CategoryId = categoryId
+                    };
+
+                    _context.CourseCategories.Add(courseCategory);
+                }
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel { Status = "Success", Message = "Added course successfully" , DataObject = course};
             }
             catch (Exception ex)
             {
@@ -180,6 +192,4 @@ namespace LMSystem.Repository.Repositories
         }
 
     }
-
-
 }

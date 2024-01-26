@@ -22,6 +22,12 @@ namespace LMSystem.API
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
 
+            services.AddScoped<ISectionRepository, SectionRepository>();
+            services.AddScoped<ISectionService, SectionService>();
+
+            services.AddScoped<IStepRepository, StepRepository>();
+            services.AddScoped<IStepService, StepService>();
+
             return services;
         }
     }
