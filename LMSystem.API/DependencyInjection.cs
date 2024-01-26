@@ -19,6 +19,8 @@ namespace LMSystem.API
             services.AddScoped<IWishListRepository, WishListRepository>();
             services.AddScoped<IWishListService, WishListService>();
 
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             return services;
         }
