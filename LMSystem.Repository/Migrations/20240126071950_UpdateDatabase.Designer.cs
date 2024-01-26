@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMSystem.Repository.Migrations
 {
     [DbContext(typeof(LMOnlineSystemDbContext))]
-    [Migration("20240126053850_AddMigrationDatabase")]
-    partial class AddMigrationDatabase
+    [Migration("20240126071950_UpdateDatabase")]
+    partial class UpdateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,8 +163,7 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(450)
@@ -175,8 +174,7 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("KnowdledgeDescription")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Price")
                         .HasColumnType("float");

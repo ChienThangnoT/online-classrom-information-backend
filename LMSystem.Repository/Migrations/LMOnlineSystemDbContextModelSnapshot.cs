@@ -160,8 +160,7 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(450)
@@ -172,8 +171,7 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("KnowdledgeDescription")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Price")
                         .HasColumnType("float");

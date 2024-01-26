@@ -61,43 +61,43 @@ builder.Services
     .AddDefaultTokenProviders();
 
 //Congig local db
-builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
-});
+//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
+//});
 
 
 
 //--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
 
 //config database to deploy on azure
-//var connection = string.Empty;
-//if (builder.Environment.IsDevelopment())
-//{
-//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.development.json");
-//    connection = builder.Configuration.GetConnectionString("azure_sql_connectionstring");
-//}
-//else
-//{
-//    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
-//}
+var connection = string.Empty;
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.development.json");
+    connection = builder.Configuration.GetConnectionString("azure_sql_connectionstring");
+}
+else
+{
+    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
+}
 //config sqlazure
-//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
-//    options.UseSqlServer(connection));
+builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+        options.UseSqlServer(connection));
 
 // ------------------- OPEN COMMENT CHAT KOO ---------------------------
 
 //add cors
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("app-cors",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .WithExposedHeaders("X-Pagination")
-            .AllowAnyMethod();
-        });
+options.AddPolicy("app-cors",
+    builder =>
+    {
+        builder.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .WithExposedHeaders("X-Pagination")
+        .AllowAnyMethod();
+    });
 });
 
 // Add Authentication and JwtBearer

@@ -90,13 +90,9 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.ToTable("Course");
 
             entity.Property(e => e.CreateAt).HasColumnType("datetime");
-            entity.Property(e => e.Description)
-                .HasMaxLength(255);
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(450)
                 .HasColumnName("ImageURL");
-            entity.Property(e => e.KnowdledgeDescription)
-                .HasMaxLength(450);
             entity.Property(e => e.PublicAt).HasColumnType("datetime");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
