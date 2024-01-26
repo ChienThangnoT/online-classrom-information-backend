@@ -21,10 +21,6 @@ namespace LMSystem.Repository.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Course>> GetAllCourses()
-        {
-            return await _context.Courses.ToListAsync();
-        }
         public async Task<IEnumerable<Course>> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             var query = _context.Courses.AsQueryable();
@@ -54,17 +50,17 @@ namespace LMSystem.Repository.Repositories
         public async Task<IEnumerable<Course>> GetTopFavoriteCourses(int numberOfCourses)
         {
             var topCourses = await _context.RegistrationCourses
-             .GroupBy(rc => rc.CourseId)
-             .OrderByDescending(g => g.Count())
-             .Take(numberOfCourses)
-             .Select(g => g.Key)
-             .ToListAsync();
+                .GroupBy(rc => rc.CourseId)
+                .OrderByDescending(g => g.Count())
+                .Take(numberOfCourses)
+                .Select(g => g.Key)
+                .ToListAsync();
 
             var courses = await _context.Courses
                 .Where(c => topCourses.Contains(c.CourseId))
                 .ToListAsync();
 
-            // If there are less than 10 courses, fill the gap with random courses
+            // Fill with random courses if needed
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses

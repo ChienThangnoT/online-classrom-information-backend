@@ -17,7 +17,7 @@ namespace LMSystem.API.Controllers
             _courseService = courseRepository;
         }
 
-        [HttpGet("SelectCourselistPagination")]
+        [HttpGet("Select-Course-list-Pagination")]
         public async Task<IActionResult> GetCourses([FromQuery] CourseFilterParameters filterParams)
         {
             var courses = await _courseService.GetFilteredCourses(filterParams);
@@ -29,7 +29,7 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
 
-        [HttpGet("top-favorites")]
+        [HttpGet("Top-Favorites-Course")]
         public async Task<IActionResult> GetTopFavoriteCourses(int numberOfCourses)
         {
             var courses = await _courseService.GetTopFavoriteCourses(numberOfCourses);
