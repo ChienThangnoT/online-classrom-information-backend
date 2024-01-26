@@ -61,5 +61,15 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
 
+        [HttpPost("AddCourse")]
+        public async Task<IActionResult> AddCourse(AddCourseModel addCourseModel)
+        {
+            var response = await _courseService.AddCourse(addCourseModel);
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+            return Ok(response);
+        }
     }
 }
