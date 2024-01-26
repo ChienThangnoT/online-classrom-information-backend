@@ -10,6 +10,7 @@ public partial class RatingCourse
     public int RegistrationId { get; set; }
 
     public string? CommentContent { get; set; }
+    public int RatingStar { get; set; }
 
     public bool? IsRatingStatus { get; set; }
 

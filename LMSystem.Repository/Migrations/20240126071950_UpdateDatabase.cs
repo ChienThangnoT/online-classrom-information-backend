@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMSystem.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class AddConfigDatabase : Migration
+    public partial class UpdateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -79,7 +79,7 @@ namespace LMSystem.Repository.Migrations
                 {
                     CourseId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageURL = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     VideoPreviewURL = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     Price = table.Column<double>(type: "float", nullable: true),
@@ -91,7 +91,7 @@ namespace LMSystem.Repository.Migrations
                     UpdateAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     TotalDuration = table.Column<int>(type: "int", maxLength: 155, nullable: false),
                     CourseIsActive = table.Column<bool>(type: "bit", nullable: true),
-                    KnowdledgeDescription = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
+                    KnowdledgeDescription = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -393,6 +393,7 @@ namespace LMSystem.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RegistrationId = table.Column<int>(type: "int", nullable: false),
                     CommentContent = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    RatingStar = table.Column<int>(type: "int", nullable: false),
                     IsRatingStatus = table.Column<bool>(type: "bit", nullable: true),
                     RatingDate = table.Column<DateTime>(type: "datetime", nullable: true)
                 },

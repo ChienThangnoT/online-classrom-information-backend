@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMSystem.Repository.Migrations
 {
     [DbContext(typeof(LMOnlineSystemDbContext))]
-    [Migration("20240125101429_AddConfigDatabase")]
-    partial class AddConfigDatabase
+    [Migration("20240126071950_UpdateDatabase")]
+    partial class UpdateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -163,8 +163,7 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(450)
@@ -175,8 +174,7 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("KnowdledgeDescription")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Price")
                         .HasColumnType("float");
@@ -397,6 +395,9 @@ namespace LMSystem.Repository.Migrations
 
                     b.Property<DateTime?>("RatingDate")
                         .HasColumnType("datetime");
+
+                    b.Property<int>("RatingStar")
+                        .HasColumnType("int");
 
                     b.Property<int>("RegistrationId")
                         .HasColumnType("int");
