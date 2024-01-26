@@ -15,7 +15,5 @@ namespace LMSystem.Repository.Interfaces
         public Task<IEnumerable<Course>> GetTopCoursesBySales(int numberOfCourses);
         public Task<IEnumerable<Course>> GetTopCoursesByRating(int numberOfCourses);
         public Task<Course> GetCourseDetailByIdAsync(int courseId);
-
-        public Task<ResponeModel> AddCourse(AddCourseModel addCourseModel);
     }
 }
