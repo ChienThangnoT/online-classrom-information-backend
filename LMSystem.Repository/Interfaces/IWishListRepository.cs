@@ -10,9 +10,9 @@ namespace LMSystem.Repository.Interfaces
 {
     public interface IWishListRepository
     {
-        public Task<ResponeModel> AddWishList(string accountId, string courseId);
-        public Task<ResponeModel> DeleteWishListByWishListId(string wishListId);
-        public Task<ResponeModel> DeleteWishListByCourseId(string courseId, string accountId);
+        public Task<ResponeModel> AddWishList(string accountId, int courseId);
+        public Task<ResponeModel> DeleteWishListByWishListId(int wishListId);
+        public Task<ResponeModel> DeleteWishListByCourseId(int courseId, string accountId);
         public Task<List<WishListModel>> GetWishListByAccountId(string accountId);
     }
 }

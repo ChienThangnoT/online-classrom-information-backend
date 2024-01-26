@@ -29,11 +29,37 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
 
-        [HttpGet("top-favorites")]
-        public async Task<IActionResult> GetTopFavoriteCourses()
+        [HttpGet("TopFavoritesCourseBaseStudentJoined")]
+        public async Task<IActionResult> GetTopCoursesByStudentJoined(int numberOfCourses)
         {
-            var courses = await _courseService.GetTopFavoriteCourses();
+            var courses = await _courseService.GetTopCoursesByStudentJoined(numberOfCourses);
             return Ok(courses);
         }
+
+        [HttpGet("TopFavoritesCourseBaseSales")]
+        public async Task<IActionResult> GetTopCoursesBySales(int numberOfCourses)
+        {
+            var courses = await _courseService.GetTopCoursesBySales(numberOfCourses);
+            return Ok(courses);
+        }
+
+        [HttpGet("TopFavoritesCourseBaseRating")]
+        public async Task<IActionResult> GetTopCoursesByRating(int numberOfCourses)
+        {
+            var courses = await _courseService.GetTopCoursesByRating(numberOfCourses);
+            return Ok(courses);
+        }
+
+        [HttpGet("GetCourseDetailById")]
+        public async Task<IActionResult> GetCourseDetailById(int courseId)
+        {
+            var courses = await _courseService.GetCourseDetailByIdAsync(courseId);
+            if (courses == null)
+            {
+                return NotFound();
+            }
+            return Ok(courses);
+        }
+
     }
 }

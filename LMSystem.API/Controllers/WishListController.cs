@@ -23,7 +23,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("AddWishList")]
-        public async Task<IActionResult> AddToWishlist(string courseId, string accountId)
+        public async Task<IActionResult> AddToWishlist(int courseId, string accountId)
         {
             var account = await _accountService.GetAccountById(accountId);
 
@@ -38,7 +38,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpDelete("DeleteWishListByCourseId")]
-        public async Task<IActionResult> DeleteWishListByCourseId(string courseId, string accountId)
+        public async Task<IActionResult> DeleteWishListByCourseId(int courseId, string accountId)
         {
             var account = await _accountService.GetAccountById(accountId);
 
@@ -53,7 +53,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpDelete("DeleteWishListByWishListId")]
-        public async Task<IActionResult> DeleteWishListByWishListId(string wishListId)
+        public async Task<IActionResult> DeleteWishListByWishListId(int wishListId)
         {
             var response = await _wishListService.DeleteWishListByWishListId(wishListId);
 

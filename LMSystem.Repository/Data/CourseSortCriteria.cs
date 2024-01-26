@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Repository.Data
 {
-    public class WishListModel
+    public enum CourseSortCriteria
     {
-        public int WishListId { get; set; }
-
-        public int CourseId { get; set; }
-
-        public string? AccountId { get; set; }
+        TopSales,
+        TopStudentJoined,
+        TopRating
     }
 }

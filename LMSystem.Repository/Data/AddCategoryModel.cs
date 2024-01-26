@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Repository.Data
 {
-    public class WishListModel
+    public class AddCategoryModel
     {
-        public int WishListId { get; set; }
-
-        public int CourseId { get; set; }
-
-        public string? AccountId { get; set; }
+        public string? CategoryName { get; set; }
+        public string? CategoryDescription { get; set; }
     }
 }

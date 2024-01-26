@@ -44,13 +44,11 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
-            var account = await userManager.FindByEmailAsync(email);
-            if (account != null)
-            {
-                return _mapper.Map<AccountModel>(account);
-            }
-            return null;
+            var account = await userManager.FindByNameAsync(email);
+            var result = _mapper.Map<AccountModel>(account);
+            return result;
         }
+
         public async Task<Account> GetAccountById(string id)
         {
             var account = await userManager.FindByIdAsync(id);
@@ -268,7 +266,43 @@ namespace LMSystem.Repository.Repositories
         {
             throw new NotImplementedException();
         }
+        
+        public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
+        {
+            try
+            {
+                var existingAccount = await _context.Account.FirstOrDefaultAsync(a => a.Id == accountId);
 
+                if (existingAccount == null)
+                {
+                    return new ResponeModel { Status = "Error", Message = "Account not found" };
+                }
+
+                existingAccount = submitAccountChanges(existingAccount, updateProfileModel);
+
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully" };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while updating the account profile" };
+            }
+        }
+
+        private Account submitAccountChanges(Account account, UpdateProfileModel updateProfileModel)
+        {
+            account.FirstName = updateProfileModel.FirstName;
+            account.LastName = updateProfileModel.LastName;
+            account.Email = updateProfileModel.Email;
+            account.PhoneNumber = updateProfileModel.PhoneNumber;
+            account.BirthDate = updateProfileModel.BirthDate;
+            account.Biography = updateProfileModel.Biography;
+            account.ProfileImg = updateProfileModel.ProfileImg;
+            account.Sex = updateProfileModel.Sex;
+            return account;
+        }
         public async Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel model)
         {
             var account = await userManager.FindByEmailAsync(model.Email);
