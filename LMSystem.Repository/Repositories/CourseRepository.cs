@@ -37,7 +37,7 @@ namespace LMSystem.Repository.Repositories
 
             if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
-                query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Equals(cc.CategoryId)));
+                query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
             }
 
             if (filterParams.MinPrice.HasValue)
