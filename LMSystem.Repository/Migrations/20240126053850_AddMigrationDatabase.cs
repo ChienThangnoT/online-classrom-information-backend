@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMSystem.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class AddConfigDatabase : Migration
+    public partial class AddMigrationDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -393,6 +393,7 @@ namespace LMSystem.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RegistrationId = table.Column<int>(type: "int", nullable: false),
                     CommentContent = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    RatingStar = table.Column<int>(type: "int", nullable: false),
                     IsRatingStatus = table.Column<bool>(type: "bit", nullable: true),
                     RatingDate = table.Column<DateTime>(type: "datetime", nullable: true)
                 },

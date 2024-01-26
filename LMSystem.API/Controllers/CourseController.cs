@@ -17,7 +17,7 @@ namespace LMSystem.API.Controllers
             _courseService = courseRepository;
         }
 
-        [HttpGet("Select-Course-list-Pagination")]
+        [HttpGet("SelectCourselistPagination")]
         public async Task<IActionResult> GetCourses([FromQuery] CourseFilterParameters filterParams)
         {
             var courses = await _courseService.GetFilteredCourses(filterParams);
@@ -29,13 +29,27 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
 
-        [HttpGet("Top-Favorites-Course")]
-        public async Task<IActionResult> GetTopFavoriteCourses(int numberOfCourses)
+        [HttpGet("TopFavoritesCourseBaseStudentJoined")]
+        public async Task<IActionResult> GetTopCoursesByStudentJoined(int numberOfCourses)
         {
-            var courses = await _courseService.GetTopFavoriteCourses(numberOfCourses);
+            var courses = await _courseService.GetTopCoursesByStudentJoined(numberOfCourses);
             return Ok(courses);
         }
-        
+
+        [HttpGet("TopFavoritesCourseBaseSales")]
+        public async Task<IActionResult> GetTopCoursesBySales(int numberOfCourses)
+        {
+            var courses = await _courseService.GetTopCoursesBySales(numberOfCourses);
+            return Ok(courses);
+        }
+
+        [HttpGet("TopFavoritesCourseBaseRating")]
+        public async Task<IActionResult> GetTopCoursesByRating(int numberOfCourses)
+        {
+            var courses = await _courseService.GetTopCoursesByRating(numberOfCourses);
+            return Ok(courses);
+        }
+
         [HttpGet("GetCourseDetailById")]
         public async Task<IActionResult> GetCourseDetailById(int courseId)
         {

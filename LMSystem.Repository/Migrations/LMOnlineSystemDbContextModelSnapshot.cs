@@ -17,7 +17,7 @@ namespace LMSystem.Repository.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -394,6 +394,9 @@ namespace LMSystem.Repository.Migrations
 
                     b.Property<DateTime?>("RatingDate")
                         .HasColumnType("datetime");
+
+                    b.Property<int>("RatingStar")
+                        .HasColumnType("int");
 
                     b.Property<int>("RegistrationId")
                         .HasColumnType("int");

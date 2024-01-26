@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMSystem.Repository.Migrations
 {
     [DbContext(typeof(LMOnlineSystemDbContext))]
-    [Migration("20240125101429_AddConfigDatabase")]
-    partial class AddConfigDatabase
+    [Migration("20240126053850_AddMigrationDatabase")]
+    partial class AddMigrationDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -397,6 +397,9 @@ namespace LMSystem.Repository.Migrations
 
                     b.Property<DateTime?>("RatingDate")
                         .HasColumnType("datetime");
+
+                    b.Property<int>("RatingStar")
+                        .HasColumnType("int");
 
                     b.Property<int>("RegistrationId")
                         .HasColumnType("int");
