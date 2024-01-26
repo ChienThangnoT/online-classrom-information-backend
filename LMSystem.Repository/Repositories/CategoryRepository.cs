@@ -30,7 +30,7 @@ namespace LMSystem.Repository.Repositories
                 _context.Categories.Add(category);
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added category successfully" };
+                return new ResponeModel { Status = "Success", Message = "Added category successfully" , Data = category.CatgoryId.ToString()};
             }
             catch (Exception ex)
             {
