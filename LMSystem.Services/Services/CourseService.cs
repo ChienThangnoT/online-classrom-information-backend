@@ -34,5 +34,10 @@ namespace LMSystem.Services.Services
         {
             return await _courseRepository.GetCourseDetailByIdAsync(courseId);
         }
+
+        public Task<ResponeModel> AddCourse(AddCourseModel addCourseModel)
+        {
+            return _courseRepository.AddCourse(addCourseModel);
+        }
     }
 }

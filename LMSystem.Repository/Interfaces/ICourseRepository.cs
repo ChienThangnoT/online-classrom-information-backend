@@ -14,5 +14,7 @@ namespace LMSystem.Repository.Interfaces
         public Task<IEnumerable<Course>> GetTopFavoriteCourses();
 
         public Task<Course> GetCourseDetailByIdAsync(int courseId);
+
+        public Task<ResponeModel> AddCourse(AddCourseModel addCourseModel);
     }
 }
