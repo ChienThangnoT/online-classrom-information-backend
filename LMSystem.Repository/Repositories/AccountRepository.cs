@@ -282,7 +282,7 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully", DataObject = existingAccount};
+                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully" };
             }
             catch (Exception ex)
             {
@@ -295,6 +295,7 @@ namespace LMSystem.Repository.Repositories
         {
             account.FirstName = updateProfileModel.FirstName;
             account.LastName = updateProfileModel.LastName;
+            account.Email = updateProfileModel.Email;
             account.PhoneNumber = updateProfileModel.PhoneNumber;
             account.BirthDate = updateProfileModel.BirthDate;
             account.Biography = updateProfileModel.Biography;
