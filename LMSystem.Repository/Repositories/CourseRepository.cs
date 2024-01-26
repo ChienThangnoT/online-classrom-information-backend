@@ -21,13 +21,23 @@ namespace LMSystem.Repository.Repositories
             _context = context;
         }
 
+        public async Task<Course> GetCourseDetailByIdAsync(int courseId)
+        {
+            var course = await _context.Courses
+            .Include(c => c.Sections)
+            .ThenInclude(s => s.Steps)
+            .FirstOrDefaultAsync(c => c.CourseId == courseId);
+
+            return course;
+        }
+
         public async Task<IEnumerable<Course>> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             var query = _context.Courses.AsQueryable();
 
             if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
-                query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
+                query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Equals(cc.CategoryId)));
             }
 
             if (filterParams.MinPrice.HasValue)
@@ -47,7 +57,7 @@ namespace LMSystem.Repository.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Course>> GetTopFavoriteCourses(int numberOfCourses)
+        public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
         {
             var topCourses = await _context.RegistrationCourses
                 .GroupBy(rc => rc.CourseId)
@@ -74,5 +84,65 @@ namespace LMSystem.Repository.Repositories
 
             return courses;
         }
+
+        public async Task<IEnumerable<Course>> GetTopCoursesBySales(int numberOfCourses)
+        {
+            var topCourses = await _context.Orders
+                .GroupBy(o => o.CourseId)
+                .OrderByDescending(g => g.Count())
+                .Take(numberOfCourses)
+                .Select(g => g.Key)
+                .ToListAsync();
+
+            var courses = await _context.Courses
+                .Where(c => topCourses.Contains(c.CourseId))
+                .ToListAsync();
+
+            if (courses.Count < numberOfCourses)
+            {
+                var additionalCourses = await _context.Courses
+                    .Where(c => !topCourses.Contains(c.CourseId))
+                    .OrderBy(c => Guid.NewGuid())
+                    .Take(numberOfCourses - courses.Count)
+                    .ToListAsync();
+
+                courses.AddRange(additionalCourses);
+            }
+
+            return courses;
+        }
+
+        public async Task<IEnumerable<Course>> GetTopCoursesByRating(int numberOfCourses)
+        {
+            var topCourseIds = await _context.RatingCourses
+                .Include(rc => rc.Registration) // Include Registration navigation property
+                .ThenInclude(reg => reg.Course) // Then include Course navigation property from Registration
+                .GroupBy(rc => rc.Registration.CourseId) // Group by CourseId from RegistrationCourse
+                .Select(group => new { CourseId = group.Key, AverageRating = group.Average(rc => rc.RatingStar) }) // Assuming the property is named RatingValue
+                .OrderByDescending(x => x.AverageRating)
+                .Take(numberOfCourses)
+                .Select(x => x.CourseId)
+                .ToListAsync();
+
+            var courses = await _context.Courses
+                .Where(c => topCourseIds.Contains(c.CourseId))
+                .ToListAsync();
+
+            if (courses.Count < numberOfCourses)
+            {
+                var additionalCourses = await _context.Courses
+                    .Where(c => !topCourseIds.Contains(c.CourseId))
+                    .OrderBy(c => Guid.NewGuid())
+                    .Take(numberOfCourses - courses.Count)
+                    .ToListAsync();
+
+                courses.AddRange(additionalCourses);
+            }
+
+            return courses;
+        }
+
     }
+
+
 }

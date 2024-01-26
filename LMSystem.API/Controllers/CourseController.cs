@@ -35,5 +35,17 @@ namespace LMSystem.API.Controllers
             var courses = await _courseService.GetTopFavoriteCourses(numberOfCourses);
             return Ok(courses);
         }
+        
+        [HttpGet("GetCourseDetailById")]
+        public async Task<IActionResult> GetCourseDetailById(int courseId)
+        {
+            var courses = await _courseService.GetCourseDetailByIdAsync(courseId);
+            if (courses == null)
+            {
+                return NotFound();
+            }
+            return Ok(courses);
+        }
+
     }
 }

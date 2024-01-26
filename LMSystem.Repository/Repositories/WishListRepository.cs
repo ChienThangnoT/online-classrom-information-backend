@@ -22,7 +22,7 @@ namespace LMSystem.Repository.Repositories
             _mapper = mapper;
         }
 
-        public async Task<ResponeModel> AddWishList(string accountId, string courseId)
+        public async Task<ResponeModel> AddWishList(string accountId, int courseId)
         {
             try
             {
@@ -32,7 +32,6 @@ namespace LMSystem.Repository.Repositories
                 }
                 var wishlistItem = new Data.WishListModel
                 {
-                    WishListId = Guid.NewGuid().ToString(),
                     AccountId = accountId,
                     CourseId = courseId
                 };
@@ -41,14 +40,15 @@ namespace LMSystem.Repository.Repositories
                 await _context.SaveChangesAsync();
 
                 return new ResponeModel { Status = "Success", Message = "Course added to the wishlist successfully" };
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while adding the course to the wishlist" };
             }
         }
 
-        public async Task<ResponeModel> DeleteWishListByCourseId(string courseId, string accountId)
+        public async Task<ResponeModel> DeleteWishListByCourseId(int courseId, string accountId)
         {
             try
             {
@@ -57,15 +57,21 @@ namespace LMSystem.Repository.Repositories
 
                 if (existingWishList == null)
                 {
-                    return new ResponeModel { Status = "Error", 
-                        Message = "No wishlist items were found for the specified course id" };
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No wishlist items were found for the specified course id"
+                    };
                 }
 
                 _context.WishLists.RemoveRange(existingWishList);
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", 
-                    Message = "Course deleted from the wishlist successfully" };
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Course deleted from the wishlist successfully"
+                };
             }
             catch (Exception ex)
             {
@@ -74,7 +80,7 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public async Task<ResponeModel> DeleteWishListByWishListId(string wishListId)
+        public async Task<ResponeModel> DeleteWishListByWishListId(int wishListId)
         {
             try
             {
@@ -82,7 +88,9 @@ namespace LMSystem.Repository.Repositories
 
                 if (existingWishList == null)
                 {
-                    return new ResponeModel { Status = "Error", 
+                    return new ResponeModel
+                    {
+                        Status = "Error",
                         Message = "No wishlist items were found for the specified wishlist id"
                     };
                 }

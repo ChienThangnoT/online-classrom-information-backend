@@ -5,9 +5,9 @@ namespace LMSystem.Repository.Models;
 
 public partial class RegistrationCourse
 {
-    public string RegistrationId { get; set; }
+    public int RegistrationId { get; set; }
 
-    public string CourseId { get; set; }
+    public int CourseId { get; set; }
 
     public string AccountId { get; set; }
 
@@ -17,9 +17,9 @@ public partial class RegistrationCourse
 
     public double? LearningProgress { get; set; }
 
-    public virtual Account Account { get; set; }
+    public virtual Account? Account { get; set; }
 
-    public virtual Course Course { get; set; }
+    public virtual Course? Course { get; set; }
 
     public virtual ICollection<RatingCourse> RatingCourses { get; set; } = new List<RatingCourse>();
 
