@@ -13,5 +13,7 @@ namespace LMSystem.Repository.Data
 
         [Required(ErrorMessage = "Title is required!")]
         public string Title { get; set; }
+        [Required(ErrorMessage = "Position is required!")]
+        public int Position { get; set; }
     }
 }

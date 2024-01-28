@@ -18,6 +18,8 @@ namespace LMSystem.Repository.Data
         public string Title { get; set; }
         [Required(ErrorMessage = "VideoUrl is required!")]
         public string VideoUrl { get; set; }
+        [Required(ErrorMessage = "Position is required!")]
+        public int Position { get; set; }
 
         [Required(ErrorMessage = "StepDescription is required!")]
         public string StepDescription { get; set; }

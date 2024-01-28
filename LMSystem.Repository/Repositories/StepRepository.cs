@@ -69,6 +69,7 @@ namespace LMSystem.Repository.Repositories
             step.Title = updateStepModel.Title;
             step.VideoUrl = updateStepModel.VideoUrl;
             step.StepDescription = updateStepModel.StepDescription;
+            step.Position = updateStepModel.Position;
 
             return step;
         }   
