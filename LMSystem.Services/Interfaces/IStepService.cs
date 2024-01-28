@@ -10,5 +10,6 @@ namespace LMSystem.Services.Interfaces
     public interface IStepService
     {
         public Task<ResponeModel> AddStep(AddStepModel addStepModel);
+        public Task<ResponeModel> UpdateStep(UpdateStepModel updateStepModel);
     }
 }

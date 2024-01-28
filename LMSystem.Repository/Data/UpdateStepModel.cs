@@ -7,16 +7,12 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Repository.Data
 {
-    public class AddStepModel
+    public class UpdateStepModel
     {
-        [Required(ErrorMessage = "SectionId is required!")]
-        public int SectionId { get; set; }
+        public int StepId { get; set; }
 
         [Required(ErrorMessage = "Duration is required!")]
         public int Duration { get; set; }
-
-        [Required(ErrorMessage = "Position is required!")]
-        public int Position { get; set; }
 
         [Required(ErrorMessage = "Title is required!")]
         public string Title { get; set; }

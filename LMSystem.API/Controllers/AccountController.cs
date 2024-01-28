@@ -102,7 +102,7 @@ namespace LMSystem.API.Controllers
                 return NotFound();
             }
         }
-        [HttpPost("UpdateProfile")]
+        [HttpPut("UpdateProfile")]
         public async Task<ActionResult> UpdateProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             var account = await _accountService.GetAccountById(accountId);

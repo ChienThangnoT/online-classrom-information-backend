@@ -20,5 +20,10 @@ namespace LMSystem.Services.Services
         {
             return await _sectionRepository.AddSection(addSectionModel);
         }
+
+        public async Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel)
+        {
+            return await _sectionRepository.UpdateSection(updateSectionModel);
+        }
     }
 }
