@@ -1,5 +1,7 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
+using LMSystem.Repository.Models;
+using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,10 @@ namespace LMSystem.Services.Services
         public async Task<ResponeModel> AddStep(AddStepModel addStepModel)
         {
             return await _stepRepository.AddStep(addStepModel);
+        }
+        public async Task<LearningProgressModel> CheckCourseProgress(int registrationId)
+        {
+            return await _stepRepository.CheckCourseProgress(registrationId);
         }
     }
 }
