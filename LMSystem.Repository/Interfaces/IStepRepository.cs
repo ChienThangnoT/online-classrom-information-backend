@@ -11,6 +11,8 @@ namespace LMSystem.Repository.Interfaces
     public interface IStepRepository
     {
         public Task<ResponeModel> AddStep(AddStepModel addStepModel);
+        public Task<ResponeModel> UpdateStep(UpdateStepModel updateStepModel);
         public Task<LearningProgressModel> CheckCourseProgress(int registrationId);
+
     }
 }

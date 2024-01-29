@@ -48,5 +48,10 @@ namespace LMSystem.Services.Services
         {
             return await _courseRepository.AddCourse(addCourseModel);
         }
+
+        public async Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel)
+        {
+            return await _courseRepository.UpdateCourse(updateCourseModel);
+        }
     }
 }

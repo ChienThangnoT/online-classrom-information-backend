@@ -191,5 +191,65 @@ namespace LMSystem.Repository.Repositories
             return courses;
         }
 
+        public async Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel)
+        {
+            try
+            {
+               var existingCourse = await _context.Courses
+                    .Include(c => c.CourseCategories)
+                    .FirstOrDefaultAsync(c => c.CourseId == updateCourseModel.CourseId);
+                if (existingCourse == null)
+                {
+                    return new ResponeModel { Status = "Error", Message = "Course not found" };
+                }
+                existingCourse = submitCourseChange(existingCourse, updateCourseModel);
+
+                //_context.Courses.Update(existingCourse);
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel { Status = "Success", Message = "Update course successfully", DataObject = existingCourse };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while update the course" };
+            }
+        }
+
+        private Course submitCourseChange(Course course, UpdateCourseModel updateCourseModel)
+        {          
+            course.Title = updateCourseModel.Title;
+            course.Description = updateCourseModel.Description;
+            course.ImageUrl = updateCourseModel.ImageUrl;
+            course.VideoPreviewUrl = updateCourseModel.VideoPreviewUrl;
+            course.Price = updateCourseModel.Price;
+            course.SalesCampaign = updateCourseModel.SalesCampaign;
+            course.IsPublic = updateCourseModel.IsPublic;
+            course.TotalDuration = updateCourseModel.TotalDuration;
+            course.CourseIsActive = updateCourseModel.CourseIsActive;
+            course.KnowdledgeDescription = updateCourseModel.KnowdledgeDescription;
+            course.UpdateAt = DateTime.UtcNow;
+            //remore old category
+            var categoriesToRemove = course.CourseCategories
+                .Where(cc => !updateCourseModel.CategoryList.Contains(cc.CategoryId))
+                .ToList();
+
+            foreach (var categoryToRemove in categoriesToRemove)
+            {
+                course.CourseCategories.Remove(categoryToRemove);
+            }
+            //add new category
+            var categoriesToAdd = updateCourseModel.CategoryList
+                .Where(categoryId => !course.CourseCategories.Any(cc => cc.CategoryId == categoryId))
+                .Select(categoryId => new CourseCategory { CategoryId = categoryId })
+                .ToList();
+
+            foreach (var categoryToAdd in categoriesToAdd)
+            {
+                course.CourseCategories.Add(categoryToAdd);
+            }
+
+            return course;
+        }
     }
 }
