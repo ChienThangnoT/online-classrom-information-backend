@@ -1,5 +1,6 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Services.Interfaces;
+using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMSystem.API.Controllers
@@ -37,6 +38,17 @@ namespace LMSystem.API.Controllers
             }
 
             return Ok(response);
+
+        [HttpGet("LearningProgress")]
+        public async Task<IActionResult> GetCourseProgress(int registrationId)
+        {
+            var progress = await _stepService.CheckCourseProgress(registrationId);
+            if (progress == null)
+            {
+                return NotFound("Learning progress not found for the given registration ID.");
+            }
+            return Ok(progress);
+
         }
     }
 }
