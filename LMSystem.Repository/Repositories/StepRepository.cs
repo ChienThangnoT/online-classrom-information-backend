@@ -53,10 +53,17 @@ namespace LMSystem.Repository.Repositories
             var courseId = registration.CourseId;
 
             // Get the IDs of completed steps
-            var completedStepIds = await _context.StepCompleteds
+            var completedStepsInfo = await _context.StepCompleteds
                 .Where(sc => sc.RegistrationId == registrationId)
-                .Select(sc => sc.CompletedStepId) // Assuming StepCompleted has a StepId
+                .Select(sc => new { sc.CompletedStepId, sc.DateCompleted })
                 .ToListAsync();
+
+            var completedStepIds = completedStepsInfo.Select(info => info.CompletedStepId).ToList();
+            var latestCompletionDate = completedStepsInfo
+                .OrderByDescending(info => info.DateCompleted)
+                .Select(info => info.DateCompleted)
+                .FirstOrDefault();
+
 
             // Count the total number of steps in the course
             var totalSteps = await _context.Steps
@@ -90,7 +97,9 @@ namespace LMSystem.Repository.Repositories
                 CurrentStep = latestStep?.Title,
                 CurrentSection = latestStep?.Section?.Title,
                 ProgressPercentage = progressPercentage,
-                IsCompleted = isComplete
+                IsCompleted = isComplete,
+                EnrollDay = registration.EnrollmentDate.GetValueOrDefault(), 
+                StepCompleteDay = latestCompletionDate.GetValueOrDefault()
             };
         }
 

@@ -14,6 +14,8 @@ namespace LMSystem.Repository.Data
         public int? CurrentStepPosition { get; set; }
         public double ProgressPercentage { get; set; } 
         public bool? IsCompleted { get; set; }
+        public DateTime EnrollDay { get; set; }
+        public DateTime StepCompleteDay { get; set; }
     }
 
 }
