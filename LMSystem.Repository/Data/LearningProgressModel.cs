@@ -13,6 +13,7 @@ namespace LMSystem.Repository.Data
         public string CurrentStep { get; set; }
         public int? CurrentStepPosition { get; set; }
         public double ProgressPercentage { get; set; } 
+        public bool? IsCompleted { get; set; }
     }
 
 }

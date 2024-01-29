@@ -66,9 +66,14 @@ namespace LMSystem.Repository.Repositories
             var progressPercentage = totalSteps > 0
                 ? (double)completedStepIds.Count / totalSteps
                 : 0;
+            
+            var isComplete = progressPercentage < 1
+                ? registration.IsCompleted = false : registration.IsCompleted = true;
 
             // Update the learning progress in the RegistrationCourse
             registration.LearningProgress = progressPercentage;
+            registration.IsCompleted = isComplete;
+            _context.Update(registration);
             _context.Update(registration);
             await _context.SaveChangesAsync();
 
@@ -84,7 +89,8 @@ namespace LMSystem.Repository.Repositories
                 CurrentStepPosition = latestStep?.Position,
                 CurrentStep = latestStep?.Title,
                 CurrentSection = latestStep?.Section?.Title,
-                ProgressPercentage = progressPercentage
+                ProgressPercentage = progressPercentage,
+                IsCompleted = isComplete
             };
         }
 
