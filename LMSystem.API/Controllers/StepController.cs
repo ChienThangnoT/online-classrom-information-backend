@@ -38,6 +38,7 @@ namespace LMSystem.API.Controllers
             }
 
             return Ok(response);
+        }
 
         [HttpGet("LearningProgress")]
         public async Task<IActionResult> GetCourseProgress(int registrationId)

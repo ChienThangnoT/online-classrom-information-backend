@@ -27,7 +27,7 @@ namespace LMSystem.Services.Services
         public async Task<ResponeModel> UpdateStep(UpdateStepModel updateStepModel)
         {
             return await _stepRepository.UpdateStep(updateStepModel);
-
+        }
         public async Task<LearningProgressModel> CheckCourseProgress(int registrationId)
         {
             return await _stepRepository.CheckCourseProgress(registrationId);
