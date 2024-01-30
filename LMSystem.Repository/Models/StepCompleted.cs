@@ -13,4 +13,6 @@ public partial class StepCompleted
     public DateTime? DateCompleted { get; set; }
 
     public virtual RegistrationCourse? Registration { get; set; }
+    public virtual ICollection<AnswerHistory> AnswerHistories { get; set; } = new List<AnswerHistory>();
+
 }

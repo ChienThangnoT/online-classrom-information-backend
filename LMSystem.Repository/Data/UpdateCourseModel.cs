@@ -30,6 +30,7 @@ namespace LMSystem.Repository.Data
         [Required(ErrorMessage = "KnowdledgeDescription is required!")]
         public string KnowdledgeDescription { get; set; }
         [Required(ErrorMessage = "CategoryList is required!")]
+         public string LinkCertificated {  get; set; }
         public List<int> CategoryList { get; set; }
     }
 }

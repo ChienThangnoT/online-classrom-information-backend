@@ -35,9 +35,11 @@ namespace LMSystem.Repository.Data
         public bool CourseIsActive { get; set; }
 
         [Required(ErrorMessage = "KnowdledgeDescription is required!")]
-        public string KnowdledgeDescription { get; set; }
+        public string? KnowdledgeDescription { get; set; }
 
         [Required(ErrorMessage = "CategoryList is required!")]
-        public List<int> CategoryList { get; set; }
+
+        public string? LinkCertificated {  get; set; }
+        public List<int>? CategoryList { get; set; }
     }
 }

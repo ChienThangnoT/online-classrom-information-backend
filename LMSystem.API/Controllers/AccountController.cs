@@ -24,9 +24,9 @@ namespace LMSystem.API.Controllers
         [HttpPost("SignUp")]
         public async Task<ActionResult> SignUp(SignUpModel signUpModel)
         {
-            //try
-            //{
-            if (ModelState.IsValid)
+            try
+            {
+                if (ModelState.IsValid)
             {
                 var result = await _accountService.SignUpAccountAsync(signUpModel);
                 if (result.Status.Equals("Success"))
@@ -36,9 +36,10 @@ namespace LMSystem.API.Controllers
                 return BadRequest(result);
             }
             return ValidationProblem(ModelState);
-            //}
-            //catch { return BadRequest(); }
         }
+            catch { return BadRequest();
+    }
+}
 
         [HttpPost("SignIn")]
         public async Task<ActionResult> SignIn(SignInModel signInModel)

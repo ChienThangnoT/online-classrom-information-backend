@@ -38,7 +38,8 @@ namespace LMSystem.Repository.Repositories
                     PublicAt = DateTime.UtcNow,
                     TotalDuration = addCourseModel.TotalDuration,
                     CourseIsActive = addCourseModel.CourseIsActive,
-                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription
+                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription,
+                    LinkCertificated = addCourseModel.LinkCertificated,
                 };
 
                 _context.Courses.Add(course);

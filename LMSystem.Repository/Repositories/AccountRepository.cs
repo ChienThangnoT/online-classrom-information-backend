@@ -252,6 +252,7 @@ namespace LMSystem.Repository.Repositories
                     }
                     return new ResponeModel { Status = "Error", Message = errorMessage };
                 }
+                return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
             }
             catch (Exception ex)
             {
@@ -259,7 +260,7 @@ namespace LMSystem.Repository.Repositories
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
             }
-            return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
+           
         }
 
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
