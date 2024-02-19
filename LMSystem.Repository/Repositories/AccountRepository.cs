@@ -330,5 +330,20 @@ namespace LMSystem.Repository.Repositories
                 Message = "Change password successfully!"
             };
         }
+
+        public Task<ResponeModel> SignUpAdminAsync(SignInModel model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponeModel> SignUpStaffAsync(SignInModel model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponeModel> SignUpParentAsync(SignInModel model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
