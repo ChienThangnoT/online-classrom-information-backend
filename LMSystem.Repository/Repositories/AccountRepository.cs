@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -204,12 +205,12 @@ namespace LMSystem.Repository.Repositories
                 }
                 else
                 {
-                    return null;
+                    return new AuthenticationResponseModel { Status = false, Message = "Cannot find user" };
                 }
             }
             else
             {
-                return null;
+                return new AuthenticationResponseModel { Status = false, Message = "Sai tài khoản hoặc mật khẩu!" };
             }
         }
 
@@ -252,7 +253,7 @@ namespace LMSystem.Repository.Repositories
                     }
                     return new ResponeModel { Status = "Error", Message = errorMessage };
                 }
-                return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
+                return new ResponeModel { Status = "Error", Message = "Account already exist" };
             }
             catch (Exception ex)
             {
@@ -260,14 +261,14 @@ namespace LMSystem.Repository.Repositories
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
             }
-           
+
         }
 
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
         {
             throw new NotImplementedException();
         }
-        
+
         public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             try
@@ -283,7 +284,7 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully", DataObject = existingAccount};
+                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully", DataObject = existingAccount };
             }
             catch (Exception ex)
             {
@@ -331,17 +332,55 @@ namespace LMSystem.Repository.Repositories
             };
         }
 
-        public Task<ResponeModel> SignUpAdminAsync(SignInModel model)
+        public async Task<ResponeModel> SignUpAdminStaffAsync(SignUpModel model, RoleModel role)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var exsistAccount = await userManager.FindByNameAsync(model.AccountEmail);
+                if (exsistAccount == null)
+                {
+                    var user = new Account
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        BirthDate = model.BirthDate,
+                        Status = "Is Active",
+                        UserName = model.AccountEmail,
+
+                        Email = model.AccountEmail,
+                        PhoneNumber = model.AccountPhone
+                    };
+
+                    string errorMessage = null;
+
+                    if (role.Equals(RoleModel.Admin) || role.Equals(RoleModel.Staff) || role.Equals(RoleModel.Parent))
+                    {
+                        await userManager.CreateAsync(user, model.AccountPassword);
+
+                        if (!await roleManager.RoleExistsAsync(role.ToString()))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole(role.ToString()));
+                        }
+                        if (await roleManager.RoleExistsAsync(role.ToString()))
+                        {
+                            await userManager.AddToRoleAsync(user, role.ToString());
+                        }
+
+                        return new ResponeModel { Status = "Success", Message = $"Đăng ký tài khoản {role} Thành công!" };
+                    }
+                    return new ResponeModel { Status = "Error", Message = $"Đăng ký thất bại, role {role} không hỗ trợ bởi hệ thống!" };
+                }
+                return new ResponeModel { Status = "Error", Message = "Account đã tồn tại trong hệ thống!" };
+            }
+            catch (Exception ex)
+            {
+                // Log or print the exception details
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
+            }
         }
 
-        public Task<ResponeModel> SignUpStaffAsync(SignInModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ResponeModel> SignUpParentAsync(SignInModel model)
+        public Task<ResponeModel> SignUpParentAsync(SignUpModel model)
         {
             throw new NotImplementedException();
         }

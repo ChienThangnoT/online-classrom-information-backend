@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMSystem.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateDatabase : Migration
+    public partial class UpdateAccountDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,6 +22,7 @@ namespace LMSystem.Repository.Migrations
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ProfileImg = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     Sex = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
+                    ParentEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nchar(40)", fixedLength: true, maxLength: 40, nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime", nullable: true),
@@ -473,7 +474,7 @@ namespace LMSystem.Repository.Migrations
                     StepId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SectionId = table.Column<int>(type: "int", nullable: false),
-                    QuizId = table.Column<int>(type: "int", nullable: false),
+                    QuizId = table.Column<int>(type: "int", nullable: true),
                     Duration = table.Column<int>(type: "int", nullable: true),
                     Position = table.Column<int>(type: "int", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
@@ -487,8 +488,7 @@ namespace LMSystem.Repository.Migrations
                         name: "FK_Step_Quiz",
                         column: x => x.QuizId,
                         principalTable: "Quiz",
-                        principalColumn: "QuizId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "QuizId");
                     table.ForeignKey(
                         name: "FK_Step_Section",
                         column: x => x.SectionId,

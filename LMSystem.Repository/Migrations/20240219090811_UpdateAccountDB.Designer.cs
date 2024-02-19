@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMSystem.Repository.Migrations
 {
     [DbContext(typeof(LMOnlineSystemDbContext))]
-    [Migration("20240130110856_UpdateDatabase")]
-    partial class UpdateDatabase
+    [Migration("20240219090811_UpdateAccountDB")]
+    partial class UpdateAccountDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,9 @@ namespace LMSystem.Repository.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ParentEmail")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -529,7 +532,7 @@ namespace LMSystem.Repository.Migrations
                     b.Property<int?>("Position")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuizId")
+                    b.Property<int?>("QuizId")
                         .HasColumnType("int");
 
                     b.Property<int>("SectionId")
@@ -886,8 +889,6 @@ namespace LMSystem.Repository.Migrations
                     b.HasOne("LMSystem.Repository.Models.Quiz", "Quiz")
                         .WithMany("Steps")
                         .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK_Step_Quiz");
 
                     b.HasOne("LMSystem.Repository.Models.Section", "Section")
