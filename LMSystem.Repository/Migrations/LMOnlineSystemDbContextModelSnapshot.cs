@@ -17,7 +17,7 @@ namespace LMSystem.Repository.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -31,12 +31,11 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Biography")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("BirthDate")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -50,12 +49,10 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
@@ -83,12 +80,10 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ProfileImg")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
                     b.Property<string>("RefreshToken")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
@@ -99,7 +94,6 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Sex")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
@@ -116,7 +110,8 @@ namespace LMSystem.Repository.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("PK_Account");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -126,21 +121,22 @@ namespace LMSystem.Repository.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("LMSystem.Repository.Models.Category", b =>
                 {
-                    b.Property<string>("CatgoryId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CatgoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CatgoryId"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
@@ -151,8 +147,11 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.Course", b =>
                 {
-                    b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CourseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"));
 
                     b.Property<bool?>("CourseIsActive")
                         .HasColumnType("bit");
@@ -161,23 +160,18 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("ImageURL");
 
                     b.Property<bool?>("IsPublic")
                         .HasColumnType("bit");
 
                     b.Property<string>("KnowdledgeDescription")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Price")
                         .HasColumnType("float");
@@ -189,23 +183,20 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("title");
+                        .HasColumnName("Title");
 
-                    b.Property<string>("TotalDuration")
-                        .IsRequired()
+                    b.Property<int>("TotalDuration")
                         .HasMaxLength(155)
-                        .HasColumnType("nvarchar(155)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime");
 
                     b.Property<string>("VideoPreviewUrl")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("VideoPreviewURL");
 
                     b.HasKey("CourseId");
@@ -215,16 +206,17 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.CourseCategory", b =>
                 {
-                    b.Property<string>("CourseCategoryId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CourseCategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("CategoryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseCategoryId"));
 
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
 
                     b.HasKey("CourseCategoryId");
 
@@ -237,15 +229,17 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.Notification", b =>
                 {
-                    b.Property<string>("NotificationId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
 
                     b.Property<string>("AccountId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Message")
-                        .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
@@ -261,24 +255,24 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.Order", b =>
                 {
-                    b.Property<string>("OrderId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
                     b.Property<string>("AccountId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AccountName")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
 
                     b.Property<string>("CurrencyCode")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("nvarchar(55)");
 
@@ -286,12 +280,10 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("PaymentMethod")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("nvarchar(55)");
 
@@ -299,7 +291,6 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("TransactionNo")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
@@ -312,13 +303,87 @@ namespace LMSystem.Repository.Migrations
                     b.ToTable("Order", (string)null);
                 });
 
+            modelBuilder.Entity("LMSystem.Repository.Models.Question", b =>
+                {
+                    b.Property<int>("QuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionId"));
+
+                    b.Property<string>("Anwser1")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Anwser2")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Anwser3")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Anwser4")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("AnwserCorrect")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Mark")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("QuestionId");
+
+                    b.HasIndex(new[] { "QuizId" }, "IX_Question_QuizId");
+
+                    b.ToTable("Question", (string)null);
+                });
+
+            modelBuilder.Entity("LMSystem.Repository.Models.Quiz", b =>
+                {
+                    b.Property<int>("QuizId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuizId"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("StepId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("QuizId");
+
+                    b.HasIndex(new[] { "StepId" }, "IX_Quiz_StepId");
+
+                    b.ToTable("Quiz", (string)null);
+                });
+
             modelBuilder.Entity("LMSystem.Repository.Models.RatingCourse", b =>
                 {
-                    b.Property<string>("RatingId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RatingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RatingId"));
 
                     b.Property<string>("CommentContent")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -328,9 +393,11 @@ namespace LMSystem.Repository.Migrations
                     b.Property<DateTime?>("RatingDate")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("RegistrationId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RatingStar")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegistrationId")
+                        .HasColumnType("int");
 
                     b.HasKey("RatingId");
 
@@ -341,16 +408,18 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.RegistrationCourse", b =>
                 {
-                    b.Property<string>("RegistrationId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RegistrationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RegistrationId"));
 
                     b.Property<string>("AccountId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("EnrollmentDate")
                         .HasColumnType("datetime");
@@ -372,8 +441,11 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.ReportProblem", b =>
                 {
-                    b.Property<string>("ReportId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"));
 
                     b.Property<string>("AccountId")
                         .IsRequired()
@@ -383,7 +455,6 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
@@ -391,17 +462,14 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("ReportStatus")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -414,18 +482,19 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.Section", b =>
                 {
-                    b.Property<string>("SectionId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("SectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SectionId"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("Position")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
@@ -438,8 +507,11 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.Step", b =>
                 {
-                    b.Property<string>("StepId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("StepId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StepId"));
 
                     b.Property<int?>("Duration")
                         .HasColumnType("int");
@@ -447,22 +519,18 @@ namespace LMSystem.Repository.Migrations
                     b.Property<int?>("Position")
                         .HasColumnType("int");
 
-                    b.Property<string>("SectionId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
 
                     b.Property<string>("StepDescription")
-                        .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(155)
                         .HasColumnType("nvarchar(155)");
 
                     b.Property<string>("VideoUrl")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -475,15 +543,17 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.StepCompleted", b =>
                 {
-                    b.Property<string>("CompletedStepId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CompletedStepId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompletedStepId"));
 
                     b.Property<DateTime?>("DateCompleted")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("RegistrationId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RegistrationId")
+                        .HasColumnType("int");
 
                     b.HasKey("CompletedStepId");
 
@@ -494,16 +564,18 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.WishList", b =>
                 {
-                    b.Property<string>("WishListId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("WishListId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WishListId"));
 
                     b.Property<string>("AccountId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
 
                     b.HasKey("WishListId");
 
@@ -701,6 +773,30 @@ namespace LMSystem.Repository.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("LMSystem.Repository.Models.Question", b =>
+                {
+                    b.HasOne("LMSystem.Repository.Models.Quiz", "Quiz")
+                        .WithMany("Question")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Question_Quiz");
+
+                    b.Navigation("Quiz");
+                });
+
+            modelBuilder.Entity("LMSystem.Repository.Models.Quiz", b =>
+                {
+                    b.HasOne("LMSystem.Repository.Models.Step", "Step")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("StepId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Quiz_Step");
+
+                    b.Navigation("Step");
+                });
+
             modelBuilder.Entity("LMSystem.Repository.Models.RatingCourse", b =>
                 {
                     b.HasOne("LMSystem.Repository.Models.RegistrationCourse", "Registration")
@@ -884,6 +980,11 @@ namespace LMSystem.Repository.Migrations
                     b.Navigation("WishLists");
                 });
 
+            modelBuilder.Entity("LMSystem.Repository.Models.Quiz", b =>
+                {
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("LMSystem.Repository.Models.RegistrationCourse", b =>
                 {
                     b.Navigation("RatingCourses");
@@ -894,6 +995,11 @@ namespace LMSystem.Repository.Migrations
             modelBuilder.Entity("LMSystem.Repository.Models.Section", b =>
                 {
                     b.Navigation("Steps");
+                });
+
+            modelBuilder.Entity("LMSystem.Repository.Models.Step", b =>
+                {
+                    b.Navigation("Quizzes");
                 });
 #pragma warning restore 612, 618
         }

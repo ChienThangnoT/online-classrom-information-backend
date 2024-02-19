@@ -44,9 +44,15 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
-            var account = await _context.Account
-                .SingleOrDefaultAsync(a => a.UserName == email && a.Status == "Is Active");
-            return _mapper.Map<AccountModel>(account);
+            var account = await userManager.FindByNameAsync(email);
+            var result = _mapper.Map<AccountModel>(account);
+            return result;
+        }
+
+        public async Task<Account> GetAccountById(string id)
+        {
+            var account = await userManager.FindByIdAsync(id);
+            return account;
         }
 
         public async Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel)
@@ -56,7 +62,7 @@ namespace LMSystem.Repository.Repositories
                 return new AuthenticationResponseModel
                 {
                     Status = false,
-                    Message = "Yêu cầu không hợp lệ!"
+                    Message = "Request not valid!"
                 };
             }
 
@@ -141,7 +147,7 @@ namespace LMSystem.Repository.Repositories
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Token không hợp lệ!");
+                throw new SecurityTokenException("Token unavailabel!");
             return principal;
         }
 
@@ -190,7 +196,7 @@ namespace LMSystem.Repository.Repositories
                     return new AuthenticationResponseModel
                     {
                         Status = true,
-                        Message = "Đăng nhập thành công!",
+                        Message = "Login successfully!",
                         JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                         Expired = token.ValidTo,
                         JwtRefreshToken = refreshToken,
@@ -259,6 +265,70 @@ namespace LMSystem.Repository.Repositories
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
         {
             throw new NotImplementedException();
+        }
+        
+        public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
+        {
+            try
+            {
+                var existingAccount = await _context.Account.FirstOrDefaultAsync(a => a.Id == accountId);
+
+                if (existingAccount == null)
+                {
+                    return new ResponeModel { Status = "Error", Message = "Account not found" };
+                }
+
+                existingAccount = submitAccountChanges(existingAccount, updateProfileModel);
+
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully" };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while updating the account profile" };
+            }
+        }
+
+        private Account submitAccountChanges(Account account, UpdateProfileModel updateProfileModel)
+        {
+            account.FirstName = updateProfileModel.FirstName;
+            account.LastName = updateProfileModel.LastName;
+            account.Email = updateProfileModel.Email;
+            account.PhoneNumber = updateProfileModel.PhoneNumber;
+            account.BirthDate = updateProfileModel.BirthDate;
+            account.Biography = updateProfileModel.Biography;
+            account.ProfileImg = updateProfileModel.ProfileImg;
+            account.Sex = updateProfileModel.Sex;
+            return account;
+        }
+        public async Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel model)
+        {
+            var account = await userManager.FindByEmailAsync(model.Email);
+            if (account == null)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Can not find your account!"
+                };
+            }
+            var result = await userManager.ChangePasswordAsync(account, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Cannot change pass"
+                };
+            }
+
+            return new ResponeModel
+            {
+                Status = "Success",
+                Message = "Change password successfully!"
+            };
         }
     }
 }

@@ -6,38 +6,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMSystem.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentityToDB : Migration
+    public partial class UpdateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AspNetRoles",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Accounts",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    Biography = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "datetime", nullable: true),
-                    ProfileImg = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    Sex = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    Biography = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProfileImg = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    Sex = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     Status = table.Column<string>(type: "nchar(40)", fixedLength: true, maxLength: 40, nullable: false),
-                    RefreshToken = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -56,16 +42,31 @@ namespace LMSystem.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.PrimaryKey("PK_Account", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Category",
                 columns: table => new
                 {
-                    CatgoryId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
+                    CatgoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -76,24 +77,132 @@ namespace LMSystem.Repository.Migrations
                 name: "Course",
                 columns: table => new
                 {
-                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ImageURL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    VideoPreviewURL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageURL = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    VideoPreviewURL = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     Price = table.Column<double>(type: "float", nullable: true),
                     SalesCampaign = table.Column<double>(type: "float", nullable: true),
-                    title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     IsPublic = table.Column<bool>(type: "bit", nullable: true),
                     CreateAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     PublicAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     UpdateAt = table.Column<DateTime>(type: "datetime", nullable: true),
-                    TotalDuration = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
+                    TotalDuration = table.Column<int>(type: "int", maxLength: 155, nullable: false),
                     CourseIsActive = table.Column<bool>(type: "bit", nullable: true),
-                    KnowdledgeDescription = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
+                    KnowdledgeDescription = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Course", x => x.CourseId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_Accounts_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_Accounts_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_Accounts_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notification",
+                columns: table => new
+                {
+                    NotificationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    SendDate = table.Column<DateTime>(type: "datetime", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notification", x => x.NotificationId);
+                    table.ForeignKey(
+                        name: "FK_Notification_Accounts",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReportProblem",
+                columns: table => new
+                {
+                    ReportId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    ReportStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    ProcessingDate = table.Column<DateTime>(type: "datetime", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReportProblem", x => x.ReportId);
+                    table.ForeignKey(
+                        name: "FK_ReportProblem_Accounts",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,47 +227,6 @@ namespace LMSystem.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
@@ -169,79 +237,15 @@ namespace LMSystem.Repository.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
+                        name: "FK_AspNetUserRoles_Accounts_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Notification",
-                columns: table => new
-                {
-                    NotificationId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    SendDate = table.Column<DateTime>(type: "datetime", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notification", x => x.NotificationId);
-                    table.ForeignKey(
-                        name: "FK_Notification_Accounts",
-                        column: x => x.AccountId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ReportProblem",
-                columns: table => new
-                {
-                    ReportId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    ReportStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "datetime", nullable: true),
-                    ProcessingDate = table.Column<DateTime>(type: "datetime", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReportProblem", x => x.ReportId);
-                    table.ForeignKey(
-                        name: "FK_ReportProblem_Accounts",
-                        column: x => x.AccountId,
-                        principalTable: "Accounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -250,9 +254,10 @@ namespace LMSystem.Repository.Migrations
                 name: "CourseCategory",
                 columns: table => new
                 {
-                    CourseCategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    CourseCategoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -275,16 +280,17 @@ namespace LMSystem.Repository.Migrations
                 name: "Order",
                 columns: table => new
                 {
-                    OrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
                     TotalPrice = table.Column<double>(type: "float", nullable: true),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    TransactionNo = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    TransactionNo = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     PaymentDate = table.Column<DateTime>(type: "datetime", nullable: true),
-                    CurrencyCode = table.Column<string>(type: "nvarchar(55)", maxLength: 55, nullable: false),
-                    AccountName = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(55)", maxLength: 55, nullable: false)
+                    CurrencyCode = table.Column<string>(type: "nvarchar(55)", maxLength: 55, nullable: true),
+                    AccountName = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(55)", maxLength: 55, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -307,8 +313,9 @@ namespace LMSystem.Repository.Migrations
                 name: "RegistrationCourse",
                 columns: table => new
                 {
-                    RegistrationId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RegistrationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
                     AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EnrollmentDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: true),
@@ -335,9 +342,10 @@ namespace LMSystem.Repository.Migrations
                 name: "Section",
                 columns: table => new
                 {
-                    SectionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
+                    SectionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     Position = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -355,8 +363,9 @@ namespace LMSystem.Repository.Migrations
                 name: "WishList",
                 columns: table => new
                 {
-                    WishListId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    WishListId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
                     AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -380,9 +389,11 @@ namespace LMSystem.Repository.Migrations
                 name: "RatingCourse",
                 columns: table => new
                 {
-                    RatingId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RegistrationId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CommentContent = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    RatingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RegistrationId = table.Column<int>(type: "int", nullable: false),
+                    CommentContent = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    RatingStar = table.Column<int>(type: "int", nullable: false),
                     IsRatingStatus = table.Column<bool>(type: "bit", nullable: true),
                     RatingDate = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
@@ -401,8 +412,9 @@ namespace LMSystem.Repository.Migrations
                 name: "StepCompleted",
                 columns: table => new
                 {
-                    CompletedStepId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RegistrationId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CompletedStepId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RegistrationId = table.Column<int>(type: "int", nullable: false),
                     DateCompleted = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
                 constraints: table =>
@@ -420,13 +432,14 @@ namespace LMSystem.Repository.Migrations
                 name: "Step",
                 columns: table => new
                 {
-                    StepId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SectionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StepId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SectionId = table.Column<int>(type: "int", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: true),
                     Position = table.Column<int>(type: "int", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    VideoUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    StepDescription = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    VideoUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    StepDescription = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -438,6 +451,65 @@ namespace LMSystem.Repository.Migrations
                         principalColumn: "SectionId",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Quiz",
+                columns: table => new
+                {
+                    QuizId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StepId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quiz", x => x.QuizId);
+                    table.ForeignKey(
+                        name: "FK_Quiz_Step",
+                        column: x => x.StepId,
+                        principalTable: "Step",
+                        principalColumn: "StepId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    QuestionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuizId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    Anwser1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    Anwser2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    Anwser3 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    Anwser4 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    AnwserCorrect = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Mark = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.QuestionId);
+                    table.ForeignKey(
+                        name: "FK_Question_Quiz",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "QuizId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "Accounts",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "Accounts",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -467,18 +539,6 @@ namespace LMSystem.Repository.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "Accounts",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "Accounts",
-                column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_CourseCategory_CategoryId",
                 table: "CourseCategory",
                 column: "CategoryId");
@@ -502,6 +562,16 @@ namespace LMSystem.Repository.Migrations
                 name: "IX_Order_CourseId",
                 table: "Order",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_QuizId",
+                table: "Question",
+                column: "QuizId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quiz_StepId",
+                table: "Quiz",
+                column: "StepId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RatingCourse_RegistrationId",
@@ -577,13 +647,13 @@ namespace LMSystem.Repository.Migrations
                 name: "Order");
 
             migrationBuilder.DropTable(
+                name: "Question");
+
+            migrationBuilder.DropTable(
                 name: "RatingCourse");
 
             migrationBuilder.DropTable(
                 name: "ReportProblem");
-
-            migrationBuilder.DropTable(
-                name: "Step");
 
             migrationBuilder.DropTable(
                 name: "StepCompleted");
@@ -598,13 +668,19 @@ namespace LMSystem.Repository.Migrations
                 name: "Category");
 
             migrationBuilder.DropTable(
-                name: "Section");
+                name: "Quiz");
 
             migrationBuilder.DropTable(
                 name: "RegistrationCourse");
 
             migrationBuilder.DropTable(
+                name: "Step");
+
+            migrationBuilder.DropTable(
                 name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "Section");
 
             migrationBuilder.DropTable(
                 name: "Course");

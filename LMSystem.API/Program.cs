@@ -1,3 +1,4 @@
+using LMSystem.API;
 using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
@@ -7,15 +8,20 @@ using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -55,43 +61,43 @@ builder.Services
     .AddDefaultTokenProviders();
 
 //Congig local db
-builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
-});
+//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
+//});
 
 
 
 //--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
 
 //config database to deploy on azure
-//var connection = String.Empty;
-//if (builder.Environment.IsDevelopment())
-//{
-//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
-//    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-//}
-//else
-//{
-//    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
-//}
-//// Config SQLAzure
-//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
-//    options.UseSqlServer(connection));
+var connection = string.Empty;
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.development.json");
+    connection = builder.Configuration.GetConnectionString("azure_sql_connectionstring");
+}
+else
+{
+    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
+}
+//config sqlazure
+builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+        options.UseSqlServer(connection));
 
 // ------------------- OPEN COMMENT CHAT KOO ---------------------------
 
 //add cors
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("app-cors",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .WithExposedHeaders("X-Pagination")
-            .AllowAnyMethod();
-        });
+options.AddPolicy("app-cors",
+    builder =>
+    {
+        builder.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .WithExposedHeaders("X-Pagination")
+        .AllowAnyMethod();
+    });
 });
 
 // Add Authentication and JwtBearer
@@ -119,11 +125,9 @@ builder.Services
 // add automapper
 builder.Services.AddAutoMapper(typeof(AutomapperProfile).Assembly);
 
-//Add Dependenci Injection, Life cycle DI: AddSingleton(), AddTransisent(), AddScoped()
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-builder.Services.AddScoped<ICourseService, CourseService>();
+
+//Add DJ
+builder.Services.AddApiWebService();
 
 
 
