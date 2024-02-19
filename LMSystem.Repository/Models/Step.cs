@@ -8,7 +8,7 @@ public partial class Step
     public int StepId { get; set; }
 
     public int SectionId { get; set; }
-    public int QuizId { get; set; }
+    public int? QuizId { get; set; }
 
     public int? Duration { get; set; }
 
