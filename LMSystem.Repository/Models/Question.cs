@@ -10,13 +10,10 @@ namespace LMSystem.Repository.Models
     {
         public int QuestionId { get; set; }
         public int QuizId { get; set; }
-        public string? Title { get; set; }
-        public string? Anwser1 { get; set; }
-        public string? Anwser2 { get; set; }
-        public string? Anwser3 { get; set; }
-        public string? Anwser4 { get; set; }
-        public string AnwserCorrect { get; set; } = string.Empty;
-        public int Mark { get; set; }
+        public string QuestionTitle { get; set; } = string.Empty;
+        public int CorrectAnwser { get; set; }
+        public string Anwser { get; set; } = string.Empty;
         public virtual Quiz? Quiz { get; set; }
+        public virtual ICollection<AnswerHistory> AnswerHistories { get; set; } = new List<AnswerHistory>();
     }
 }

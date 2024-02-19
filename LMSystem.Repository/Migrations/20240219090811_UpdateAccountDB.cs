@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMSystem.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateDatabase : Migration
+    public partial class UpdateAccountDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,6 +22,7 @@ namespace LMSystem.Repository.Migrations
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ProfileImg = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     Sex = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
+                    ParentEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nchar(40)", fixedLength: true, maxLength: 40, nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime", nullable: true),
@@ -91,11 +92,26 @@ namespace LMSystem.Repository.Migrations
                     UpdateAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     TotalDuration = table.Column<int>(type: "int", maxLength: 155, nullable: false),
                     CourseIsActive = table.Column<bool>(type: "bit", nullable: true),
-                    KnowdledgeDescription = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    KnowdledgeDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LinkCertificated = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Course", x => x.CourseId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Quiz",
+                columns: table => new
+                {
+                    QuizId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quiz", x => x.QuizId);
                 });
 
             migrationBuilder.CreateTable(
@@ -386,6 +402,28 @@ namespace LMSystem.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    QuestionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuizId = table.Column<int>(type: "int", nullable: false),
+                    QuestionTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CorrectAnwser = table.Column<int>(type: "int", nullable: false),
+                    Anwser = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.QuestionId);
+                    table.ForeignKey(
+                        name: "FK_Question_Quiz",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "QuizId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RatingCourse",
                 columns: table => new
                 {
@@ -415,6 +453,7 @@ namespace LMSystem.Repository.Migrations
                     CompletedStepId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RegistrationId = table.Column<int>(type: "int", nullable: false),
+                    StepId = table.Column<int>(type: "int", nullable: false),
                     DateCompleted = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
                 constraints: table =>
@@ -435,6 +474,7 @@ namespace LMSystem.Repository.Migrations
                     StepId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SectionId = table.Column<int>(type: "int", nullable: false),
+                    QuizId = table.Column<int>(type: "int", nullable: true),
                     Duration = table.Column<int>(type: "int", nullable: true),
                     Position = table.Column<int>(type: "int", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
@@ -445,6 +485,11 @@ namespace LMSystem.Repository.Migrations
                 {
                     table.PrimaryKey("PK_Step", x => x.StepId);
                     table.ForeignKey(
+                        name: "FK_Step_Quiz",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "QuizId");
+                    table.ForeignKey(
                         name: "FK_Step_Section",
                         column: x => x.SectionId,
                         principalTable: "Section",
@@ -453,49 +498,29 @@ namespace LMSystem.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Quiz",
+                name: "AnswerHistory",
                 columns: table => new
                 {
-                    QuizId = table.Column<int>(type: "int", nullable: false)
+                    AnswerHistoryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StepId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                    CompletedStepId = table.Column<int>(type: "int", nullable: false),
+                    QuestionId = table.Column<int>(type: "int", nullable: false),
+                    AnswerSelected = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Quiz", x => x.QuizId);
+                    table.PrimaryKey("PK_AnswerHistory", x => x.AnswerHistoryId);
                     table.ForeignKey(
-                        name: "FK_Quiz_Step",
-                        column: x => x.StepId,
-                        principalTable: "Step",
-                        principalColumn: "StepId",
+                        name: "FK_AnswerHistory_Question",
+                        column: x => x.QuestionId,
+                        principalTable: "Question",
+                        principalColumn: "QuestionId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Question",
-                columns: table => new
-                {
-                    QuestionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    QuizId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Anwser1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Anwser2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Anwser3 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Anwser4 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    AnwserCorrect = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    Mark = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Question", x => x.QuestionId);
                     table.ForeignKey(
-                        name: "FK_Question_Quiz",
-                        column: x => x.QuizId,
-                        principalTable: "Quiz",
-                        principalColumn: "QuizId",
+                        name: "FK_AnswerHistory_StepCompleted",
+                        column: x => x.CompletedStepId,
+                        principalTable: "StepCompleted",
+                        principalColumn: "CompletedStepId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -510,6 +535,16 @@ namespace LMSystem.Repository.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnswerHistory_CompletedStepId",
+                table: "AnswerHistory",
+                column: "CompletedStepId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnswerHistory_QuestionId",
+                table: "AnswerHistory",
+                column: "QuestionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -569,11 +604,6 @@ namespace LMSystem.Repository.Migrations
                 column: "QuizId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Quiz_StepId",
-                table: "Quiz",
-                column: "StepId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RatingCourse_RegistrationId",
                 table: "RatingCourse",
                 column: "RegistrationId");
@@ -597,6 +627,11 @@ namespace LMSystem.Repository.Migrations
                 name: "IX_Section_CourseId",
                 table: "Section",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Step_QuizId",
+                table: "Step",
+                column: "QuizId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Step_SectionId",
@@ -623,6 +658,9 @@ namespace LMSystem.Repository.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AnswerHistory");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -647,19 +685,22 @@ namespace LMSystem.Repository.Migrations
                 name: "Order");
 
             migrationBuilder.DropTable(
-                name: "Question");
-
-            migrationBuilder.DropTable(
                 name: "RatingCourse");
 
             migrationBuilder.DropTable(
                 name: "ReportProblem");
 
             migrationBuilder.DropTable(
-                name: "StepCompleted");
+                name: "Step");
 
             migrationBuilder.DropTable(
                 name: "WishList");
+
+            migrationBuilder.DropTable(
+                name: "Question");
+
+            migrationBuilder.DropTable(
+                name: "StepCompleted");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -668,19 +709,16 @@ namespace LMSystem.Repository.Migrations
                 name: "Category");
 
             migrationBuilder.DropTable(
+                name: "Section");
+
+            migrationBuilder.DropTable(
                 name: "Quiz");
 
             migrationBuilder.DropTable(
                 name: "RegistrationCourse");
 
             migrationBuilder.DropTable(
-                name: "Step");
-
-            migrationBuilder.DropTable(
                 name: "Accounts");
-
-            migrationBuilder.DropTable(
-                name: "Section");
 
             migrationBuilder.DropTable(
                 name: "Course");

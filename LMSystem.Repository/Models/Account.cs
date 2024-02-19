@@ -17,6 +17,7 @@ public partial class Account : IdentityUser
     public string? ProfileImg { get; set; }
 
     public string? Sex { get; set; }
+    public string? ParentEmail { get; set; }
 
     public string Status { get; set; } = string.Empty;
 

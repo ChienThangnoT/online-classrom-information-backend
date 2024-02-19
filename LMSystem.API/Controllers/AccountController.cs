@@ -42,6 +42,28 @@ namespace LMSystem.API.Controllers
                 return BadRequest();
             }
         }
+        
+        [HttpPost("SignUpStaffAdmin")]
+        public async Task<ActionResult> SignUpStaffAdminParent(SignUpModel signUpModel, RoleModel role)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = await _accountService.SignUpAdminStaffAsync(signUpModel, role);
+                    if (result.Status.Equals("Success"))
+                    {
+                        return Ok(result);
+                    }
+                    return BadRequest(result);
+                }
+                return ValidationProblem(ModelState);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
         [HttpPost("SignIn")]
         public async Task<ActionResult> SignIn(SignInModel signInModel)
@@ -63,7 +85,7 @@ namespace LMSystem.API.Controllers
             {
                 return BadRequest();
             }
-           
+
         }
 
 
@@ -113,7 +135,7 @@ namespace LMSystem.API.Controllers
                 return NotFound();
             }
         }
-        [HttpPost("UpdateProfile")]
+        [HttpPut("UpdateProfile")]
         public async Task<ActionResult> UpdateProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             var account = await _accountService.GetAccountById(accountId);

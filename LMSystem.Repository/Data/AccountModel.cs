@@ -34,5 +34,6 @@ namespace LMSystem.Repository.Data
         public string ProfileImg { get; set; }
 
         public string Sex { get; set; }
+        public string? ParentEmail { get; set; }
     }
 }
