@@ -297,6 +297,7 @@ namespace LMSystem.Repository.Repositories
         {
             account.FirstName = updateProfileModel.FirstName;
             account.LastName = updateProfileModel.LastName;
+            account.Email = updateProfileModel.Email;
             account.PhoneNumber = updateProfileModel.PhoneNumber;
             account.BirthDate = updateProfileModel.BirthDate;
             account.Biography = updateProfileModel.Biography;
