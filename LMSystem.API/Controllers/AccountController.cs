@@ -24,35 +24,46 @@ namespace LMSystem.API.Controllers
         [HttpPost("SignUp")]
         public async Task<ActionResult> SignUp(SignUpModel signUpModel)
         {
-            //try
-            //{
-            if (ModelState.IsValid)
+            try
             {
-                var result = await _accountService.SignUpAccountAsync(signUpModel);
-                if (result.Status.Equals("Success"))
+                if (ModelState.IsValid)
                 {
-                    return Ok(result);
+                    var result = await _accountService.SignUpAccountAsync(signUpModel);
+                    if (result.Status.Equals("Success"))
+                    {
+                        return Ok(result);
+                    }
+                    return BadRequest(result);
                 }
-                return BadRequest(result);
+                return ValidationProblem(ModelState);
             }
-            return ValidationProblem(ModelState);
-            //}
-            //catch { return BadRequest(); }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("SignIn")]
         public async Task<ActionResult> SignIn(SignInModel signInModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var result = await _accountService.SignInAccountAsync(signInModel);
-                if (result.Status.Equals(false))
+                if (ModelState.IsValid)
                 {
-                    return Unauthorized();
+                    var result = await _accountService.SignInAccountAsync(signInModel);
+                    if (result.Status.Equals(false))
+                    {
+                        return Unauthorized(result);
+                    }
+                    return Ok(result);
                 }
-                return Ok(result);
+                return ValidationProblem(ModelState);
             }
-            return ValidationProblem(ModelState);
+            catch
+            {
+                return BadRequest();
+            }
+           
         }
 
 
@@ -107,7 +118,7 @@ namespace LMSystem.API.Controllers
         {
             var account = await _accountService.GetAccountById(accountId);
 
-            var response = await _accountService.UpdateAccountProfile(updateProfileModel,accountId);
+            var response = await _accountService.UpdateAccountProfile(updateProfileModel, accountId);
 
             if (response.Status == "Error")
             {
