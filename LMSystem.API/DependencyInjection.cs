@@ -22,6 +22,10 @@ namespace LMSystem.API
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
 
+            services.AddScoped<IRatingCourseRepository, RatingCourseRepository>();
+            services.AddScoped<IRatingCourseService, RatingCourseService>();
+
+
             return services;
         }
     }
