@@ -44,7 +44,7 @@ namespace LMSystem.API.Controllers
         }
         
         [HttpPost("SignUpStaffAdmin")]
-        public async Task<ActionResult> SignUpStaffAdmin(SignUpModel signUpModel, RoleModel role)
+        public async Task<ActionResult> SignUpStaffAdminParent(SignUpModel signUpModel, RoleModel role)
         {
             try
             {
