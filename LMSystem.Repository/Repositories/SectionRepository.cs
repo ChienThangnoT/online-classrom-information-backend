@@ -19,48 +19,48 @@ namespace LMSystem.Repository.Repositories
             _context = context;
         }
 
-        public async Task<ResponeModel> AddSection(AddSectionModel addSectionModel)
-        {
-            try
-            {
-               var section = new Section
-               {
-                    CourseId = addSectionModel.CourseId,
-                    Title = addSectionModel.Title,
-                    Position = addSectionModel.Position
-                };
-                _context.Sections.Add(section);
-                await _context.SaveChangesAsync();
+        //public async Task<ResponeModel> AddSection(AddSectionModel addSectionModel)
+        //{
+        //    try
+        //    {
+        //       var section = new Section
+        //       {
+        //            CourseId = addSectionModel.CourseId,
+        //            Title = addSectionModel.Title,
+        //            Position = addSectionModel.Position
+        //        };
+        //        _context.Sections.Add(section);
+        //        await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added section successfully",DataObject = section };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while adding the section" };
-            }
-        }
-        public async Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel)
-        {
-            try
-            {
-                var section = await _context.Sections.FirstOrDefaultAsync(x => x.SectionId == updateSectionModel.SectionId);
-                if (section == null)
-                {
-                    return new ResponeModel { Status = "Error", Message = "Section not found" };
-                }
-                section = submitSectionChanges(section, updateSectionModel);
+        //        return new ResponeModel { Status = "Success", Message = "Added section successfully",DataObject = section };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Exception: {ex.Message}");
+        //        return new ResponeModel { Status = "Error", Message = "An error occurred while adding the section" };
+        //    }
+        //}
+        //public async Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel)
+        //{
+        //    try
+        //    {
+        //        var section = await _context.Sections.FirstOrDefaultAsync(x => x.SectionId == updateSectionModel.SectionId);
+        //        if (section == null)
+        //        {
+        //            return new ResponeModel { Status = "Error", Message = "Section not found" };
+        //        }
+        //        section = submitSectionChanges(section, updateSectionModel);
 
-                await _context.SaveChangesAsync();
+        //        await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Updated section successfully", DataObject = section };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while updating the section" };
-            }
-        }
+        //        return new ResponeModel { Status = "Success", Message = "Updated section successfully", DataObject = section };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Exception: {ex.Message}");
+        //        return new ResponeModel { Status = "Error", Message = "An error occurred while updating the section" };
+        //    }
+        //}
 
         private Section submitSectionChanges(Section section, UpdateSectionModel updateSectionModel)
         {

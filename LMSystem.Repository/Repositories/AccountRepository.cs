@@ -330,5 +330,10 @@ namespace LMSystem.Repository.Repositories
                 Message = "Change password successfully!"
             };
         }
+
+        public async Task<IEnumerable<Account>> ViewAccountList()
+        {
+            return await _context.Users.ToListAsync();
+        }
     }
 }

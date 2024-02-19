@@ -1,5 +1,6 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
+using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
@@ -115,6 +116,12 @@ namespace LMSystem.API.Controllers
             }
 
             return Ok(response);
+        }
+        [HttpGet("ViewAccountList")]
+        public async Task<ActionResult> ViewAccountList()
+        {
+            var accounts = await _accountService.ViewAccountList();
+            return Ok(accounts);
         }
     }
 }
