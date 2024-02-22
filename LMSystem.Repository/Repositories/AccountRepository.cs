@@ -331,9 +331,12 @@ namespace LMSystem.Repository.Repositories
             };
         }
 
-        public async Task<IEnumerable<Account>> ViewAccountList()
+        public async Task<IEnumerable<AccountModelGetList>> ViewAccountList()
         {
-            return await _context.Users.ToListAsync();
+            
+            var accounts = await _context.Users.ToListAsync();
+            var accountModels = _mapper.Map<IEnumerable<AccountModelGetList>>(accounts);
+            return accountModels;
         }
     }
 }

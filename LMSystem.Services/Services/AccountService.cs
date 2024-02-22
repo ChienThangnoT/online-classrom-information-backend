@@ -76,7 +76,7 @@ namespace LMSystem.Services.Services
             return await _repo.UpdateAccountProfile(updateProfileModel,accountId);    
         }
 
-        public async Task<IEnumerable<Account>> ViewAccountList()
+        public async Task<IEnumerable<AccountModelGetList>> ViewAccountList()
         {
             return await _repo.ViewAccountList();
         }
