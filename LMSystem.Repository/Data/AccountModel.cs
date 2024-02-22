@@ -9,7 +9,7 @@ namespace LMSystem.Repository.Data
 {
     public class AccountModel
     {
-        public string? Id { get; set; }
+        public string Id { get; set; }
         [Required(ErrorMessage = "First name is required!")]
         [Display(Name = "Name")]
         public string FirstName { get; set; }
@@ -34,5 +34,6 @@ namespace LMSystem.Repository.Data
         public string ProfileImg { get; set; }
 
         public string Sex { get; set; }
+        public string? ParentEmail { get; set; }
     }
 }

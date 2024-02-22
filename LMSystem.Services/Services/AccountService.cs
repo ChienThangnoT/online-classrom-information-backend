@@ -66,6 +66,12 @@ namespace LMSystem.Services.Services
             return result;
         }
 
+        public async Task<ResponeModel> SignUpAdminStaffAsync(SignUpModel model, RoleModel role)
+        {
+            var result = await _repo.SignUpAdminStaffAsync(model, role);
+            return result;
+        }
+
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
         {
             throw new NotImplementedException();
