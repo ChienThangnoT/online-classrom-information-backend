@@ -19,6 +19,5 @@ namespace LMSystem.Repository.Data
         [JsonIgnore]
         public System.Threading.Tasks.Task<String>? ConfirmEmailToken { get; set; }
         public object DataObject { get; set; } = null;
-        public Step DataObject { get; internal set; }
     }
 }

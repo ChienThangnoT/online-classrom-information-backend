@@ -192,11 +192,11 @@ namespace LMSystem.API.Controllers
                 return BadRequest("Confirm email failed!");
             }
         }
-        [HttpGet("ViewAccountList")]
-        public async Task<ActionResult> ViewAccountList()
-        {
-            var accounts = await _accountService.ViewAccountList();
-            return Ok(accounts);
-        }
+        //[HttpGet("ViewAccountList")]
+        //public async Task<ActionResult> ViewAccountList()
+        //{
+        //    var accounts = await _accountService.ViewAccountList();
+        //    return Ok(accounts);
+        //}
     }
 }

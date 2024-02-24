@@ -91,12 +91,12 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        private Section submitSectionChanges(Section section, UpdateSectionModel updateSectionModel)
-        {
-            section.Title = updateSectionModel.Title;
-            section.Position = updateSectionModel.Position;
+        //private Section submitSectionChanges(Section section, UpdateSectionModel updateSectionModel)
+        //{
+        //    section.Title = updateSectionModel.Title;
+        //    section.Position = updateSectionModel.Position;
 
-            return section;
-        }
+        //    return section;
+        //}
     }
 }
