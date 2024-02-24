@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Configuration;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -121,6 +123,14 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"]))
         };
     });
+
+//Add config mail setting
+builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("MailSettings"));
+
+//Add Email Confirm
+builder.Services.Configure<IdentityOptions>(
+    opt => opt.SignIn.RequireConfirmedEmail = true
+    );
 
 // add automapper
 builder.Services.AddAutoMapper(typeof(AutomapperProfile).Assembly);

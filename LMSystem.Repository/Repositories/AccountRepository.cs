@@ -3,11 +3,13 @@ using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -204,12 +206,22 @@ namespace LMSystem.Repository.Repositories
                 }
                 else
                 {
-                    return null;
+                    return new AuthenticationResponseModel { Status = false, Message = "Cannot find user" };
                 }
+            }
+            else if (result.IsNotAllowed)
+            {
+                var token = userManager.GenerateEmailConfirmationTokenAsync(account);
+                return new AuthenticationResponseModel
+                {
+                    Status = false,
+                    Message = "Email xác nhận đã được gửi đến tài khoản email bạn đã đăng ký, vui lòng xác thực tài khoản để đăng nhập!",
+                    VerifyEmailToken = token
+                };
             }
             else
             {
-                return null;
+                return new AuthenticationResponseModel { Status = false, Message = "Sai tài khoản hoặc mật khẩu!" };
             }
         }
 
@@ -243,8 +255,11 @@ namespace LMSystem.Repository.Repositories
                         {
                             await userManager.AddToRoleAsync(user, RoleModel.Student.ToString());
                         }
-                        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                        return new ResponeModel { Status = "Success", Message = "Create account successfull" };
+                        var token = userManager.GenerateEmailConfirmationTokenAsync(user);
+                        //token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+
+                        return new ResponeModel { Status = "Success", Message = "Create account successfull, Please confirm your email to login into eHubSystem", ConfirmEmailToken = token };
                     }
                     foreach (var ex in result.Errors)
                     {
@@ -252,6 +267,7 @@ namespace LMSystem.Repository.Repositories
                     }
                     return new ResponeModel { Status = "Error", Message = errorMessage };
                 }
+                return new ResponeModel { Status = "Error", Message = "Account already exist" };
             }
             catch (Exception ex)
             {
@@ -259,14 +275,14 @@ namespace LMSystem.Repository.Repositories
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
             }
-            return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
+
         }
 
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
         {
             throw new NotImplementedException();
         }
-        
+
         public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             try
@@ -282,7 +298,7 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully" };
+                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully", DataObject = existingAccount };
             }
             catch (Exception ex)
             {
@@ -328,6 +344,105 @@ namespace LMSystem.Repository.Repositories
             {
                 Status = "Success",
                 Message = "Change password successfully!"
+            };
+        }
+
+        public async Task<ResponeModel> SignUpAdminStaffAsync(SignUpModel model, RoleModel role)
+        {
+            try
+            {
+                var exsistAccount = await userManager.FindByNameAsync(model.AccountEmail);
+                if (exsistAccount == null)
+                {
+                    var user = new Account
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        BirthDate = model.BirthDate,
+                        Status = "Is Active",
+                        UserName = model.AccountEmail,
+
+                        Email = model.AccountEmail,
+                        PhoneNumber = model.AccountPhone
+                    };
+
+                    string errorMessage = null;
+
+                    if (role.Equals(RoleModel.Admin) || role.Equals(RoleModel.Staff))
+                    {
+                        await userManager.CreateAsync(user, model.AccountPassword);
+
+                        if (!await roleManager.RoleExistsAsync(role.ToString()))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole(role.ToString()));
+                        }
+                        if (await roleManager.RoleExistsAsync(role.ToString()))
+                        {
+                            await userManager.AddToRoleAsync(user, role.ToString());
+                        }
+                         // AUTO CONFIRM EMAIL
+                        var token = userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var confirm = await userManager.ConfirmEmailAsync(user, token.Result);
+                        if (confirm.Succeeded)
+                        {
+                            return new ResponeModel { Status = "Success", Message = $"Đăng ký tài khoản {role} Thành công!" };
+                        }
+                        foreach (var error in confirm.Errors)
+                        {
+                            errorMessage = error.Description;
+                        }
+                        return new ResponeModel { Status = "Error", Message = errorMessage };
+                    }
+                    return new ResponeModel { Status = "Error", Message = $"Đăng ký thất bại, role {role} không hỗ trợ bởi hệ thống!" };
+                }
+                return new ResponeModel { Status = "Error", Message = "Account đã tồn tại trong hệ thống!" };
+            }
+            catch (Exception ex)
+            {
+                // Log or print the exception details
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
+            }
+        }
+
+        public Task<ResponeModel> SignUpParentAsync(SignUpModel model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ResponeModel> ConfirmEmail(string email, string token)
+        {
+            var user =  await userManager.FindByNameAsync(email);
+            if (user.EmailConfirmed)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Email đã được xác nhận!"
+                };
+
+            }
+            if (user != null)
+            {
+                var result = await userManager.ConfirmEmailAsync(user, token);
+                if (result.Succeeded)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Success",
+                        Message = "Xác thực email thành công!"
+                    };
+                }
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Xác thực email thất bại!"
+                };
+            }
+            return new ResponeModel
+            {
+                Status = "Error",
+                Message = "Tài khoản không tồn tại!"
             };
         }
 

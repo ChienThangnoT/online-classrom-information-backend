@@ -36,7 +36,19 @@ namespace LMSystem.API.Controllers
         //        return Conflict(response);
         //    }
 
-        //    return Ok(response);
-        //}
+            return Ok(response);
+        }
+
+        [HttpPut("UpdateSection")]
+        public async Task<IActionResult> UpdateSection(UpdateSectionModel updateSectionModel)
+        {
+            var response = await _sectionService.UpdateSection(updateSectionModel);
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+
+            return Ok(response);
+        }
     }
 }

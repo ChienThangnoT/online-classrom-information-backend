@@ -70,6 +70,9 @@ namespace LMSystem.Repository.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("ParentEmail")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -124,6 +127,32 @@ namespace LMSystem.Repository.Migrations
                     b.ToTable("Accounts", (string)null);
                 });
 
+            modelBuilder.Entity("LMSystem.Repository.Models.AnswerHistory", b =>
+                {
+                    b.Property<int>("AnswerHistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnswerHistoryId"));
+
+                    b.Property<int>("AnswerSelected")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompletedStepId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AnswerHistoryId");
+
+                    b.HasIndex(new[] { "CompletedStepId" }, "IX_AnswerHistory_CompletedStepId");
+
+                    b.HasIndex(new[] { "QuestionId" }, "IX_AnswerHistory_QuestionId");
+
+                    b.ToTable("AnswerHistory", (string)null);
+                });
+
             modelBuilder.Entity("LMSystem.Repository.Models.Category", b =>
                 {
                     b.Property<int>("CatgoryId")
@@ -171,6 +200,9 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("KnowdledgeDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinkCertificated")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Price")
@@ -311,36 +343,19 @@ namespace LMSystem.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionId"));
 
-                    b.Property<string>("Anwser1")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Anwser2")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Anwser3")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Anwser4")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("AnwserCorrect")
+                    b.Property<string>("Anwser")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Mark")
+                    b.Property<int>("CorrectAnwser")
                         .HasColumnType("int");
+
+                    b.Property<string>("QuestionTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("QuizId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
 
                     b.HasKey("QuestionId");
 
@@ -361,16 +376,11 @@ namespace LMSystem.Repository.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<int>("StepId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
                     b.HasKey("QuizId");
-
-                    b.HasIndex(new[] { "StepId" }, "IX_Quiz_StepId");
 
                     b.ToTable("Quiz", (string)null);
                 });
@@ -519,6 +529,9 @@ namespace LMSystem.Repository.Migrations
                     b.Property<int?>("Position")
                         .HasColumnType("int");
 
+                    b.Property<int?>("QuizId")
+                        .HasColumnType("int");
+
                     b.Property<int>("SectionId")
                         .HasColumnType("int");
 
@@ -535,6 +548,8 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("StepId");
+
+                    b.HasIndex(new[] { "QuizId" }, "IX_Step_QuizId");
 
                     b.HasIndex(new[] { "SectionId" }, "IX_Step_SectionId");
 
@@ -553,6 +568,9 @@ namespace LMSystem.Repository.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<int>("RegistrationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StepId")
                         .HasColumnType("int");
 
                     b.HasKey("CompletedStepId");
@@ -719,6 +737,27 @@ namespace LMSystem.Repository.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("LMSystem.Repository.Models.AnswerHistory", b =>
+                {
+                    b.HasOne("LMSystem.Repository.Models.StepCompleted", "StepCompleted")
+                        .WithMany("AnswerHistories")
+                        .HasForeignKey("CompletedStepId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_AnswerHistory_StepCompleted");
+
+                    b.HasOne("LMSystem.Repository.Models.Question", "Question")
+                        .WithMany("AnswerHistories")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_AnswerHistory_Question");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("StepCompleted");
+                });
+
             modelBuilder.Entity("LMSystem.Repository.Models.CourseCategory", b =>
                 {
                     b.HasOne("LMSystem.Repository.Models.Category", "Category")
@@ -776,25 +815,13 @@ namespace LMSystem.Repository.Migrations
             modelBuilder.Entity("LMSystem.Repository.Models.Question", b =>
                 {
                     b.HasOne("LMSystem.Repository.Models.Quiz", "Quiz")
-                        .WithMany("Question")
+                        .WithMany("Questions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Question_Quiz");
 
                     b.Navigation("Quiz");
-                });
-
-            modelBuilder.Entity("LMSystem.Repository.Models.Quiz", b =>
-                {
-                    b.HasOne("LMSystem.Repository.Models.Step", "Step")
-                        .WithMany("Quizzes")
-                        .HasForeignKey("StepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_Quiz_Step");
-
-                    b.Navigation("Step");
                 });
 
             modelBuilder.Entity("LMSystem.Repository.Models.RatingCourse", b =>
@@ -856,12 +883,19 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.Step", b =>
                 {
+                    b.HasOne("LMSystem.Repository.Models.Quiz", "Quiz")
+                        .WithMany("Steps")
+                        .HasForeignKey("QuizId")
+                        .HasConstraintName("FK_Step_Quiz");
+
                     b.HasOne("LMSystem.Repository.Models.Section", "Section")
                         .WithMany("Steps")
                         .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Step_Section");
+
+                    b.Navigation("Quiz");
 
                     b.Navigation("Section");
                 });
@@ -980,9 +1014,16 @@ namespace LMSystem.Repository.Migrations
                     b.Navigation("WishLists");
                 });
 
+            modelBuilder.Entity("LMSystem.Repository.Models.Question", b =>
+                {
+                    b.Navigation("AnswerHistories");
+                });
+
             modelBuilder.Entity("LMSystem.Repository.Models.Quiz", b =>
                 {
-                    b.Navigation("Question");
+                    b.Navigation("Questions");
+
+                    b.Navigation("Steps");
                 });
 
             modelBuilder.Entity("LMSystem.Repository.Models.RegistrationCourse", b =>
@@ -997,9 +1038,9 @@ namespace LMSystem.Repository.Migrations
                     b.Navigation("Steps");
                 });
 
-            modelBuilder.Entity("LMSystem.Repository.Models.Step", b =>
+            modelBuilder.Entity("LMSystem.Repository.Models.StepCompleted", b =>
                 {
-                    b.Navigation("Quizzes");
+                    b.Navigation("AnswerHistories");
                 });
 #pragma warning restore 612, 618
         }

@@ -28,6 +28,18 @@ namespace LMSystem.API.Controllers
             return Ok(response);
         }
 
+        [HttpPut("UpdateStep")]
+        public async Task<IActionResult> UpdateStep(UpdateStepModel updateStepModel)
+        {
+            var response = await _stepService.UpdateStep(updateStepModel);
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+
+            return Ok(response);
+        }
+
         //[HttpPut("UpdateStep")]
         //public async Task<IActionResult> UpdateStep(UpdateStepModel updateStepModel)
         //{

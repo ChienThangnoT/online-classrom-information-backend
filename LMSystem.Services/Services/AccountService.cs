@@ -25,6 +25,12 @@ namespace LMSystem.Services.Services
             return result;
         }
 
+        public async Task<ResponeModel> ConfirmEmail(string email, string token)
+        {
+            var result = await _repo.ConfirmEmail(email, token);
+            return result;
+        }
+
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
             var result = await _repo.GetAccountByEmail(email);
@@ -63,6 +69,12 @@ namespace LMSystem.Services.Services
         public async Task<ResponeModel> SignUpAccountAsync(SignUpModel model)
         {
             var result = await _repo.SignUpAccountAsync(model);
+            return result;
+        }
+
+        public async Task<ResponeModel> SignUpAdminStaffAsync(SignUpModel model, RoleModel role)
+        {
+            var result = await _repo.SignUpAdminStaffAsync(model, role);
             return result;
         }
 

@@ -43,6 +43,7 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
     public virtual DbSet<WishList> WishLists { get; set; }
     public virtual DbSet<Quiz> Quizzes { get; set; }
     public virtual DbSet<Question> Questions { get; set; }
+    public virtual DbSet<AnswerHistory> AnswerHistories { get; set; }
 
 
     //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -263,8 +264,11 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.ToTable("Step");
 
             entity.HasIndex(e => e.SectionId, "IX_Step_SectionId");
-
             entity.Property(e => e.SectionId);
+
+            entity.HasIndex(e => e.QuizId, "IX_Step_QuizId");
+            entity.Property(e => e.QuizId);
+
             entity.Property(e => e.StepDescription)
                 .HasMaxLength(450);
             entity.Property(e => e.Title)
@@ -275,6 +279,10 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.HasOne(d => d.Section).WithMany(p => p.Steps)
                 .HasForeignKey(d => d.SectionId)
                 .HasConstraintName("FK_Step_Section");
+
+            entity.HasOne(d => d.Quiz).WithMany(p => p.Steps)
+                .HasForeignKey(d => d.QuizId)
+                .HasConstraintName("FK_Step_Quiz");
         });
 
         modelBuilder.Entity<StepCompleted>(entity =>
@@ -316,18 +324,10 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
         {
             entity.HasKey(e => e.QuizId);
             entity.ToTable("Quiz");
-
-
-            entity.HasIndex(e => e.StepId, "IX_Quiz_StepId");
             
             entity.Property(e => e.Title).HasMaxLength(150);
 
             entity.Property(e => e.Description).HasMaxLength(250);
-
-
-            entity.HasOne(d => d.Step).WithMany(p => p.Quizzes)
-                .HasForeignKey(d => d.StepId)
-                .HasConstraintName("FK_Quiz_Step");
         });
         
         modelBuilder.Entity<Question>(entity =>
@@ -335,19 +335,32 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.HasKey(e => e.QuestionId);
             entity.ToTable("Question");
 
-
             entity.HasIndex(e => e.QuizId, "IX_Question_QuizId");
+            entity.Property(e => e.QuizId);
             
-            entity.Property(e => e.Title).HasMaxLength(250);
-            entity.Property(e => e.Anwser1).HasMaxLength(250);
-            entity.Property(e => e.Anwser2).HasMaxLength(250);
-            entity.Property(e => e.Anwser3).HasMaxLength(250);
-            entity.Property(e => e.Anwser4).HasMaxLength(250);
-            entity.Property(e => e.AnwserCorrect).HasMaxLength(250);
-
-            entity.HasOne(d => d.Quiz).WithMany(p => p.Question)
+            entity.HasOne(d => d.Quiz).WithMany(p => p.Questions)
                 .HasForeignKey(d => d.QuizId)
                 .HasConstraintName("FK_Question_Quiz");
+        }); 
+        
+        modelBuilder.Entity<AnswerHistory>(entity =>
+        {
+            entity.HasKey(e => e.AnswerHistoryId);
+            entity.ToTable("AnswerHistory");
+
+            entity.HasIndex(e => e.CompletedStepId, "IX_AnswerHistory_CompletedStepId");
+            entity.Property(e => e.CompletedStepId);
+            
+            entity.HasIndex(e => e.QuestionId, "IX_AnswerHistory_QuestionId");
+            entity.Property(e => e.QuestionId);
+            
+            entity.HasOne(d => d.StepCompleted).WithMany(p => p.AnswerHistories)
+                .HasForeignKey(d => d.CompletedStepId)
+                .HasConstraintName("FK_AnswerHistory_StepCompleted");
+            
+            entity.HasOne(d => d.Question).WithMany(p => p.AnswerHistories)
+                .HasForeignKey(d => d.QuestionId)
+                .HasConstraintName("FK_AnswerHistory_Question");
         });
 
         //base.OnModelCreating(modelBuilder);

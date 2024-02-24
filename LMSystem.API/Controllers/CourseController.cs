@@ -71,7 +71,7 @@ namespace LMSystem.API.Controllers
         //    }
         //    return Ok(response);
         //}
-
+            return Ok(response);
         //[HttpPut("UpdateCourse")]
         //public async Task<IActionResult> UpdateCourse(UpdateCourseModel updateCourseModel)
         //{
@@ -82,5 +82,7 @@ namespace LMSystem.API.Controllers
         //    }
         //    return Ok(response);
         //}
+        }   
+>>>>>>>>> Temporary merge branch 2
     }
 }

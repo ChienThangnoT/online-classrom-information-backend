@@ -1,4 +1,7 @@
-﻿using LMSystem.Repository.Data;
+﻿using AutoMapper.Internal;
+using Humanizer;
+using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
@@ -15,45 +18,99 @@ namespace LMSystem.API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly IEmailTemplateReader _emailTemplateReader;
+        private readonly IMailService _mailService;
+
         //private readonly IAccountRepository _accountRepository;
 
-        public AccountController(IAccountService accountRepository)
+        public AccountController(IAccountService accountRepository, IEmailTemplateReader emailTemplateReader, IMailService mailService)
         {
             _accountService = accountRepository;
+            _emailTemplateReader = emailTemplateReader;
+            _mailService = mailService;
         }
 
         [HttpPost("SignUp")]
         public async Task<ActionResult> SignUp(SignUpModel signUpModel)
         {
-            //try
-            //{
-            if (ModelState.IsValid)
+            try
             {
-                var result = await _accountService.SignUpAccountAsync(signUpModel);
-                if (result.Status.Equals("Success"))
+                if (ModelState.IsValid)
                 {
-                    return Ok(result);
+                    var result = await _accountService.SignUpAccountAsync(signUpModel);
+                    if (result.Status.Equals("Success"))
+                    {
+                        var token = result.ConfirmEmailToken;
+                        var url = Url.Action("ConfirmEmail", "Account", new {memberEmail = signUpModel.AccountEmail, tokenReset = token.Result}, Request.Scheme);
+                        result.ConfirmEmailToken = null;
+
+                        var body = await _emailTemplateReader.GetTemplate("Helper\\EmailTemplate.html");
+                        body = string.Format(body, signUpModel.AccountEmail, url);
+
+                        var messageRequest = new EmailRequest
+                        {
+                            To = signUpModel.AccountEmail,
+                            Subject = "Confirm Email For Register",
+                            Content = body
+                        };
+
+                        await _mailService.SendConFirmEmailAsync(messageRequest);
+
+                        return Ok(result);
+                    }
+                    return BadRequest(result);
                 }
-                return BadRequest(result);
+                return ValidationProblem(ModelState);
             }
-            return ValidationProblem(ModelState);
-            //}
-            //catch { return BadRequest(); }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+        
+        [HttpPost("SignUpStaffAdmin")]
+        public async Task<ActionResult> SignUpStaffAdminParent(SignUpModel signUpModel, RoleModel role)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = await _accountService.SignUpAdminStaffAsync(signUpModel, role);
+                    if (result.Status.Equals("Success"))
+                    {
+                        return Ok(result);
+                    }
+                    return BadRequest(result);
+                }
+                return ValidationProblem(ModelState);
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("SignIn")]
         public async Task<ActionResult> SignIn(SignInModel signInModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var result = await _accountService.SignInAccountAsync(signInModel);
-                if (result.Status.Equals(false))
+                if (ModelState.IsValid)
                 {
-                    return Unauthorized();
+                    var result = await _accountService.SignInAccountAsync(signInModel);
+                    if (result.Status.Equals(false))
+                    {
+                        return Unauthorized(result);
+                    }
+                    return Ok(result);
                 }
-                return Ok(result);
+                return ValidationProblem(ModelState);
             }
-            return ValidationProblem(ModelState);
+            catch
+            {
+                return BadRequest();
+            }
+
         }
 
 
@@ -108,7 +165,7 @@ namespace LMSystem.API.Controllers
         {
             var account = await _accountService.GetAccountById(accountId);
 
-            var response = await _accountService.UpdateAccountProfile(updateProfileModel,accountId);
+            var response = await _accountService.UpdateAccountProfile(updateProfileModel, accountId);
 
             if (response.Status == "Error")
             {
@@ -116,6 +173,24 @@ namespace LMSystem.API.Controllers
             }
 
             return Ok(response);
+        }
+
+        [HttpGet("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string tokenReset, string memberEmail)
+        {
+            try
+            {
+                var result = await _accountService.ConfirmEmail(memberEmail, tokenReset);
+                if (result.Status.Equals(false))
+                {
+                    return Unauthorized(result);
+                }
+                return Redirect("https://online-class-room-fe.vercel.app/login");
+            }
+            catch
+            {
+                return BadRequest("Confirm email failed!");
+            }
         }
         [HttpGet("ViewAccountList")]
         public async Task<ActionResult> ViewAccountList()

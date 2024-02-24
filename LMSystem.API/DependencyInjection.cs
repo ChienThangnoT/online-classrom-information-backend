@@ -22,6 +22,11 @@ namespace LMSystem.API
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
 
+            services.AddScoped<IEmailTemplateReader, EmailTemplateReader>();
+
+            services.AddScoped<IMailService, MailService>();
+            services.AddTransient<IMailService, MailService>();
+
             services.AddScoped<IRatingCourseRepository, RatingCourseRepository>();
             services.AddScoped<IRatingCourseService, RatingCourseService>();
 

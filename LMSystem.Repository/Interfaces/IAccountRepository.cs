@@ -19,8 +19,8 @@ namespace LMSystem.Repository.Interfaces
         public Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel);
         public Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId);
         public Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel changePassword);
-        public Task<IEnumerable<Account>> ViewAccountList();
-
-
+        public Task<ResponeModel> SignUpAdminStaffAsync (SignUpModel model, RoleModel role);
+        public Task<ResponeModel> SignUpParentAsync (SignUpModel model);
+        public Task<ResponeModel> ConfirmEmail(string email, string token);
     }
 }
