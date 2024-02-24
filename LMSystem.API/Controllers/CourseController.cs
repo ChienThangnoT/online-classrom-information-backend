@@ -71,18 +71,16 @@ namespace LMSystem.API.Controllers
         //    }
         //    return Ok(response);
         //}
-//            return Ok(response);
-//        //[HttpPut("UpdateCourse")]
-//        //public async Task<IActionResult> UpdateCourse(UpdateCourseModel updateCourseModel)
-//        //{
-//        //    var response = await _courseService.UpdateCourse(updateCourseModel);
-//        //    if (response.Status == "Error")
-//        //    {
-//        //        return Conflict(response);
-//        //    }
-//        //    return Ok(response);
-//        //}
-//        }   
-//>>>>>>>>> Temporary merge branch 2
+
+        //[HttpPut("UpdateCourse")]
+        //public async Task<IActionResult> UpdateCourse(UpdateCourseModel updateCourseModel)
+        //{
+        //    var response = await _courseService.UpdateCourse(updateCourseModel);
+        //    if (response.Status == "Error")
+        //    {
+        //        return Conflict(response);
+        //    }
+        //    return Ok(response);
+        //}
     }
 }
