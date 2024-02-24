@@ -15,28 +15,28 @@ namespace LMSystem.API.Controllers
             _sectionService = sectionRepository;
         }
 
-        [HttpPost("AddSection")]
-        public async Task<IActionResult> AddSection(AddSectionModel addSectionModel)
-        {
-            var response = await _sectionService.AddSection(addSectionModel);
-            if (response.Status == "Error")
-            {
-                return Conflict(response);
-            }
+        //[HttpPost("AddSection")]
+        //public async Task<IActionResult> AddSection(AddSectionModel addSectionModel)
+        //{
+        //    var response = await _sectionService.AddSection(addSectionModel);
+        //    if (response.Status == "Error")
+        //    {
+        //        return Conflict(response);
+        //    }
 
-            return Ok(response);
-        }
+        //    return Ok(response);
+        //}
 
-        [HttpPut("UpdateSection")]
-        public async Task<IActionResult> UpdateSection(UpdateSectionModel updateSectionModel)
-        {
-            var response = await _sectionService.UpdateSection(updateSectionModel);
-            if (response.Status == "Error")
-            {
-                return Conflict(response);
-            }
+        //[HttpPut("UpdateSection")]
+        //public async Task<IActionResult> UpdateSection(UpdateSectionModel updateSectionModel)
+        //{
+        //    var response = await _sectionService.UpdateSection(updateSectionModel);
+        //    if (response.Status == "Error")
+        //    {
+        //        return Conflict(response);
+        //    }
 
-            return Ok(response);
-        }
+        //    return Ok(response);
+        //}
     }
 }

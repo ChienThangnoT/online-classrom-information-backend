@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -206,7 +205,7 @@ namespace LMSystem.Repository.Repositories
                 }
                 else
                 {
-                    return new AuthenticationResponseModel { Status = false, Message = "Cannot find user" };
+                    return null;
                 }
             }
             else if (result.IsNotAllowed)
@@ -221,7 +220,7 @@ namespace LMSystem.Repository.Repositories
             }
             else
             {
-                return new AuthenticationResponseModel { Status = false, Message = "Sai tài khoản hoặc mật khẩu!" };
+                return null;
             }
         }
 
@@ -267,7 +266,6 @@ namespace LMSystem.Repository.Repositories
                     }
                     return new ResponeModel { Status = "Error", Message = errorMessage };
                 }
-                return new ResponeModel { Status = "Error", Message = "Account already exist" };
             }
             catch (Exception ex)
             {
@@ -275,14 +273,14 @@ namespace LMSystem.Repository.Repositories
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
             }
-
+            return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
         }
 
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
         {
             throw new NotImplementedException();
         }
-
+        
         public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             try
@@ -298,7 +296,7 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully", DataObject = existingAccount };
+                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully" };
             }
             catch (Exception ex)
             {
@@ -444,6 +442,11 @@ namespace LMSystem.Repository.Repositories
                 Status = "Error",
                 Message = "Tài khoản không tồn tại!"
             };
+        }
+
+        public async Task<IEnumerable<Account>> ViewAccountList()
+        {
+            return await _context.Users.ToListAsync();
         }
     }
 }
