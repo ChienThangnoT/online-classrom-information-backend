@@ -21,5 +21,6 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel changePassword);
         public Task<ResponeModel> SignUpAdminStaffAsync (SignUpModel model, RoleModel role);
         public Task<ResponeModel> SignUpParentAsync (SignUpModel model);
+        public Task<ResponeModel> ConfirmEmail(string email, string token);
     }
 }

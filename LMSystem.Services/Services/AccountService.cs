@@ -25,6 +25,12 @@ namespace LMSystem.Services.Services
             return result;
         }
 
+        public async Task<ResponeModel> ConfirmEmail(string email, string token)
+        {
+            var result = await _repo.ConfirmEmail(email, token);
+            return result;
+        }
+
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
             var result = await _repo.GetAccountByEmail(email);
