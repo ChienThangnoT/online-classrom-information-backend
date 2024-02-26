@@ -61,7 +61,7 @@ namespace LMSystem.Services.Services
             return new AuthenticationResponseModel
             {
                 Status = false,
-                Message = "Your Account not valid! Please Sign Up to Connect with LM.",
+                Message = "Your Account not valid! Please Sign Up to Connect with eStudyHub.",
                 JwtToken = null,
                 Expired = null
             };

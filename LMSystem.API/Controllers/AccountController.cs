@@ -21,8 +21,6 @@ namespace LMSystem.API.Controllers
         private readonly IEmailTemplateReader _emailTemplateReader;
         private readonly IMailService _mailService;
 
-        //private readonly IAccountRepository _accountRepository;
-
         public AccountController(IAccountService accountRepository, IEmailTemplateReader emailTemplateReader, IMailService mailService)
         {
             _accountService = accountRepository;
