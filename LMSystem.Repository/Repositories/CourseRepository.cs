@@ -21,49 +21,50 @@ namespace LMSystem.Repository.Repositories
             _context = context;
         }
 
-        //public async Task<ResponeModel> AddCourse(AddCourseModel addCourseModel)
-        //{
-        //    try
-        //    {
-        //        var course = new Course
-        //        {
-        //            Title = addCourseModel.Title,
-        //            Description = addCourseModel.Description,
-        //            ImageUrl = addCourseModel.ImageUrl,
-        //            VideoPreviewUrl = addCourseModel.VideoPreviewUrl,
-        //            Price = addCourseModel.Price,
-        //            SalesCampaign = addCourseModel.SalesCampaign,
-        //            IsPublic = addCourseModel.IsPublic,
-        //            CreateAt = DateTime.UtcNow,
-        //            PublicAt = DateTime.UtcNow,
-        //            TotalDuration = addCourseModel.TotalDuration,
-        //            CourseIsActive = addCourseModel.CourseIsActive,
-        //            KnowdledgeDescription = addCourseModel.KnowdledgeDescription
-        //        };
+        public async Task<ResponeModel> AddCourse(AddCourseModel addCourseModel)
+        {
+            try
+            {
+                var course = new Course
+                {
+                    Title = addCourseModel.Title,
+                    Description = addCourseModel.Description,
+                    ImageUrl = addCourseModel.ImageUrl,
+                    VideoPreviewUrl = addCourseModel.VideoPreviewUrl,
+                    Price = addCourseModel.Price,
 
-        //        _context.Courses.Add(course);
-        //        await _context.SaveChangesAsync();
+                    SalesCampaign = addCourseModel.SalesCampaign,
+                    IsPublic = addCourseModel.IsPublic,
+                    CreateAt = DateTime.UtcNow,
+                    PublicAt = DateTime.UtcNow,
+                    TotalDuration = addCourseModel.TotalDuration,
+                    CourseIsActive = addCourseModel.CourseIsActive,
+                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription
+                };
 
-        //        foreach (var categoryId in addCourseModel.CategoryList)
-        //        {
-        //            var courseCategory = new CourseCategory
-        //            {
-        //                CourseId = course.CourseId,
-        //                CategoryId = categoryId
-        //            };
+                _context.Courses.Add(course);
+                await _context.SaveChangesAsync();
 
-        //            _context.CourseCategories.Add(courseCategory);
-        //        }
-        //        await _context.SaveChangesAsync();
+                foreach (var categoryId in addCourseModel.CategoryList)
+                {
+                    var courseCategory = new CourseCategory
+                    {
+                        CourseId = course.CourseId,
+                        CategoryId = categoryId
+                    };
 
-        //        return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = course };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Exception: {ex.Message}");
-        //        return new ResponeModel { Status = "Error", Message = "An error occurred while adding the course" };
-        //    }
-        //}
+                    _context.CourseCategories.Add(courseCategory);
+                }
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = course };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while adding the course" };
+            }
+        }
 
         public async Task<IEnumerable<Course>> GetAllCourses()
         {
