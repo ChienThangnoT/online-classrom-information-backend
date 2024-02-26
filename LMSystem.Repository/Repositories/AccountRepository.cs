@@ -14,6 +14,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LMSystem.Repository.Repositories
 {
@@ -331,11 +332,15 @@ namespace LMSystem.Repository.Repositories
             };
         }
 
-        public async Task<IEnumerable<AccountModelGetList>> ViewAccountList()
+        public async Task<IEnumerable<AccountModelGetList>> ViewAccountList(AccountFilterParameters filterParams)
         {
             
-            var accounts = await _context.Users.ToListAsync();
-            var accountModels = _mapper.Map<IEnumerable<AccountModelGetList>>(accounts);
+            var accounts = _context.Users.AsQueryable();
+            var paginatedAccounts = await accounts
+                 .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                 .Take(filterParams.PageSize)
+                 .ToListAsync();
+            var accountModels = _mapper.Map<IEnumerable<AccountModelGetList>>(paginatedAccounts);
             return accountModels;
         }
     }

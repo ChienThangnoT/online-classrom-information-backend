@@ -118,9 +118,13 @@ namespace LMSystem.API.Controllers
             return Ok(response);
         }
         [HttpGet("ViewAccountList")]
-        public async Task<ActionResult> ViewAccountList()
+        public async Task<ActionResult> ViewAccountList([FromQuery] AccountFilterParameters filterParams)
         {
-            var accounts = await _accountService.ViewAccountList();
+            var accounts = await _accountService.ViewAccountList(filterParams);
+            if (accounts == null)
+            {
+                return NotFound();
+            }
             return Ok(accounts);
         }
     }
