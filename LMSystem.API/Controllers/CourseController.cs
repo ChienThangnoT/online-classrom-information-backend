@@ -82,5 +82,16 @@ namespace LMSystem.API.Controllers
         //    }
         //    return Ok(response);
         //}
+
+        [HttpDelete("DeleteCourse")]
+        public async Task<IActionResult> DeleteCourse(int courseId)
+        {
+            var response = await _courseService.DeleteCourse(courseId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }
