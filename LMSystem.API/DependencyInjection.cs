@@ -30,6 +30,8 @@ namespace LMSystem.API
             services.AddScoped<IRatingCourseRepository, RatingCourseRepository>();
             services.AddScoped<IRatingCourseService, RatingCourseService>();
 
+            services.AddScoped<IRegistrationCourseRepository, RegistrationCourseRepository>();
+            services.AddScoped<IRegistrationCourseService, RegistrationCourseService>();
 
             return services;
         }
