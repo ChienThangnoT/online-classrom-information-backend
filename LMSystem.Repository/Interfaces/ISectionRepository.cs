@@ -9,7 +9,7 @@ namespace LMSystem.Repository.Interfaces
 {
     public interface ISectionRepository
     {
-        public Task<ResponeModel> AddSection(AddSectionModel addSectionModel);
-        public Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel);
+        //public Task<ResponeModel> AddSection(AddSectionModel addSectionModel);
+        //public Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel);
     }
 }

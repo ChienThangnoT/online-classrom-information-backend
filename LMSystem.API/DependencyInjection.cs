@@ -27,6 +27,10 @@ namespace LMSystem.API
             services.AddScoped<IMailService, MailService>();
             services.AddTransient<IMailService, MailService>();
 
+            services.AddScoped<IRatingCourseRepository, RatingCourseRepository>();
+            services.AddScoped<IRatingCourseService, RatingCourseService>();
+
+
             return services;
         }
     }

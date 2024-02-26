@@ -25,6 +25,7 @@ namespace LMSystem.Services.Services
             return result;
         }
 
+
         public async Task<ResponeModel> ConfirmEmail(string email, string token)
         {
             var result = await _repo.ConfirmEmail(email, token);
@@ -87,5 +88,10 @@ namespace LMSystem.Services.Services
         {
             return await _repo.UpdateAccountProfile(updateProfileModel,accountId);    
         }
+
+        //public async Task<IEnumerable<Account>> ViewAccountList()
+        //{
+        //    return await _repo.ViewAccountList();
+        //}
     }
 }
