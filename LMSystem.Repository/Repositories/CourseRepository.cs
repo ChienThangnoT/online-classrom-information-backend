@@ -251,5 +251,35 @@ namespace LMSystem.Repository.Repositories
 
             return course;
         }
+
+        public async Task<ResponeModel> DeleteCourse(int courseId)
+        {
+            try
+            {
+                var existingCourse = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId);
+
+                if (existingCourse == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No course were found for the specified course id"
+                    };
+                }
+
+                existingCourse.CourseIsActive = false;
+
+                _context.Entry(existingCourse).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel { Status = "Success", Message = "Course deleted successfully", DataObject = existingCourse};
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while deleting the course" };
+            }
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace LMSystem.Services.Interfaces
         public Task<ResponeModel> SignUpAdminStaffAsync(SignUpModel model, RoleModel role);
         public Task<ResponeModel> ConfirmEmail(string email, string token);
        // public Task<IEnumerable<Account>> ViewAccountList();
+       public Task<ResponeModel> DeleteAccount(string accountId);
        
     }
 }

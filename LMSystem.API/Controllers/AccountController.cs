@@ -196,5 +196,15 @@ namespace LMSystem.API.Controllers
         //    var accounts = await _accountService.ViewAccountList();
         //    return Ok(accounts);
         //}
+        [HttpDelete("{accountId}")]
+        public async Task<ActionResult> DeleteAccount(string accountId)
+        {
+            var result = await _accountService.DeleteAccount(accountId);
+            if (result.Status.Equals("Success"))
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

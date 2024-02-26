@@ -32,6 +32,11 @@ namespace LMSystem.Services.Services
             return result;
         }
 
+        public async Task<ResponeModel> DeleteAccount(string accountId)
+        {
+            return await _repo.DeleteAccount(accountId);
+        }
+
         public async Task<AccountModel> GetAccountByEmail(string email)
         {
             var result = await _repo.GetAccountByEmail(email);
