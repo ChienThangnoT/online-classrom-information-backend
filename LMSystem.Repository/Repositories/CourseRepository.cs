@@ -266,8 +266,16 @@ namespace LMSystem.Repository.Repositories
                         Message = "No course were found for the specified course id"
                     };
                 }
-
+                if (existingCourse.CourseIsActive == false)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Course already inactive"
+                    };
+                }
                 existingCourse.CourseIsActive = false;
+                existingCourse.IsPublic = false;
 
                 _context.Entry(existingCourse).State = EntityState.Modified;
 
