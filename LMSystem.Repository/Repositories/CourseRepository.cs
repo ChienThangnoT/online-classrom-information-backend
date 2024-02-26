@@ -32,7 +32,6 @@ namespace LMSystem.Repository.Repositories
                     ImageUrl = addCourseModel.ImageUrl,
                     VideoPreviewUrl = addCourseModel.VideoPreviewUrl,
                     Price = addCourseModel.Price,
-
                     SalesCampaign = addCourseModel.SalesCampaign,
                     IsPublic = addCourseModel.IsPublic,
                     CreateAt = DateTime.UtcNow,

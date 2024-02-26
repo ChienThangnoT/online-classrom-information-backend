@@ -17,8 +17,6 @@ namespace LMSystem.Repository.Data
 
         public string ImageUrl { get; set; }
 
-        public string ParentEmail {  get; set; }
-
         public string VideoPreviewUrl { get; set; }
 
         [Required(ErrorMessage = "Price is required!")]
