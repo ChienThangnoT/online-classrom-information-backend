@@ -11,6 +11,6 @@ namespace LMSystem.Repository.Helpers
         public string? To { get; set; }
         public string? Subject { get; set; }
         public string? Content { get; set; }
-        public string[] AttachmentFilePaths { get; set; } = new string[0];
+        public string[] AttachmentFilePaths { get; set; } = [];
     }
 }
