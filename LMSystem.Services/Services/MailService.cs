@@ -12,13 +12,10 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Services.Services
 {
-    public class MailService : IMailService
+    public class MailService(IOptions<EmailConfig> emailConfig) : IMailService
     {
-        private readonly EmailConfig _emailConfig;
-        public MailService(IOptions<EmailConfig> emailConfig)
-        {
-            _emailConfig = emailConfig.Value;
-        }
+        readonly EmailConfig _emailConfig = emailConfig.Value;
+
         public async Task SendEmailAsync(EmailRequest emailRequest)
         {
             try
@@ -52,8 +49,8 @@ namespace LMSystem.Services.Services
         }
         public async Task SendConFirmEmailAsync(EmailRequest emailRequest)
         {
-            try
-            {
+            //try
+            //{
                 SmtpClient smtpClient = new SmtpClient(_emailConfig.Host, _emailConfig.Port);
                 smtpClient.Credentials = new NetworkCredential(_emailConfig.Mail, _emailConfig.Password);
                 smtpClient.UseDefaultCredentials = false;
@@ -77,10 +74,10 @@ namespace LMSystem.Services.Services
                 }
                 await smtpClient.SendMailAsync(msg);
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
     }
-}
+
