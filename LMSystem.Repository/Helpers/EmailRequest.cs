@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,6 @@ namespace LMSystem.Repository.Helpers
         public string? To { get; set; }
         public string? Subject { get; set; }
         public string? Content { get; set; }
-        public string[] AttachmentFilePaths { get; set; } = Array.Empty<string>();
+        public List<IFormFile>? AttachmentFilePaths { get; set; }
     }
 }

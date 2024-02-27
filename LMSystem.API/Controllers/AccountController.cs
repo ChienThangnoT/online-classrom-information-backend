@@ -206,5 +206,19 @@ namespace LMSystem.API.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpPost("Send-email")]
+        public async Task<ActionResult> SendEmail([FromForm] EmailRequest email)
+        {
+            try
+            {
+                await _mailService.SendEmailAsync(email);
+                return Ok("Test");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
