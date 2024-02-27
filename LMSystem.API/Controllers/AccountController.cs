@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Internal;
 using Humanizer;
+using LMSystem.API.Helper;
 using LMSystem.Repository.Data;
 using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
@@ -42,14 +43,14 @@ namespace LMSystem.API.Controllers
                         var url = Url.Action("ConfirmEmail", "Account", new {memberEmail = signUpModel.AccountEmail, tokenReset = token.Result}, Request.Scheme);
                         result.ConfirmEmailToken = null;
 
-                        var body = await _emailTemplateReader.GetTemplate("Helper\\EmailTemplate.html");
-                        body = string.Format(body, signUpModel.AccountEmail, url);
+                        //var body = await _emailTemplateReader.GetTemplate("Helper\\EmailTemplate.html");
+                        //body = string.Format(body, signUpModel.AccountEmail, url);
 
                         var messageRequest = new EmailRequest
                         {
                             To = signUpModel.AccountEmail,
                             Subject = "Confirm Email For Register",
-                            Content = body
+                            Content =  MailTemplate.ConfirmTemplate(signUpModel.AccountEmail, url)
                         };
 
                         await _mailService.SendConFirmEmailAsync(messageRequest);
