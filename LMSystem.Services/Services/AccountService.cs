@@ -93,10 +93,9 @@ namespace LMSystem.Services.Services
         {
             return await _repo.UpdateAccountProfile(updateProfileModel,accountId);    
         }
-
-        //public async Task<IEnumerable<Account>> ViewAccountList()
-        //{
-        //    return await _repo.ViewAccountList();
-        //}
+        public async Task<IEnumerable<AccountModelGetList>> ViewAccountList(AccountFilterParameters filterParams)
+        {
+            return await _repo.ViewAccountList(filterParams);
+        }
     }
 }

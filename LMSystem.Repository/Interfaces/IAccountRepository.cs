@@ -23,5 +23,7 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> SignUpParentAsync (SignUpModel model);
         public Task<ResponeModel> ConfirmEmail(string email, string token);
         public Task<ResponeModel> DeleteAccount(string accountId);
+        public Task<IEnumerable<AccountModelGetList>> ViewAccountList(AccountFilterParameters filterParams);
+
     }
 }
