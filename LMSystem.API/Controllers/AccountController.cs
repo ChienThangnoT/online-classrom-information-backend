@@ -21,8 +21,6 @@ namespace LMSystem.API.Controllers
         private readonly IEmailTemplateReader _emailTemplateReader;
         private readonly IMailService _mailService;
 
-        //private readonly IAccountRepository _accountRepository;
-
         public AccountController(IAccountService accountRepository, IEmailTemplateReader emailTemplateReader, IMailService mailService)
         {
             _accountService = accountRepository;
@@ -191,6 +189,22 @@ namespace LMSystem.API.Controllers
             {
                 return BadRequest("Confirm email failed!");
             }
+        }
+        //[HttpGet("ViewAccountList")]
+        //public async Task<ActionResult> ViewAccountList()
+        //{
+        //    var accounts = await _accountService.ViewAccountList();
+        //    return Ok(accounts);
+        //}
+        [HttpDelete("{accountId}")]
+        public async Task<ActionResult> DeleteAccount(string accountId)
+        {
+            var result = await _accountService.DeleteAccount(accountId);
+            if (result.Status.Equals("Success"))
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
     }
 }

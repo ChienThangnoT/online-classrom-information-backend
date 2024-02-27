@@ -38,8 +38,7 @@ namespace LMSystem.Repository.Repositories
                     PublicAt = DateTime.UtcNow,
                     TotalDuration = addCourseModel.TotalDuration,
                     CourseIsActive = addCourseModel.CourseIsActive,
-                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription,
-                    LinkCertificated = addCourseModel.LinkCertificated,
+                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription
                 };
 
                 _context.Courses.Add(course);
@@ -87,7 +86,7 @@ namespace LMSystem.Repository.Repositories
 
             if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
-                query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Equals(cc.CategoryId)));
+                query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
             }
 
             if (filterParams.MinPrice.HasValue)
@@ -192,30 +191,30 @@ namespace LMSystem.Repository.Repositories
             return courses;
         }
 
-        public async Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel)
-        {
-            try
-            {
-               var existingCourse = await _context.Courses
-                    .Include(c => c.CourseCategories)
-                    .FirstOrDefaultAsync(c => c.CourseId == updateCourseModel.CourseId);
-                if (existingCourse == null)
-                {
-                    return new ResponeModel { Status = "Error", Message = "Course not found" };
-                }
-                existingCourse = submitCourseChange(existingCourse, updateCourseModel);
+        //public async Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel)
+        //{
+        //    try
+        //    {
+        //       var existingCourse = await _context.Courses
+        //            .Include(c => c.CourseCategories)
+        //            .FirstOrDefaultAsync(c => c.CourseId == updateCourseModel.CourseId);
+        //        if (existingCourse == null)
+        //        {
+        //            return new ResponeModel { Status = "Error", Message = "Course not found" };
+        //        }
+        //        existingCourse = submitCourseChange(existingCourse, updateCourseModel);
 
-                //_context.Courses.Update(existingCourse);
-                await _context.SaveChangesAsync();
+        //        //_context.Courses.Update(existingCourse);
+        //        await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Update course successfully", DataObject = existingCourse };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while update the course" };
-            }
-        }
+        //        return new ResponeModel { Status = "Success", Message = "Update course successfully", DataObject = existingCourse };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Exception: {ex.Message}");
+        //        return new ResponeModel { Status = "Error", Message = "An error occurred while update the course" };
+        //    }
+        //}
 
         private Course submitCourseChange(Course course, UpdateCourseModel updateCourseModel)
         {          
@@ -252,7 +251,35 @@ namespace LMSystem.Repository.Repositories
 
             return course;
         }
+
+        public async Task<ResponeModel> DeleteCourse(int courseId)
+        {
+            try
+            {
+                var existingCourse = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId);
+
+                if (existingCourse == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No course were found for the specified course id"
+                    };
+                }
+
+                existingCourse.CourseIsActive = false;
+
+                _context.Entry(existingCourse).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel { Status = "Success", Message = "Course deleted successfully", DataObject = existingCourse};
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while deleting the course" };
+            }
+        }
     }
-
-
 }

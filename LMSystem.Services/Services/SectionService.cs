@@ -16,14 +16,14 @@ namespace LMSystem.Services.Services
         {
             _sectionRepository = sectionRepository;
         }
-        public async Task<ResponeModel> AddSection(AddSectionModel addSectionModel)
-        {
-            return await _sectionRepository.AddSection(addSectionModel);
-        }
+        //public async Task<ResponeModel> AddSection(AddSectionModel addSectionModel)
+        //{
+        //    return await _sectionRepository.AddSection(addSectionModel);
+        //}
 
-        public async Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel)
-        {
-            return await _sectionRepository.UpdateSection(updateSectionModel);
-        }
+        //public async Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel)
+        //{
+        //    return await _sectionRepository.UpdateSection(updateSectionModel);
+        //}
     }
 }

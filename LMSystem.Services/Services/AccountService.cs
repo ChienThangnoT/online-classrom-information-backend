@@ -25,10 +25,16 @@ namespace LMSystem.Services.Services
             return result;
         }
 
+
         public async Task<ResponeModel> ConfirmEmail(string email, string token)
         {
             var result = await _repo.ConfirmEmail(email, token);
             return result;
+        }
+
+        public async Task<ResponeModel> DeleteAccount(string accountId)
+        {
+            return await _repo.DeleteAccount(accountId);
         }
 
         public async Task<AccountModel> GetAccountByEmail(string email)
@@ -60,7 +66,7 @@ namespace LMSystem.Services.Services
             return new AuthenticationResponseModel
             {
                 Status = false,
-                Message = "Your Account not valid! Please Sign Up to Connect with LM.",
+                Message = "Your Account not valid! Please Sign Up to Connect with eStudyHub.",
                 JwtToken = null,
                 Expired = null
             };
@@ -87,5 +93,10 @@ namespace LMSystem.Services.Services
         {
             return await _repo.UpdateAccountProfile(updateProfileModel,accountId);    
         }
+
+        //public async Task<IEnumerable<Account>> ViewAccountList()
+        //{
+        //    return await _repo.ViewAccountList();
+        //}
     }
 }
