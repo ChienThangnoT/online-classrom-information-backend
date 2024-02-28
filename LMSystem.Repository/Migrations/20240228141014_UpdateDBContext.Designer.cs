@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMSystem.Repository.Migrations
 {
     [DbContext(typeof(LMOnlineSystemDbContext))]
-    [Migration("20240219090811_UpdateAccountDB")]
-    partial class UpdateAccountDB
+    [Migration("20240228141014_UpdateDBContext")]
+    partial class UpdateDBContext
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,9 @@ namespace LMSystem.Repository.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeviceToken")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -262,6 +265,34 @@ namespace LMSystem.Repository.Migrations
                     b.ToTable("CourseCategory", (string)null);
                 });
 
+            modelBuilder.Entity("LMSystem.Repository.Models.LinkCertificateAccount", b =>
+                {
+                    b.Property<int>("LinkCertId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LinkCertId"));
+
+                    b.Property<string>("AccountId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LinkCert")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LinkCertId");
+
+                    b.HasIndex(new[] { "AccountId" }, "IX_LinkCertificateAccount_AccountId");
+
+                    b.HasIndex(new[] { "CourseId" }, "IX_LinkCertificateAccount_CourseId");
+
+                    b.ToTable("LinkCertificateAccount", (string)null);
+                });
+
             modelBuilder.Entity("LMSystem.Repository.Models.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
@@ -274,12 +305,27 @@ namespace LMSystem.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Action")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsRead")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Message")
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("ModelId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("SendDate")
                         .HasColumnType("datetime");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("NotificationId");
 
@@ -782,6 +828,27 @@ namespace LMSystem.Repository.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("LMSystem.Repository.Models.LinkCertificateAccount", b =>
+                {
+                    b.HasOne("LMSystem.Repository.Models.Account", "Account")
+                        .WithMany("LinkCertificateAccounts")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_LinkCertificateAccount_Accounts");
+
+                    b.HasOne("LMSystem.Repository.Models.Course", "Course")
+                        .WithMany("LinkCertificateAccounts")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_LinkCertificateAccount_Course");
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("LMSystem.Repository.Models.Notification", b =>
                 {
                     b.HasOne("LMSystem.Repository.Models.Account", "Account")
@@ -988,6 +1055,8 @@ namespace LMSystem.Repository.Migrations
 
             modelBuilder.Entity("LMSystem.Repository.Models.Account", b =>
                 {
+                    b.Navigation("LinkCertificateAccounts");
+
                     b.Navigation("Notifications");
 
                     b.Navigation("Orders");
@@ -1007,6 +1076,8 @@ namespace LMSystem.Repository.Migrations
             modelBuilder.Entity("LMSystem.Repository.Models.Course", b =>
                 {
                     b.Navigation("CourseCategories");
+
+                    b.Navigation("LinkCertificateAccounts");
 
                     b.Navigation("Orders");
 

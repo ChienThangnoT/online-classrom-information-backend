@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMSystem.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateAccountDB : Migration
+    public partial class UpdateDBContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +24,7 @@ namespace LMSystem.Repository.Migrations
                     Sex = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     ParentEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nchar(40)", fixedLength: true, maxLength: 40, nullable: false),
+                    DeviceToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshToken = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -182,8 +183,13 @@ namespace LMSystem.Repository.Migrations
                     NotificationId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SendDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsRead = table.Column<bool>(type: "bit", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Message = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    SendDate = table.Column<DateTime>(type: "datetime", nullable: true)
+                    ModelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -286,6 +292,33 @@ namespace LMSystem.Repository.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseCategory_Course",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LinkCertificateAccount",
+                columns: table => new
+                {
+                    LinkCertId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LinkCert = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LinkCertificateAccount", x => x.LinkCertId);
+                    table.ForeignKey(
+                        name: "FK_LinkCertificateAccount_Accounts",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LinkCertificateAccount_Course",
                         column: x => x.CourseId,
                         principalTable: "Course",
                         principalColumn: "CourseId",
@@ -584,6 +617,16 @@ namespace LMSystem.Repository.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LinkCertificateAccount_AccountId",
+                table: "LinkCertificateAccount",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LinkCertificateAccount_CourseId",
+                table: "LinkCertificateAccount",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notification_AccountId",
                 table: "Notification",
                 column: "AccountId");
@@ -677,6 +720,9 @@ namespace LMSystem.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "CourseCategory");
+
+            migrationBuilder.DropTable(
+                name: "LinkCertificateAccount");
 
             migrationBuilder.DropTable(
                 name: "Notification");
