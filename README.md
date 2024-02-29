@@ -1,7 +1,7 @@
-# eStudyHub - Nền tảng Học trực tuyến cho Học Sinh Trung Học
+# eStudyHub - Nền tảng cung cấp các khóa học trực tuyến cho Học Sinh Trung Học
 
 ## 1. Giới thiệu
-eStudyHub là một nền tảng học trực tuyến chuyên dành cho học sinh trung học phổ thông, nơi mà họ có thể trải nghiệm và tiếp cận các khóa học chất lượng từ mọi nơi trên thế giới. Chúng tôi cam kết cung cấp một môi trường học tập linh hoạt, thú vị và tích hợp nhiều nguồn tài nguyên giáo dục chất lượng.
+eStudyHub là một nền tảng học cung cấp các khóa học tin học trực tuyến chuyên dành cho học sinh trung học phổ thông, nơi mà họ có thể trải nghiệm và tiếp cận các khóa học chất lượng từ mọi nơi trên thế giới. Chúng tôi cam kết cung cấp một môi trường học tập linh hoạt, thú vị và tích hợp nhiều nguồn tài nguyên giáo dục chất lượng.
 
 ## 2. Tính năng chính
 - **Đa dạng Khóa học:** Nền tảng của chúng tôi cung cấp một loạt các khóa học, từ lĩnh vực Khoa học, Toán, Ngôn ngữ, đến Công nghệ thông tin và Nghệ thuật.
