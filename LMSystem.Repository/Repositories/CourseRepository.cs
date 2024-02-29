@@ -56,7 +56,7 @@ namespace LMSystem.Repository.Repositories
                 }
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = "CourseID: "+ course.CourseId };
+                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject =  course };
             }
             catch (Exception ex)
             {
