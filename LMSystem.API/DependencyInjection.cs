@@ -36,6 +36,9 @@ namespace LMSystem.API
             services.AddScoped<IStepRepository, StepRepository>();
             services.AddScoped<IStepService, StepService>();
 
+            services.AddScoped<IRegistrationCourseRepository, RegistrationCourseRepository>();
+            services.AddScoped<IRegistrationCourseService, RegistrationCourseService>();
+
             return services;
         }
     }
