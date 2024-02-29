@@ -6,6 +6,7 @@ using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,8 @@ using Microsoft.OpenApi.Models;
 using System.Configuration;
 using System.Text;
 using System.Text.Json.Serialization;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -139,7 +142,10 @@ builder.Services.AddAutoMapper(typeof(AutomapperProfile).Assembly);
 //Add DJ
 builder.Services.AddApiWebService();
 
-
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("estudyhub-a1699-firebase-adminsdk-7vd3i-7c30c27294.json")
+});
 
 var app = builder.Build();
 
@@ -155,6 +161,8 @@ app.UseSwaggerUI(c =>
 app.UseCors("app-cors");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
