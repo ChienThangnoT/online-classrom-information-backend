@@ -469,6 +469,9 @@ namespace LMSystem.Repository.Repositories
                 case "role":
                     accountsWithRoles = accountsWithRoles.OrderBy(x => x.RoleName);
                     break;
+                case "all":
+                    accountsWithRoles = accountsWithRoles;
+                    break;
                 default:
                     // Default sorting or handle unknown sort criteria
                     break;
