@@ -447,9 +447,57 @@ namespace LMSystem.Repository.Repositories
             };
         }
 
-        public async Task<IEnumerable<Account>> ViewAccountList()
+        public async Task<IEnumerable<AccountModelGetList>> ViewAccountList(AccountFilterParameters filterParams)
         {
-            return await _context.Users.ToListAsync();
+            // Fetch accounts and their roles
+            var accountsWithRoles = from user in _context.Users
+                                    join userRole in _context.UserRoles on user.Id equals userRole.UserId into userRoles
+                                    from ur in userRoles.DefaultIfEmpty()
+                                    join role in _context.Roles on ur.RoleId equals role.Id into roles
+                                    from r in roles.DefaultIfEmpty()
+                                    select new { user, RoleName = r == null ? "" : r.Name };
+
+            // Apply dynamic sorting based on filterParams.SortBy
+            switch (filterParams.SortBy.ToLower())
+            {
+                case "name":
+                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.user.FirstName).ThenBy(x => x.user.LastName);
+                    break;
+                case "email":
+                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.user.Email);
+                    break;
+                case "role":
+                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.RoleName);
+                    break;
+                case "all":
+                    accountsWithRoles = accountsWithRoles;
+                    break;
+                default:
+                    // Default sorting or handle unknown sort criteria
+                    break;
+            }
+
+            // Apply Pagination
+            var paginatedAccounts = await accountsWithRoles
+                                        .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                                        .Take(filterParams.PageSize)
+                                        .ToListAsync();
+
+            // Convert to AccountModelGetList
+            var accountModels = paginatedAccounts.Select(a => new AccountModelGetList
+            {
+                Id = a.user.Id,
+                FirstName = a.user.FirstName,
+                LastName = a.user.LastName,
+                Email = a.user.Email,
+                Role = a.RoleName,
+                // Add other properties as needed
+            });
+
+            // Implement grouping logic if necessary (e.g., group students with parents)
+            // This part of the logic would depend on your specific requirements and data structure
+
+            return accountModels;
         }
 
         public async Task<ResponeModel> DeleteAccount(string accountId)

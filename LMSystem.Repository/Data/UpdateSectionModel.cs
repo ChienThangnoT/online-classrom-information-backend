@@ -9,6 +9,7 @@ namespace LMSystem.Repository.Data
 {
     public class UpdateSectionModel
     {
+        [Required(ErrorMessage = "SectionId is required!")]
         public int SectionId { get; set; }
 
         [Required(ErrorMessage = "Title is required!")]
