@@ -9,6 +9,7 @@ namespace LMSystem.Repository.Data
 {
     public class UpdateStepModel
     {
+        [Required(ErrorMessage = "StepId is required!")]
         public int StepId { get; set; }
 
         [Required(ErrorMessage = "Duration is required!")]
@@ -23,5 +24,7 @@ namespace LMSystem.Repository.Data
 
         [Required(ErrorMessage = "StepDescription is required!")]
         public string StepDescription { get; set; }
+
+        public int QuizId { get; set; }
     }
 }
