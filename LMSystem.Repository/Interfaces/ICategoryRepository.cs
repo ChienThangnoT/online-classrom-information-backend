@@ -1,5 +1,7 @@
 ﻿using Azure;
 using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
+using LMSystem.Repository.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,6 @@ namespace LMSystem.Repository.Interfaces
         Task<ResponeModel> AddCategory(AddCategoryModel model);
         Task<ResponeModel> UpdateCategory(UpdateCategoryModel model);
         Task<ResponeModel> DeleteCategory(int categoryId);
-        Task<ResponeModel> GetAllCategory();
+        Task<PagedList<Category>> GetAllCategory(PaginationParameter paginationParameter);
     }
 }

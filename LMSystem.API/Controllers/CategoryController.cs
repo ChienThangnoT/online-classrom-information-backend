@@ -1,7 +1,9 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LMSystem.API.Controllers
 {
@@ -41,17 +43,33 @@ namespace LMSystem.API.Controllers
             return Ok(response);
         }
         [HttpGet("GetAllCategory")]
-        public async Task<IActionResult> GetAllCategory()
+        public async Task<IActionResult> GetAllCategory([FromQuery] PaginationParameter paginationParameter)
         {
-            var response = await _categoryService.GetAllCategory();
-
-            if (response.Status == "Error")
+            try
             {
-                return Conflict(response);
+                var response = await _categoryService.GetAllCategory(paginationParameter);
+                //var metadata = new
+                //{
+                //    response.TotalCount,
+                //    response.PageSize,
+                //    response.CurrentPage,
+                //    response.TotalPages,
+                //    response.HasNext,
+                //    response.HasPrevious
+                //};
+                //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                if (!response.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(response);
             }
-
-            return Ok(response);
+            catch
+            {
+                return BadRequest();
+            }
         }
+
         [HttpPut("UpdateCategory")]
         public async Task<IActionResult> UpdateCategory(UpdateCategoryModel model)
         {
