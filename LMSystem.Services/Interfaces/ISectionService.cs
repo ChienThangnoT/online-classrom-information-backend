@@ -9,7 +9,7 @@ namespace LMSystem.Services.Interfaces
 {
     public interface ISectionService
     {
-        //public Task<ResponeModel> AddSection(AddSectionModel addSectionModel);
-        //public Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel);
+        public Task<ResponeModel> AddSection(AddSectionModel addSectionModel);
+        public Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel);
     }
 }

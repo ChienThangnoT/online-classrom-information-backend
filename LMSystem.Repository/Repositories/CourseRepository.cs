@@ -191,30 +191,30 @@ namespace LMSystem.Repository.Repositories
             return courses;
         }
 
-        //public async Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel)
-        //{
-        //    try
-        //    {
-        //       var existingCourse = await _context.Courses
-        //            .Include(c => c.CourseCategories)
-        //            .FirstOrDefaultAsync(c => c.CourseId == updateCourseModel.CourseId);
-        //        if (existingCourse == null)
-        //        {
-        //            return new ResponeModel { Status = "Error", Message = "Course not found" };
-        //        }
-        //        existingCourse = submitCourseChange(existingCourse, updateCourseModel);
+        public async Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel)
+        {
+            try
+            {
+                var existingCourse = await _context.Courses
+                     .Include(c => c.CourseCategories)
+                     .FirstOrDefaultAsync(c => c.CourseId == updateCourseModel.CourseId);
+                if (existingCourse == null)
+                {
+                    return new ResponeModel { Status = "Error", Message = "Course not found" };
+                }
+                existingCourse = submitCourseChange(existingCourse, updateCourseModel);
 
-        //        //_context.Courses.Update(existingCourse);
-        //        await _context.SaveChangesAsync();
+                //_context.Courses.Update(existingCourse);
+                await _context.SaveChangesAsync();
 
-        //        return new ResponeModel { Status = "Success", Message = "Update course successfully", DataObject = existingCourse };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Exception: {ex.Message}");
-        //        return new ResponeModel { Status = "Error", Message = "An error occurred while update the course" };
-        //    }
-        //}
+                return new ResponeModel { Status = "Success", Message = "Update course successfully", DataObject = existingCourse };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while update the course" };
+            }
+        }
 
         private Course submitCourseChange(Course course, UpdateCourseModel updateCourseModel)
         {          
@@ -266,8 +266,16 @@ namespace LMSystem.Repository.Repositories
                         Message = "No course were found for the specified course id"
                     };
                 }
-
+                if (existingCourse.CourseIsActive == false)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Course already inactive"
+                    };
+                }
                 existingCourse.CourseIsActive = false;
+                existingCourse.IsPublic = false;
 
                 _context.Entry(existingCourse).State = EntityState.Modified;
 

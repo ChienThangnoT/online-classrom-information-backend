@@ -72,16 +72,16 @@ namespace LMSystem.API.Controllers
             return Ok(response);
         }
 
-        //[HttpPut("UpdateCourse")]
-        //public async Task<IActionResult> UpdateCourse(UpdateCourseModel updateCourseModel)
-        //{
-        //    var response = await _courseService.UpdateCourse(updateCourseModel);
-        //    if (response.Status == "Error")
-        //    {
-        //        return Conflict(response);
-        //    }
-        //    return Ok(response);
-        //}
+        [HttpPut("UpdateCourse")]
+        public async Task<IActionResult> UpdateCourse(UpdateCourseModel updateCourseModel)
+        {
+            var response = await _courseService.UpdateCourse(updateCourseModel);
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+            return Ok(response);
+        }
 
         [HttpDelete("DeleteCourse")]
         public async Task<IActionResult> DeleteCourse(int courseId)
