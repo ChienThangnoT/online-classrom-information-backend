@@ -21,6 +21,7 @@ public partial class Account : IdentityUser
 
     public string Status { get; set; } = string.Empty;
 
+    public string? DeviceToken { get; set; }
     public string? RefreshToken { get; set; }
 
     public DateTime? RefreshTokenExpiryTime { get; set; }
@@ -34,5 +35,7 @@ public partial class Account : IdentityUser
     public virtual ICollection<ReportProblem> ReportProblems { get; set; } = new List<ReportProblem>();
 
     public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
+
+    public virtual ICollection<LinkCertificateAccount> LinkCertificateAccounts { get; set; } = new List<LinkCertificateAccount>();
 
 }

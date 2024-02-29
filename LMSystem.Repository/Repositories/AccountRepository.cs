@@ -258,7 +258,10 @@ namespace LMSystem.Repository.Repositories
                         //token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
 
-                        return new ResponeModel { Status = "Success", Message = "Create account successfull, Please confirm your email to login into eHubSystem", ConfirmEmailToken = token };
+                        return new ResponeModel { 
+                            Status = "Success", 
+                            Message = "Create account successfull, Please confirm your email to login into eHubSystem", 
+                            ConfirmEmailToken = token };
                     }
                     foreach (var ex in result.Errors)
                     {
@@ -447,6 +450,34 @@ namespace LMSystem.Repository.Repositories
         public async Task<IEnumerable<Account>> ViewAccountList()
         {
             return await _context.Users.ToListAsync();
+        }
+
+        public async Task<ResponeModel> DeleteAccount(string accountId)
+        {
+            try
+            {
+                var existingAccount = await _context.Account.FirstOrDefaultAsync(a => a.Id == accountId);
+
+                if (existingAccount == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No account were found for the specified account id"
+                    };
+                }
+
+                existingAccount.Status = AccountStatusEnum.Inactive.ToString();
+
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel { Status = "Success", Message = "Account deleted successfully" };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while deleting the account" };
+            }
         }
     }
 }

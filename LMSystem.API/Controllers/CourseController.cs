@@ -61,26 +61,37 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
 
-        //[HttpPost("AddCourse")]
-        //public async Task<IActionResult> AddCourse(AddCourseModel addCourseModel)
-        //{
-        //    var response = await _courseService.AddCourse(addCourseModel);
-        //    if (response.Status == "Error")
-        //    {
-        //        return Conflict(response);
-        //    }
-        //    return Ok(response);
-        //}
+        [HttpPost("AddCourse")]
+        public async Task<IActionResult> AddCourse(AddCourseModel addCourseModel)
+        {
+            var response = await _courseService.AddCourse(addCourseModel);
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+            return Ok(response);
+        }
 
-        //[HttpPut("UpdateCourse")]
-        //public async Task<IActionResult> UpdateCourse(UpdateCourseModel updateCourseModel)
-        //{
-        //    var response = await _courseService.UpdateCourse(updateCourseModel);
-        //    if (response.Status == "Error")
-        //    {
-        //        return Conflict(response);
-        //    }
-        //    return Ok(response);
-        //}
+        [HttpPut("UpdateCourse")]
+        public async Task<IActionResult> UpdateCourse(UpdateCourseModel updateCourseModel)
+        {
+            var response = await _courseService.UpdateCourse(updateCourseModel);
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpDelete("DeleteCourse")]
+        public async Task<IActionResult> DeleteCourse(int courseId)
+        {
+            var response = await _courseService.DeleteCourse(courseId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }

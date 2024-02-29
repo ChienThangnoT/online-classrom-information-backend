@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Internal;
 using Humanizer;
+using LMSystem.API.Helper;
 using LMSystem.Repository.Data;
 using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
@@ -20,8 +21,6 @@ namespace LMSystem.API.Controllers
         private readonly IAccountService _accountService;
         private readonly IEmailTemplateReader _emailTemplateReader;
         private readonly IMailService _mailService;
-
-        //private readonly IAccountRepository _accountRepository;
 
         public AccountController(IAccountService accountRepository, IEmailTemplateReader emailTemplateReader, IMailService mailService)
         {
@@ -44,14 +43,14 @@ namespace LMSystem.API.Controllers
                         var url = Url.Action("ConfirmEmail", "Account", new {memberEmail = signUpModel.AccountEmail, tokenReset = token.Result}, Request.Scheme);
                         result.ConfirmEmailToken = null;
 
-                        var body = await _emailTemplateReader.GetTemplate("Helper\\EmailTemplate.html");
-                        body = string.Format(body, signUpModel.AccountEmail, url);
+                        //var body = await _emailTemplateReader.GetTemplate("Helper\\EmailTemplate.html");
+                        //body = string.Format(body, signUpModel.AccountEmail, url);
 
                         var messageRequest = new EmailRequest
                         {
                             To = signUpModel.AccountEmail,
                             Subject = "Confirm Email For Register",
-                            Content = body
+                            Content =  MailTemplate.ConfirmTemplate(signUpModel.AccountEmail, url)
                         };
 
                         await _mailService.SendConFirmEmailAsync(messageRequest);
@@ -198,5 +197,29 @@ namespace LMSystem.API.Controllers
         //    var accounts = await _accountService.ViewAccountList();
         //    return Ok(accounts);
         //}
+        [HttpDelete("{accountId}")]
+        public async Task<ActionResult> DeleteAccount(string accountId)
+        {
+            var result = await _accountService.DeleteAccount(accountId);
+            if (result.Status.Equals("Success"))
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("Send-email")]
+        public async Task<ActionResult> SendEmail([FromForm] EmailRequest email)
+        {
+            try
+            {
+                await _mailService.SendEmailAsync(email);
+                return Ok("Test");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -41,8 +41,13 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
     public virtual DbSet<StepCompleted> StepCompleteds { get; set; }
 
     public virtual DbSet<WishList> WishLists { get; set; }
+
+    public virtual DbSet<LinkCertificateAccount> LinkCertificateAccounts  { get; set; }
+
     public virtual DbSet<Quiz> Quizzes { get; set; }
+
     public virtual DbSet<Question> Questions { get; set; }
+
     public virtual DbSet<AnswerHistory> AnswerHistories { get; set; }
 
 
@@ -318,6 +323,27 @@ public partial class LMOnlineSystemDbContext : IdentityDbContext<Account>
             entity.HasOne(d => d.Course).WithMany(p => p.WishLists)
                 .HasForeignKey(d => d.CourseId)
                 .HasConstraintName("FK_WishList_Course");
+        });
+        
+        modelBuilder.Entity<LinkCertificateAccount>(entity =>
+        {
+            entity.HasKey(e => e.LinkCertId);
+            entity.ToTable("LinkCertificateAccount");
+
+            entity.HasIndex(e => e.AccountId, "IX_LinkCertificateAccount_AccountId");
+
+            entity.HasIndex(e => e.CourseId, "IX_LinkCertificateAccount_CourseId");
+
+            entity.Property(e => e.AccountId);
+            entity.Property(e => e.CourseId);
+
+            entity.HasOne(d => d.Account).WithMany(p => p.LinkCertificateAccounts)
+                .HasForeignKey(d => d.AccountId)
+                .HasConstraintName("FK_LinkCertificateAccount_Accounts");
+
+            entity.HasOne(d => d.Course).WithMany(p => p.LinkCertificateAccounts)
+                .HasForeignKey(d => d.CourseId)
+                .HasConstraintName("FK_LinkCertificateAccount_Course");
         });
         
         modelBuilder.Entity<Quiz>(entity =>
