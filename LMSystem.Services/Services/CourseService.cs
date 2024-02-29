@@ -20,7 +20,7 @@ namespace LMSystem.Services.Services
         {
             _courseRepository = courseRepository;
         }
-        public async Task<IEnumerable<Course>> GetFilteredCourses(CourseFilterParameters filterParams)
+        public async Task<IEnumerable<CourseModel>> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             return await _courseRepository.GetCoursesWithFilters(filterParams);
         }
@@ -51,11 +51,6 @@ namespace LMSystem.Services.Services
         public async Task<ResponeModel> DeleteCourse(int courseId)
         {
             return await _courseRepository.DeleteCourse(courseId);
-        }
-
-        public async Task<ResponeModel> AddCourse(AddCourseModel addCourseModel)
-        {
-            return await _courseRepository.AddCourse(addCourseModel);
         }
 
         public async Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel)

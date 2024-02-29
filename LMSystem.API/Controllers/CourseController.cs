@@ -20,7 +20,7 @@ namespace LMSystem.API.Controllers
         [HttpGet("SelectCourselistPagination")]
         public async Task<IActionResult> GetCourses([FromQuery] CourseFilterParameters filterParams)
         {
-            var courses = await _courseService.GetFilteredCourses(filterParams);
+            var courses = await _courseService.GetCoursesWithFilters(filterParams);
             if (courses == null)
             {
                 return NotFound();
@@ -50,7 +50,7 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
 
-        [HttpGet("GetCourseDetailById")]
+        [HttpGet("GetCourseDetailById/{courseId}")]
         public async Task<IActionResult> GetCourseDetailById(int courseId)
         {
             var courses = await _courseService.GetCourseDetailByIdAsync(courseId);

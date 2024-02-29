@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LMSystem.Repository.Repositories
 {
@@ -80,7 +81,7 @@ namespace LMSystem.Repository.Repositories
             return course;
         }
 
-        public async Task<IEnumerable<Course>> GetCoursesWithFilters(CourseFilterParameters filterParams)
+        public async Task<IEnumerable<CourseModel>> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             var query = _context.Courses.AsQueryable();
 
@@ -99,11 +100,23 @@ namespace LMSystem.Repository.Repositories
                 query = query.Where(c => c.Price <= filterParams.MaxPrice.Value);
             }
 
-            // Apply pagination
-            return await query
-                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                .Take(filterParams.PageSize)
-                .ToListAsync();
+            var coursesWithFilter = await query
+                                        .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                                        .Take(filterParams.PageSize)
+                                        .Select(c => new CourseModel
+                                        {
+                                            CourseId = c.CourseId,
+                                            Title = c.Title,
+                                            Price = c.Price,
+                                            // Assuming CourseModel has a Categories property of type List<string> to hold category names
+                                            CourseCategory = string.Join(", ", c.CourseCategories.Select(cc => cc.Category.Name)), // Joining category names
+                                            TotalDuration = c.TotalDuration,
+                                            UpdateAt = c.UpdateAt,
+                                            IsPublic = c.IsPublic
+                                        })
+                                        .ToListAsync();
+
+            return coursesWithFilter;
         }
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
