@@ -11,5 +11,8 @@ namespace LMSystem.Repository.Interfaces
     public interface ICategoryRepository
     {
         Task<ResponeModel> AddCategory(AddCategoryModel model);
+        Task<ResponeModel> UpdateCategory(UpdateCategoryModel model);
+        Task<ResponeModel> DeleteCategory(int categoryId);
+        Task<ResponeModel> GetAllCategory();
     }
 }
