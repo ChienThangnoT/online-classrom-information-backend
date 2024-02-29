@@ -57,7 +57,7 @@ namespace LMSystem.Repository.Repositories
                 }
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = course };
+                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = "CourseID: "+ course.CourseId };
             }
             catch (Exception ex)
             {
@@ -81,7 +81,7 @@ namespace LMSystem.Repository.Repositories
             return course;
         }
 
-        public async Task<IEnumerable<CourseModel>> GetCoursesWithFilters(CourseFilterParameters filterParams)
+        public async Task<IEnumerable<CourseListModel>> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             var query = _context.Courses.AsQueryable();
 
@@ -103,7 +103,7 @@ namespace LMSystem.Repository.Repositories
             var coursesWithFilter = await query
                                         .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
                                         .Take(filterParams.PageSize)
-                                        .Select(c => new CourseModel
+                                        .Select(c => new CourseListModel
                                         {
                                             CourseId = c.CourseId,
                                             Title = c.Title,
