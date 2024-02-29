@@ -25,5 +25,7 @@ namespace LMSystem.Repository.Data
 
         [Required(ErrorMessage = "StepDescription is required!")]
         public string StepDescription { get; set; }
+        
+        public int QuizId { get; set; }
     }
 }
