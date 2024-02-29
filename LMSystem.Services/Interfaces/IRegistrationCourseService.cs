@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Services.Interfaces
 {
-    public interface ISectionService
+    public interface IRegistrationCourseService
     {
-        public Task<ResponeModel> AddSection(AddSectionModel addSectionModel);
-        public Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel);
+        public Task<ResponeModel> GetRegisterCourseListByAccountId(string accountId);
     }
 }
