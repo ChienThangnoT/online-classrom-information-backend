@@ -23,5 +23,11 @@ namespace LMSystem.Services.Services
         {
             return await _ratingCourseRepository.AddRatingAsync(ratingCourse);
         }
+
+        public async Task<double> GetCourseRating(int courseId)
+        {
+            return await _ratingCourseRepository.GetCourseRating(courseId);
+        }
+
     }
 }
