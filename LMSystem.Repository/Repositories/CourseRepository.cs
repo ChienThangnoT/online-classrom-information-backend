@@ -39,7 +39,8 @@ namespace LMSystem.Repository.Repositories
                     PublicAt = DateTime.UtcNow,
                     TotalDuration = addCourseModel.TotalDuration,
                     CourseIsActive = addCourseModel.CourseIsActive,
-                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription
+                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription,
+                    LinkCertificated = addCourseModel.LinkCertificated
                 };
 
                 _context.Courses.Add(course);
@@ -57,7 +58,7 @@ namespace LMSystem.Repository.Repositories
                 }
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = "CourseID: "+ course.CourseId };
+                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject =  course };
             }
             catch (Exception ex)
             {
@@ -241,6 +242,7 @@ namespace LMSystem.Repository.Repositories
             course.TotalDuration = updateCourseModel.TotalDuration;
             course.CourseIsActive = updateCourseModel.CourseIsActive;
             course.KnowdledgeDescription = updateCourseModel.KnowdledgeDescription;
+            course.LinkCertificated = updateCourseModel.LinkCertificated;
             course.UpdateAt = DateTime.UtcNow;
             //remore old category
             var categoriesToRemove = course.CourseCategories

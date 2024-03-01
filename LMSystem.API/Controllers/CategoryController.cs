@@ -28,5 +28,41 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
+        [HttpDelete("DeleteCategory")]
+        public async Task<IActionResult> DeleteCategory(int categoryId)
+        {
+            var response = await _categoryService.DeleteCategory(categoryId);
+
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+
+            return Ok(response);
+        }
+        [HttpGet("GetAllCategory")]
+        public async Task<IActionResult> GetAllCategory()
+        {
+            var response = await _categoryService.GetAllCategory();
+
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+
+            return Ok(response);
+        }
+        [HttpPut("UpdateCategory")]
+        public async Task<IActionResult> UpdateCategory(UpdateCategoryModel model)
+        {
+            var response = await _categoryService.UpdateCategory(model);
+
+            if (response.Status == "Error")
+            {
+                return Conflict(response);
+            }
+
+            return Ok(response);
+        }
     }
 }

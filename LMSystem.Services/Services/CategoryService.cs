@@ -22,5 +22,20 @@ namespace LMSystem.Services.Services
         {
             return await _categoryRepository.AddCategory(model);
         }
+
+        public async Task<ResponeModel> DeleteCategory(int categoryId)
+        {
+            return await _categoryRepository.DeleteCategory(categoryId);
+        }
+
+        public async Task<ResponeModel> GetAllCategory()
+        {
+            return await _categoryRepository.GetAllCategory();
+        }
+
+        public async Task<ResponeModel> UpdateCategory(UpdateCategoryModel model)
+        {
+            return await _categoryRepository.UpdateCategory(model);
+        }
     }
 }

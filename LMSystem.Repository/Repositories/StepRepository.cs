@@ -30,7 +30,8 @@ namespace LMSystem.Repository.Repositories
                     Position = addStepModel.Position,
                     Title = addStepModel.Title,
                     VideoUrl = addStepModel.VideoUrl,
-                    StepDescription = addStepModel.StepDescription
+                    StepDescription = addStepModel.StepDescription,
+                    QuizId = addStepModel.QuizId
                 };
                 _context.Steps.Add(step);
                 await _context.SaveChangesAsync();
@@ -72,6 +73,7 @@ namespace LMSystem.Repository.Repositories
             step.VideoUrl = updateStepModel.VideoUrl;
             step.StepDescription = updateStepModel.StepDescription;
             step.Position = updateStepModel.Position;
+            step.QuizId = updateStepModel.QuizId;
 
             return step;
         }   

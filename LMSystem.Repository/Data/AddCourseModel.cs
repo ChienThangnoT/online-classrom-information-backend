@@ -14,7 +14,7 @@ namespace LMSystem.Repository.Data
 
         [Required(ErrorMessage = "Description is required!")]
         public string Description { get; set; }
-
+        [Required(ErrorMessage = "ImageUrl is required!")]
         public string ImageUrl { get; set; }
 
         public string VideoPreviewUrl { get; set; }
@@ -37,9 +37,10 @@ namespace LMSystem.Repository.Data
         [Required(ErrorMessage = "KnowdledgeDescription is required!")]
         public string? KnowdledgeDescription { get; set; }
 
-        [Required(ErrorMessage = "CategoryList is required!")]
-
+        [Required(ErrorMessage = "LinkCertificated is required!")]
         public string? LinkCertificated {  get; set; }
+
+        [Required(ErrorMessage = "CategoryList is required!")]
         public List<int>? CategoryList { get; set; }
     }
 }
