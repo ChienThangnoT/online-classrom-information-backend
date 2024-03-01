@@ -20,7 +20,7 @@ namespace LMSystem.Services.Services
         {
             _courseRepository = courseRepository;
         }
-        public async Task<IEnumerable<CourseListModel>> GetCoursesWithFilters(CourseFilterParameters filterParams)
+        public async Task<(IEnumerable<CourseListModel> Courses, int CurrentPage, int PageSize, int TotalCourses, int TotalPages)> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             return await _courseRepository.GetCoursesWithFilters(filterParams);
         }

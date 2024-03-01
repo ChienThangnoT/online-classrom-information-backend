@@ -82,10 +82,11 @@ namespace LMSystem.Repository.Repositories
             return course;
         }
 
-        public async Task<IEnumerable<CourseListModel>> GetCoursesWithFilters(CourseFilterParameters filterParams)
+        public async Task<(IEnumerable<CourseListModel> Courses, int CurrentPage, int PageSize, int TotalCourses, int TotalPages)> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             var query = _context.Courses.AsQueryable();
 
+            // Apply filters
             if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
                 query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
@@ -101,23 +102,24 @@ namespace LMSystem.Repository.Repositories
                 query = query.Where(c => c.Price <= filterParams.MaxPrice.Value);
             }
 
-            var coursesWithFilter = await query
-                                        .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                                        .Take(filterParams.PageSize)
-                                        .Select(c => new CourseListModel
-                                        {
-                                            CourseId = c.CourseId,
-                                            Title = c.Title,
-                                            Price = c.Price,
-                                            // Assuming CourseModel has a Categories property of type List<string> to hold category names
-                                            CourseCategory = string.Join(", ", c.CourseCategories.Select(cc => cc.Category.Name)), // Joining category names
-                                            TotalDuration = c.TotalDuration,
-                                            UpdateAt = c.UpdateAt,
-                                            IsPublic = c.IsPublic
-                                        })
-                                        .ToListAsync();
+            int totalCourses = await query.CountAsync(); 
+            int totalPages = (int)Math.Ceiling(totalCourses / (double)filterParams.PageSize);
 
-            return coursesWithFilter;
+            var courses = await query.Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                                     .Take(filterParams.PageSize)
+                                     .Select(c => new CourseListModel
+                                     {
+                                         CourseId = c.CourseId,
+                                         Title = c.Title,
+                                         Price = c.Price,
+                                         CourseCategory = string.Join(", ", c.CourseCategories.Select(cc => cc.Category.Name)),
+                                         TotalDuration = c.TotalDuration,
+                                         UpdateAt = c.UpdateAt,
+                                         IsPublic = c.IsPublic
+                                     })
+                                     .ToListAsync();
+
+            return (Courses: courses, CurrentPage: filterParams.PageNumber, PageSize: filterParams.PageSize, TotalCourses: totalCourses, TotalPages: totalPages);
         }
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)

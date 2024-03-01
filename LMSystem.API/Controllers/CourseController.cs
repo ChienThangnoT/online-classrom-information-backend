@@ -20,13 +20,13 @@ namespace LMSystem.API.Controllers
         [HttpGet("SelectCourselistPagination")]
         public async Task<IActionResult> GetCourses([FromQuery] CourseFilterParameters filterParams)
         {
-            var courses = await _courseService.GetCoursesWithFilters(filterParams);
-            if (courses == null)
+            var (Courses, CurrentPage, PageSize, TotalCourses, TotalPages) = await _courseService.GetCoursesWithFilters(filterParams);
+            if (!Courses.Any()) 
             {
                 return NotFound();
             }
-
-            return Ok(courses);
+            var response = new { Courses, CurrentPage, PageSize, TotalCourses, TotalPages };
+            return Ok(response);
         }
 
         [HttpGet("TopFavoritesCourseBaseStudentJoined")]
