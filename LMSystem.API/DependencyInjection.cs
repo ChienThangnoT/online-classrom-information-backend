@@ -41,6 +41,7 @@ namespace LMSystem.API
             services.AddScoped<IRegistrationCourseService, RegistrationCourseService>();
             
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<INotificationService, NotificationService>();
 
             return services;
         }

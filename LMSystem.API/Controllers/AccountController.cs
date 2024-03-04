@@ -21,12 +21,14 @@ namespace LMSystem.API.Controllers
         private readonly IAccountService _accountService;
         private readonly IEmailTemplateReader _emailTemplateReader;
         private readonly IMailService _mailService;
+        private readonly INotificationService _notificationService;
 
-        public AccountController(IAccountService accountRepository, IEmailTemplateReader emailTemplateReader, IMailService mailService)
+        public AccountController(IAccountService accountRepository, IEmailTemplateReader emailTemplateReader, IMailService mailService, INotificationService notificationService)
         {
             _accountService = accountRepository;
             _emailTemplateReader = emailTemplateReader;
             _mailService = mailService;
+            _notificationService = notificationService;
         }
 
         [HttpPost("SignUp")]
@@ -40,7 +42,7 @@ namespace LMSystem.API.Controllers
                     if (result.Status.Equals("Success"))
                     {
                         var token = result.ConfirmEmailToken;
-                        var url = Url.Action("ConfirmEmail", "Account", new {memberEmail = signUpModel.AccountEmail, tokenReset = token.Result}, Request.Scheme);
+                        var url = Url.Action("ConfirmEmail", "Account", new { memberEmail = signUpModel.AccountEmail, tokenReset = token.Result }, Request.Scheme);
                         result.ConfirmEmailToken = null;
 
                         //var body = await _emailTemplateReader.GetTemplate("Helper\\EmailTemplate.html");
@@ -50,7 +52,7 @@ namespace LMSystem.API.Controllers
                         {
                             To = signUpModel.AccountEmail,
                             Subject = "Confirm Email For Register",
-                            Content =  MailTemplate.ConfirmTemplate(signUpModel.AccountEmail, url)
+                            Content = MailTemplate.ConfirmTemplate(signUpModel.AccountEmail, url)
                         };
 
                         await _mailService.SendConFirmEmailAsync(messageRequest);
@@ -66,7 +68,7 @@ namespace LMSystem.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpPost("SignUpStaffAdmin")]
         public async Task<ActionResult> SignUpStaffAdminParent(SignUpModel signUpModel, RoleModel role)
         {
@@ -192,11 +194,13 @@ namespace LMSystem.API.Controllers
                         AccountId = account.Id,
                         SendDate = DateTime.Now,
                         Type = "System",
-                        Title = "Chào mừng bạn đến với FService",
+                        Title = "Chào mừng bạn đến với eStudyHub",
                         Message = "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hãy cùng nhau khám phá các tính năng nhé!"
                     };
-                    await _.AddNotificationByAccountId(account.Id, notification);
+                    await _notificationService.AddNotificationByAccountId(account.Id, notification);
                     return Redirect("https://online-class-room-fe.vercel.app/login");
+                }
+                return Ok(result);
             }
             catch
             {
