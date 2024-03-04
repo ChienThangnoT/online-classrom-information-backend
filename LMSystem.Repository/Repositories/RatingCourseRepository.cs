@@ -1,4 +1,5 @@
-﻿using LMSystem.Repository.Interfaces;
+﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -50,7 +51,7 @@ namespace LMSystem.Repository.Repositories
             return ratingCourse;
         }
 
-        public async Task<double> GetCourseRating(int courseId)
+        public async Task<CourseRatingResult> GetCourseRating(int courseId)
         {
             var ratings = await _context.RatingCourses
                 .Where(rc => rc.Registration.CourseId == courseId)
@@ -58,11 +59,18 @@ namespace LMSystem.Repository.Repositories
 
             if (ratings.Any())
             {
-                double averageRating = ratings.Average(rc => rc.RatingStar);
-                return averageRating;
+                return new CourseRatingResult
+                {
+                    AverageRating = ratings.Average(rc => rc.RatingStar),
+                    RatingCount = ratings.Count()
+                };
             }
 
-            return 0;
+            return new CourseRatingResult
+            {
+                AverageRating = 0,
+                RatingCount = 0
+            };
         }
     }
 }

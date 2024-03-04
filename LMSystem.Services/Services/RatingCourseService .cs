@@ -1,4 +1,5 @@
-﻿using LMSystem.Repository.Interfaces;
+﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
@@ -24,7 +25,7 @@ namespace LMSystem.Services.Services
             return await _ratingCourseRepository.AddRatingAsync(ratingCourse);
         }
 
-        public async Task<double> GetCourseRating(int courseId)
+        public async Task<CourseRatingResult> GetCourseRating(int courseId)
         {
             return await _ratingCourseRepository.GetCourseRating(courseId);
         }
