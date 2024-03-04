@@ -10,5 +10,7 @@ namespace LMSystem.Services.Interfaces
     public interface IRatingCourseService
     {
         public Task<RatingCourse> AddRatingAsync(RatingCourse ratingCourse);
+        public Task<double> GetCourseRating(int courseId);
+
     }
 }

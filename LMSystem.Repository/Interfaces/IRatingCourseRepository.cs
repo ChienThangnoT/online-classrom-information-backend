@@ -9,6 +9,8 @@ namespace LMSystem.Repository.Interfaces
 {
     public interface IRatingCourseRepository
     {
-        Task<RatingCourse> AddRatingAsync(RatingCourse ratingCourse);
+        public Task<RatingCourse> AddRatingAsync(RatingCourse ratingCourse);
+        public Task<double> GetCourseRating(int courseId);
+
     }
 }
