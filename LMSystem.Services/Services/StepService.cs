@@ -33,5 +33,10 @@ namespace LMSystem.Services.Services
             return await _stepRepository.CheckCourseProgress(registrationId);
 
         }
+
+        public async Task<ResponeModel> GetStepsBySectionId(int sectionId)
+        {
+            return await _stepRepository.GetStepsBySectionId(sectionId);
+        }
     }
 }

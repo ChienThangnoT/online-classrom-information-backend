@@ -202,7 +202,7 @@ namespace LMSystem.API.Controllers
 
             return Ok(account);
         }
-        [HttpDelete("{accountId}")]
+        [HttpDelete("DeleteAccount/{accountId}")]
         public async Task<ActionResult> DeleteAccount(string accountId)
         {
             var result = await _accountService.DeleteAccount(accountId);

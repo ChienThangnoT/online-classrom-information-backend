@@ -9,6 +9,7 @@ namespace LMSystem.Repository.Data
 {
     public class UpdateCourseModel
     {
+        [Required(ErrorMessage = "CourseId is required!")]
         public int CourseId { get; set; }
         [Required(ErrorMessage = "Title is required!")]
         public string Title { get; set; }
@@ -16,7 +17,6 @@ namespace LMSystem.Repository.Data
         public string Description { get; set; }
         [Required(ErrorMessage = "ImageUrl is required!")]
         public string ImageUrl { get; set; }
-        [Required(ErrorMessage = "VideoPreviewUrl is required!")]
         public string VideoPreviewUrl { get; set; }
         [Required(ErrorMessage = "Price is required!")]
         public double Price { get; set; }
@@ -29,8 +29,11 @@ namespace LMSystem.Repository.Data
         public bool CourseIsActive { get; set; }
         [Required(ErrorMessage = "KnowdledgeDescription is required!")]
         public string KnowdledgeDescription { get; set; }
+
+        [Required(ErrorMessage = "LinkCertificated is required!")]
+        public string LinkCertificated {  get; set; }
+
         [Required(ErrorMessage = "CategoryList is required!")]
-         public string LinkCertificated {  get; set; }
         public List<int> CategoryList { get; set; }
     }
 }

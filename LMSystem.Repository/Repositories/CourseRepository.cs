@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LMSystem.Repository.Repositories
 {
@@ -38,7 +39,8 @@ namespace LMSystem.Repository.Repositories
                     PublicAt = DateTime.UtcNow,
                     TotalDuration = addCourseModel.TotalDuration,
                     CourseIsActive = addCourseModel.CourseIsActive,
-                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription
+                    KnowdledgeDescription = addCourseModel.KnowdledgeDescription,
+                    LinkCertificated = addCourseModel.LinkCertificated
                 };
 
                 _context.Courses.Add(course);
@@ -56,7 +58,7 @@ namespace LMSystem.Repository.Repositories
                 }
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = "CourseID: "+ course.CourseId };
+                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject =  course };
             }
             catch (Exception ex)
             {
@@ -80,10 +82,11 @@ namespace LMSystem.Repository.Repositories
             return course;
         }
 
-        public async Task<IEnumerable<Course>> GetCoursesWithFilters(CourseFilterParameters filterParams)
+        public async Task<(IEnumerable<CourseListModel> Courses, int CurrentPage, int PageSize, int TotalCourses, int TotalPages)> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {
             var query = _context.Courses.AsQueryable();
 
+            // Apply filters
             if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
                 query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
@@ -99,11 +102,24 @@ namespace LMSystem.Repository.Repositories
                 query = query.Where(c => c.Price <= filterParams.MaxPrice.Value);
             }
 
-            // Apply pagination
-            return await query
-                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                .Take(filterParams.PageSize)
-                .ToListAsync();
+            int totalCourses = await query.CountAsync(); 
+            int totalPages = (int)Math.Ceiling(totalCourses / (double)filterParams.PageSize);
+
+            var courses = await query.Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                                     .Take(filterParams.PageSize)
+                                     .Select(c => new CourseListModel
+                                     {
+                                         CourseId = c.CourseId,
+                                         Title = c.Title,
+                                         Price = c.Price,
+                                         CourseCategory = string.Join(", ", c.CourseCategories.Select(cc => cc.Category.Name)),
+                                         TotalDuration = c.TotalDuration,
+                                         UpdateAt = c.UpdateAt,
+                                         IsPublic = c.IsPublic
+                                     })
+                                     .ToListAsync();
+
+            return (Courses: courses, CurrentPage: filterParams.PageNumber, PageSize: filterParams.PageSize, TotalCourses: totalCourses, TotalPages: totalPages);
         }
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
@@ -228,6 +244,7 @@ namespace LMSystem.Repository.Repositories
             course.TotalDuration = updateCourseModel.TotalDuration;
             course.CourseIsActive = updateCourseModel.CourseIsActive;
             course.KnowdledgeDescription = updateCourseModel.KnowdledgeDescription;
+            course.LinkCertificated = updateCourseModel.LinkCertificated;
             course.UpdateAt = DateTime.UtcNow;
             //remore old category
             var categoriesToRemove = course.CourseCategories

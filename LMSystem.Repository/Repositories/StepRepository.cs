@@ -30,7 +30,8 @@ namespace LMSystem.Repository.Repositories
                     Position = addStepModel.Position,
                     Title = addStepModel.Title,
                     VideoUrl = addStepModel.VideoUrl,
-                    StepDescription = addStepModel.StepDescription
+                    StepDescription = addStepModel.StepDescription,
+                    QuizId = addStepModel.QuizId
                 };
                 _context.Steps.Add(step);
                 await _context.SaveChangesAsync();
@@ -72,6 +73,7 @@ namespace LMSystem.Repository.Repositories
             step.VideoUrl = updateStepModel.VideoUrl;
             step.StepDescription = updateStepModel.StepDescription;
             step.Position = updateStepModel.Position;
+            step.QuizId = updateStepModel.QuizId;
 
             return step;
         }   
@@ -135,5 +137,36 @@ namespace LMSystem.Repository.Repositories
             };
         }
 
+        public async Task<ResponeModel> GetStepsBySectionId(int sectionId)
+        {
+            try
+            {
+                var steps = await _context.Steps
+                    .Where(s => s.SectionId == sectionId)
+                    .Select(s => new
+                    {
+                        s.StepId,
+                        s.Title,
+                        s.Position,
+                        s.Duration,
+                        s.VideoUrl,
+                        s.StepDescription,
+                        s.QuizId
+                    })
+                    .ToListAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Steps retrieved successfully",
+                    DataObject = steps
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while retrieve steps list" };
+            }
+        }
     }
 }

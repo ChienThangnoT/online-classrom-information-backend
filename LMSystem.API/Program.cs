@@ -6,6 +6,7 @@ using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,8 @@ using Microsoft.OpenApi.Models;
 using System.Configuration;
 using System.Text;
 using System.Text.Json.Serialization;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,29 +66,29 @@ builder.Services
     .AddDefaultTokenProviders();
 
 //Congig local db
-//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
-//{
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
-//});
+builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
+});
 
 
 
 //--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
 
 //config database to deploy on azure
-var connection = string.Empty;
-if (builder.Environment.IsDevelopment())
-{
-    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.development.json");
-    connection = builder.Configuration.GetConnectionString("azure_sql_connectionstring");
-}
-else
-{
-    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
-}
+//var connection = string.Empty;
+//if (builder.Environment.IsDevelopment())
+//{
+//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.development.json");
+//    connection = builder.Configuration.GetConnectionString("azure_sql_connectionstring");
+//}
+//else
+//{
+//    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
+//}
 ////config sqlazure
-builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
-        options.UseSqlServer(connection));
+//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+//        options.UseSqlServer(connection));
 
 // ------------------- OPEN COMMENT CHAT KOO ---------------------------
 
@@ -139,7 +142,10 @@ builder.Services.AddAutoMapper(typeof(AutomapperProfile).Assembly);
 //Add DJ
 builder.Services.AddApiWebService();
 
-
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("estudyhub-a1699-firebase-adminsdk-7vd3i-7c30c27294.json")
+});
 
 var app = builder.Build();
 
@@ -155,6 +161,8 @@ app.UseSwaggerUI(c =>
 app.UseCors("app-cors");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

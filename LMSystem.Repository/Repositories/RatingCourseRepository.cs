@@ -28,7 +28,6 @@ namespace LMSystem.Repository.Repositories
             {
                 throw new InvalidOperationException("You have already rated this course.");
             }
-            // First, find the registration associated with this rating
             var registration = await _context.RegistrationCourses
                 .Include(rc => rc.StepCompleteds)
                 .FirstOrDefaultAsync(rc => rc.RegistrationId == ratingCourse.RegistrationId);
@@ -38,8 +37,7 @@ namespace LMSystem.Repository.Repositories
                 throw new ArgumentException("Invalid registration ID.");
             }
 
-            // Check if all steps are completed and learning progress is 100%
-            bool? allStepsCompleted = registration.IsCompleted; // Assuming existence of StepCompleted means step is completed
+            bool? allStepsCompleted = registration.IsCompleted; 
             double? learningProgressComplete = registration.LearningProgress;
 
             if (allStepsCompleted == false || learningProgressComplete < 1)
@@ -47,10 +45,24 @@ namespace LMSystem.Repository.Repositories
                 throw new InvalidOperationException("Cannot rate the course. All steps must be completed and learning progress must be 100%.");
             }
 
-            // If checks pass, proceed to add the rating
             _context.RatingCourses.Add(ratingCourse);
             await _context.SaveChangesAsync();
             return ratingCourse;
+        }
+
+        public async Task<double> GetCourseRating(int courseId)
+        {
+            var ratings = await _context.RatingCourses
+                .Where(rc => rc.Registration.CourseId == courseId)
+                .ToListAsync();
+
+            if (ratings.Any())
+            {
+                double averageRating = ratings.Average(rc => rc.RatingStar);
+                return averageRating;
+            }
+
+            return 0;
         }
     }
 }
