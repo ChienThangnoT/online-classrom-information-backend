@@ -184,7 +184,19 @@ namespace LMSystem.API.Controllers
                 {
                     return Unauthorized(result);
                 }
-                return Redirect("https://online-class-room-fe.vercel.app/login");
+                var account = await _accountService.GetAccountByEmail(memberEmail);
+                if (account != null)
+                {
+                    Notification notification = new Notification
+                    {
+                        AccountId = account.Id,
+                        SendDate = DateTime.Now,
+                        Type = "System",
+                        Title = "Chào mừng bạn đến với FService",
+                        Message = "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hãy cùng nhau khám phá các tính năng nhé!"
+                    };
+                    await _.AddNotificationByAccountId(account.Id, notification);
+                    return Redirect("https://online-class-room-fe.vercel.app/login");
             }
             catch
             {

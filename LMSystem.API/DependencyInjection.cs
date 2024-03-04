@@ -1,4 +1,5 @@
-﻿using LMSystem.Repository.Interfaces;
+﻿using FirebaseAdmin.Messaging;
+using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
@@ -38,6 +39,8 @@ namespace LMSystem.API
 
             services.AddScoped<IRegistrationCourseRepository, RegistrationCourseRepository>();
             services.AddScoped<IRegistrationCourseService, RegistrationCourseService>();
+            
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
             return services;
         }

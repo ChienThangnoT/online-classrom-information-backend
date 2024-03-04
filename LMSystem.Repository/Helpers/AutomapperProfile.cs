@@ -15,6 +15,7 @@ namespace LMSystem.Repository.Helpers
         {
             CreateMap<AccountModel, Account>().ReverseMap();
             CreateMap<WishListModel, WishList>().ReverseMap();  
+            CreateMap<NotificationModel, Notification>().ReverseMap();  
         }
     }
 }

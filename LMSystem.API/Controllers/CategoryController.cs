@@ -48,16 +48,16 @@ namespace LMSystem.API.Controllers
             try
             {
                 var response = await _categoryService.GetAllCategory(paginationParameter);
-                //var metadata = new
-                //{
-                //    response.TotalCount,
-                //    response.PageSize,
-                //    response.CurrentPage,
-                //    response.TotalPages,
-                //    response.HasNext,
-                //    response.HasPrevious
-                //};
-                //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var metadata = new
+                {
+                    response.TotalCount,
+                    response.PageSize,
+                    response.CurrentPage,
+                    response.TotalPages,
+                    response.HasNext,
+                    response.HasPrevious
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 if (!response.Any())
                 {
                     return NotFound();
