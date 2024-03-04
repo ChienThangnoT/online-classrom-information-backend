@@ -38,5 +38,16 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
+        [HttpGet("GetSectionsByCourseId")]
+        public async Task<IActionResult> GetSectionsByCourseId(int courseId)
+        {
+            var response = await _sectionService.GetSectionsByCourseId(courseId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
