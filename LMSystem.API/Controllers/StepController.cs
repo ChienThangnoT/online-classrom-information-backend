@@ -51,5 +51,16 @@ namespace LMSystem.API.Controllers
             return Ok(progress);
 
         }
+        [HttpGet("GetStepsBySectionId")]
+        public async Task<IActionResult> GetStepsBySectionId(int sectionId)
+        {
+            var response = await _stepService.GetStepsBySectionId(sectionId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
