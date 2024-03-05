@@ -63,7 +63,7 @@ namespace LMSystem.API.Controllers
             return Ok(report);
         }
 
-        [HttpPatch("ResolveRequest/{reportId}")]
+        [HttpPut("ResolveRequest/{reportId}")]
         public async Task<IActionResult> ResolveRequest(int reportId, [FromQuery] string newStatus)
         {
             var result = await _reportProblemService.ResolveRequestAsync(reportId, newStatus);
