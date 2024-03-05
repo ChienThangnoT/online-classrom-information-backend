@@ -26,10 +26,10 @@ namespace LMSystem.Services.Services
         //    return await _courseRepository.GetCoursesWithFilters(filterParams);
         //}
 
-        //public async Task<PagedList<CourseListModel>> GetAllCourse(PaginationParameter paginationParameter)
-        //{
-        //    return await _courseRepository.GetAllCourse(paginationParameter);
-        //}
+        public async Task<PagedList<CourseListModel>> GetAllCourse(PaginationParameter paginationParameter)
+        {
+            return await _courseRepository.GetAllCourse(paginationParameter);
+        }
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
         {

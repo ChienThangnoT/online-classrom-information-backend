@@ -123,40 +123,58 @@ namespace LMSystem.Repository.Repositories
         //    return (Courses: courses, CurrentPage: filterParams.PageNumber, PageSize: filterParams.PageSize, TotalCourses: totalCourses, TotalPages: totalPages);
         //}
 
-        //public async Task<PagedList<CourseListModel>> GetAllCourse(PaginationParameter paginationParameter)
-        //{
-        //    if (_context == null)
-        //    {
-        //        return null;
-        //    }
-        //    var course = _context.Courses.AsQueryable();
-        //    if (!string.IsNullOrEmpty(paginationParameter.Search))
-        //    {
-        //        course = course.Where(o => o.Title.Contains(paginationParameter.Search));
-        //    }
+        public async Task<PagedList<CourseListModel>> GetAllCourse(PaginationParameter paginationParameter)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
 
-        //    switch (paginationParameter.Sort)
-        //    {
-        //        case "title_asc":
-        //            course = course.OrderBy(p => p.Title);
-        //            break;
-        //        case "title_desc":
-        //            course = course.OrderByDescending(p => p.Title);
-        //            break;
-        //        case "price_asc":
-        //            course = course.OrderBy(p => p.Price);
-        //            break;
-        //        case "price_desc":
-        //            course = course.OrderByDescending(p => p.Price);
-        //            break;
-        //    }
+            var courseQuery = _context.Courses.AsQueryable();
 
-        //    var allCourse = await course.ToListAsync();
+            if (!string.IsNullOrEmpty(paginationParameter.Search))
+            {
+                courseQuery = courseQuery.Where(o => o.Title.Contains(paginationParameter.Search));
+            }
 
-        //    return PagedList<CourseListModel>.ToPagedList(allCourse,
-        //        paginationParameter.PageNumber,
-        //        paginationParameter.PageSize);
-        //}
+            switch (paginationParameter.Sort)
+            {
+                case "title_asc":
+                    courseQuery = courseQuery.OrderBy(p => p.Title);
+                    break;
+                case "title_desc":
+                    courseQuery = courseQuery.OrderByDescending(p => p.Title);
+                    break;
+                case "price_asc":
+                    courseQuery = courseQuery.OrderBy(p => p.Price);
+                    break;
+                case "price_desc":
+                    courseQuery = courseQuery.OrderByDescending(p => p.Price);
+                    break;
+            }
+
+            var totalItems = await courseQuery.CountAsync();
+
+            var items = await courseQuery.Skip((paginationParameter.PageNumber - 1) * paginationParameter.PageSize)
+                             .Take(paginationParameter.PageSize)
+                             .Select(course => new CourseListModel
+                             {
+                                 CourseId = course.CourseId,
+                                 Title = course.Title,
+                                 ImageUrl = course.ImageUrl,
+                                 Price = course.Price,
+                                 CourseCategory = string.Join(", ", course.CourseCategories.Select(cc => cc.Category.Name)), 
+                                 TotalDuration = course.TotalDuration,
+                                 UpdateAt = course.UpdateAt,
+                                 IsPublic = course.IsPublic
+                             })
+                             .ToListAsync();
+
+
+            var pagedList = new PagedList<CourseListModel>(items, totalItems, paginationParameter.PageNumber, paginationParameter.PageSize);
+
+            return pagedList;
+        }
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
         {

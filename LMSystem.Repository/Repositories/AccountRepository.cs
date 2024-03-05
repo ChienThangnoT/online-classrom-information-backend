@@ -459,7 +459,6 @@ namespace LMSystem.Repository.Repositories
             var accountsQuery = _context.Users
                .AsQueryable();
 
-            // Optional: Filter accounts based on search criteria
             if (!string.IsNullOrEmpty(filterParams.Search))
             {
                 accountsQuery = accountsQuery.Where(a => a.FirstName.Contains(filterParams.Search) ||
@@ -467,7 +466,6 @@ namespace LMSystem.Repository.Repositories
                                                           a.Email.Contains(filterParams.Search));
             }
 
-            // Fetch the accounts with their roles and optionally parent email
             var accountsWithDetails = await accountsQuery
                 .Select(a => new
                 {
@@ -489,18 +487,30 @@ namespace LMSystem.Repository.Repositories
 
             var sortedAccounts = accountsWithDetails.ToList();
 
-            if (filterParams.SortBy == "role")
+            if (filterParams.SortBy == "role_asc")
             {
                 sortedAccounts = accountsWithDetails.OrderBy(a => a.Roles).ToList();
             }
-            else if (filterParams.SortBy == "name")
+            if (filterParams.SortBy == "role_desc")
+            {
+                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.Roles).ToList();
+            }
+            else if (filterParams.SortBy == "name_asc")
             {
                 sortedAccounts = accountsWithDetails.OrderBy(a => a.FirstName).ThenBy(a => a.LastName).ToList();
             }
+            else if (filterParams.SortBy == "name_desc")
+            {
+                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.FirstName).ThenBy(a => a.LastName).ToList();
+            }
 
-            else if (filterParams.SortBy == "email")
+            else if (filterParams.SortBy == "email_asc")
             {
                 sortedAccounts = accountsWithDetails.OrderBy(a => a.Email).ToList();
+            }
+            else if (filterParams.SortBy == "email_desc")
+            {
+                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.Email).ToList();
             }
 
             var rearrangedAccounts = new List<dynamic>();
@@ -512,7 +522,6 @@ namespace LMSystem.Repository.Repositories
                     rearrangedAccounts.Add(account);
                     handledAccounts.Add(account.Id);
 
-                    // Find and append child accounts
                     var childAccounts = sortedAccounts.Where(a => a.Email == account.ParentEmail).ToList();
                     foreach (var child in childAccounts)
                     {
@@ -525,7 +534,6 @@ namespace LMSystem.Repository.Repositories
                 }
             }
 
-            // Convert to AccountModelGetList and apply pagination
             var pagedAccounts = rearrangedAccounts
                 .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
                 .Take(filterParams.PageSize)
@@ -546,7 +554,6 @@ namespace LMSystem.Repository.Repositories
                 .ToList();
 
 
-            // Assume totalAccounts and totalPages are correctly calculated based on the initial query
             return new AccountListResult
             {
                 Accounts = pagedAccounts,

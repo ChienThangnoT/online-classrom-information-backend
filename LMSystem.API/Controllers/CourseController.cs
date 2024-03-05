@@ -31,33 +31,33 @@ namespace LMSystem.API.Controllers
         //    return Ok(response);
         //}
 
-        //[HttpGet("GetAllCategory")]
-        //public async Task<IActionResult> GetAllCourse([FromQuery] PaginationParameter paginationParameter)
-        //{
-        //    try
-        //    {
-        //        var response = await _courseService.GetAllCourse(paginationParameter);
-        //        var metadata = new
-        //        {
-        //            response.TotalCount,
-        //            response.PageSize,
-        //            response.CurrentPage,
-        //            response.TotalPages,
-        //            response.HasNext,
-        //            response.HasPrevious
-        //        };
-        //        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-        //        if (!response.Any())
-        //        {
-        //            return NotFound();
-        //        }
-        //        return Ok(response);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpGet("GetAllCategory")]
+        public async Task<IActionResult> GetAllCourse([FromQuery] PaginationParameter paginationParameter)
+        {
+            try
+            {
+                var response = await _courseService.GetAllCourse(paginationParameter);
+                var metadata = new
+                {
+                    response.TotalCount,
+                    response.PageSize,
+                    response.CurrentPage,
+                    response.TotalPages,
+                    response.HasNext,
+                    response.HasPrevious
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                if (!response.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(response);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
         [HttpGet("TopFavoritesCourseBaseStudentJoined")]
         public async Task<IActionResult> GetTopCoursesByStudentJoined(int numberOfCourses)
