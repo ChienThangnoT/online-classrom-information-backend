@@ -31,7 +31,7 @@ namespace LMSystem.API.Controllers
         //    return Ok(response);
         //}
 
-        [HttpGet("GetAllCategory")]
+        [HttpGet("GetAllCourse")]
         public async Task<IActionResult> GetAllCourse([FromQuery] PaginationParameter paginationParameter)
         {
             try
