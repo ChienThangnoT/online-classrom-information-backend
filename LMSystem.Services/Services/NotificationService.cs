@@ -15,12 +15,12 @@ namespace LMSystem.Services.Services
     public class NotificationService : INotificationService
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly IAccountRepository _accountRepository;
+        private readonly IAccountService _accountService;
 
-        public NotificationService(INotificationRepository notificationRepository, IAccountRepository accountRepository)
+        public NotificationService(INotificationRepository notificationRepository, IAccountService accountService)
         {
             _notificationRepository = notificationRepository;
-            _accountRepository = accountRepository;
+            _accountService = accountService;
         }
 
         public async Task<int> AddNotificationByAccountId(string accountId, Notification notification)
@@ -29,7 +29,7 @@ namespace LMSystem.Services.Services
             {
                 return 0;
             }
-            var account = await _accountRepository.GetAccountById(accountId);
+            var account = await _accountService.GetAccountById(accountId);
             if (account != null && notification != null)
             {
                 var addNoti = _notificationRepository.AddNotificationByAccountId(accountId, notification);
@@ -44,32 +44,68 @@ namespace LMSystem.Services.Services
             {
                 return null;
             }
-            var account = await _accountRepository.GetAccountById(accountId);
+            var account = await _accountService.GetAccountById(accountId);
             if(account != null)
             {
-                var getAll = await _notificationRepository.GetAllNotificationsByAccountIdAsync(paginationParameter, accountId);
+                return await _notificationRepository.GetAllNotificationsByAccountIdAsync(paginationParameter, accountId);
             }
             return null;
         }
 
-        public Task<NotificationModel> GetNotificationById(int notificationId)
+        public async Task<NotificationModel> GetNotificationById(int notificationId)
         {
-            throw new NotImplementedException();
+            if(notificationId == 0)
+            {
+                return null;
+            }
+            var notification = await _notificationRepository.GetNotificationById(notificationId);
+            if (notification != null)
+            {
+                return notification;
+            }
+            return null;
         }
 
-        public Task<int> GetNumbersOfUnReadNotification(string accountId)
+        public async Task<int> GetNumbersOfUnReadNotification(string accountId)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(accountId))
+            {
+                return -1;
+            }
+            var account = await _accountService.GetAccountById(accountId);
+            if (account != null)
+            {
+                return await _notificationRepository.GetNumbersOfUnReadNotification(account.Id);
+            }
+            return -1;
         }
 
-        public Task<int> MarkAllNotificationByAccountIdIsRead(string accountId)
+        public async Task<int> MarkAllNotificationByAccountIdIsRead(string accountId)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(accountId))
+            {
+                return -1;
+            }
+            var account = await _accountService.GetAccountById(accountId);
+            if (account != null)
+            {
+                return await _notificationRepository.MarkAllNotificationByAccountIdIsRead(account.Id);
+            }
+            return -1;
         }
 
-        public Task<int> MarkNotificationIsReadById(int notificationId)
+        public async Task<int> MarkNotificationIsReadById(int notificationId)
         {
-            throw new NotImplementedException();
+            if (notificationId == 0)
+            {
+                return -1;
+            }
+            var notifi = await _notificationRepository.GetNotificationById(notificationId);
+            if (notifi != null)
+            {
+                return await _notificationRepository.MarkNotificationIsReadById(notifi.NotificationId);
+            }
+            return -1;
         }
     }
 }

@@ -22,6 +22,6 @@ namespace LMSystem.Services.Interfaces
         public Task<ResponeModel> ConfirmEmail(string email, string token);
         public Task<IEnumerable<AccountModelGetList>> ViewAccountList(AccountFilterParameters filterParams);
         public Task<ResponeModel> DeleteAccount(string accountId);
-       
+        public Task<bool> UpdateDeviceToken(string accountId, string deviceToken);
     }
 }

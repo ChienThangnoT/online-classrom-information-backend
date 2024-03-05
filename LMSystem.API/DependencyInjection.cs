@@ -8,7 +8,7 @@ namespace LMSystem.API
 {
     static class DependencyInjection
     {
-         public static IServiceCollection AddApiWebService(this IServiceCollection services)
+        public static IServiceCollection AddApiWebService(this IServiceCollection services)
         {
             //Add Dependenci Injection, Life cycle DI: AddSingleton(), AddTransisent(), AddScoped()
             services.AddScoped<IAccountRepository, AccountRepository>();
@@ -39,9 +39,12 @@ namespace LMSystem.API
 
             services.AddScoped<IRegistrationCourseRepository, RegistrationCourseRepository>();
             services.AddScoped<IRegistrationCourseService, RegistrationCourseService>();
-            
+
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationService, NotificationService>();
+
+            services.AddScoped<IFirebaseRepository, FirebaseRepository>();
+
 
             return services;
         }
