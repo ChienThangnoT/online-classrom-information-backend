@@ -91,6 +91,34 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
+        public async Task<ResponeModel> GetSectionsByCourseId(int courseId)
+        {
+            try
+            {
+                var sections = await _context.Sections
+                    .Where(s => s.CourseId == courseId)
+                    .Select(s => new
+                    {
+                        s.SectionId,
+                        s.Title,
+                        s.Position
+                    })
+                    .ToListAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Sections retrieved successfully",
+                    DataObject = sections
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while retrieve sections list" };
+            }
+        }
+
         //private Section submitSectionChanges(Section section, UpdateSectionModel updateSectionModel)
         //{
         //    section.Title = updateSectionModel.Title;

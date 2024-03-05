@@ -19,20 +19,28 @@ namespace LMSystem.API.Controllers
         [HttpPost("RatingCourse")]
         public async Task<ActionResult> AddRating([FromQuery] AddRatingModel addRatingModel, [FromQuery] int registrationId)
         {
-            // Assuming the user's ID is determined from the context (e.g., authenticated user)
-            // and you have a way to associate the rating with a registration/course
-
             var ratingCourse = new RatingCourse
             {
-                RegistrationId = registrationId, // You need to ensure this ID is correctly handled
+                RegistrationId = registrationId, 
                 RatingStar = addRatingModel.RatingStar,
                 CommentContent = addRatingModel.CommentContent,
-                RatingDate = DateTime.UtcNow, // Set the rating date to now
-                IsRatingStatus = true // Assuming you want to set a default value
+                RatingDate = DateTime.UtcNow, 
+                IsRatingStatus = true 
             };
 
             var addedRating = await _ratingCourseService.AddRatingAsync(ratingCourse);
             return CreatedAtAction(nameof(AddRating), new { id = addedRating.RatingId }, addedRating);
+        }
+
+        [HttpGet("ViewCourseRating/{courseId}")]
+        public async Task<IActionResult> GetCourseRating(int courseId)
+        {
+            var averageRating = await _ratingCourseService.GetCourseRating(courseId);
+            if (averageRating == 0) // Assuming 0 is an indicator of no ratings
+            {
+                return NotFound("No ratings found for this course.");
+            }
+            return Ok(new { AverageRating = averageRating });
         }
     }
 }

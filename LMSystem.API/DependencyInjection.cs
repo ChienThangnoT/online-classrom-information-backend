@@ -40,6 +40,9 @@ namespace LMSystem.API
             services.AddScoped<IRegistrationCourseRepository, RegistrationCourseRepository>();
             services.AddScoped<IRegistrationCourseService, RegistrationCourseService>();
 
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderService, OrderService>();
+
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationService, NotificationService>();
 

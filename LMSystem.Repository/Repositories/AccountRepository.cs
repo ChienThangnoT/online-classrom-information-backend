@@ -453,9 +453,19 @@ namespace LMSystem.Repository.Repositories
             };
         }
 
-        public async Task<IEnumerable<AccountModelGetList>> ViewAccountList(AccountFilterParameters filterParams)
+        public async Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams)
         {
-            // Fetch accounts and their roles
+            var accountsQuery = from user in _context.Users
+                                join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                                join role in _context.Roles on userRole.RoleId equals role.Id
+                                select new AccountModelGetList
+                                {
+                                    Id = user.Id,
+                                    FirstName = user.FirstName,
+                                    LastName = user.LastName,
+                                    Email = user.Email,
+                                    Role = role.Name
+                                };
             var accountsWithRoles = from user in _context.Users
                                     join userRole in _context.UserRoles on user.Id equals userRole.UserId into userRoles
                                     from ur in userRoles.DefaultIfEmpty()
@@ -463,7 +473,6 @@ namespace LMSystem.Repository.Repositories
                                     from r in roles.DefaultIfEmpty()
                                     select new { user, RoleName = r == null ? "" : r.Name };
 
-            // Apply dynamic sorting based on filterParams.SortBy
             switch (filterParams.SortBy.ToLower())
             {
                 case "name":
@@ -475,35 +484,27 @@ namespace LMSystem.Repository.Repositories
                 case "role":
                     accountsWithRoles = accountsWithRoles.OrderBy(x => x.RoleName);
                     break;
-                case "all":
-                    accountsWithRoles = accountsWithRoles;
-                    break;
                 default:
                     // Default sorting or handle unknown sort criteria
                     break;
             }
 
-            // Apply Pagination
-            var paginatedAccounts = await accountsWithRoles
-                                        .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                                        .Take(filterParams.PageSize)
-                                        .ToListAsync();
+            int totalAccounts = await accountsQuery.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalAccounts / filterParams.PageSize);
 
-            // Convert to AccountModelGetList
-            var accountModels = paginatedAccounts.Select(a => new AccountModelGetList
+            var accounts = await accountsQuery
+                            .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                            .Take(filterParams.PageSize)
+                            .ToListAsync();
+
+            return new AccountListResult
             {
-                Id = a.user.Id,
-                FirstName = a.user.FirstName,
-                LastName = a.user.LastName,
-                Email = a.user.Email,
-                Role = a.RoleName,
-                // Add other properties as needed
-            });
-
-            // Implement grouping logic if necessary (e.g., group students with parents)
-            // This part of the logic would depend on your specific requirements and data structure
-
-            return accountModels;
+                Accounts = accounts,
+                CurrentPage = filterParams.PageNumber,
+                PageSize = filterParams.PageSize,
+                TotalAccounts = totalAccounts,
+                TotalPages = totalPages
+            };
         }
 
         public async Task<ResponeModel> DeleteAccount(string accountId)
