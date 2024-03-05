@@ -83,12 +83,26 @@ namespace LMSystem.Repository.Repositories
                 categories = categories.Where(o => o.Name.Contains(paginationParameter.Search));
             }
 
+            if (!string.IsNullOrEmpty(paginationParameter.Sort))
+            {
+                switch (paginationParameter.Sort)
+                {
+                    case "name_asc":
+                        categories = categories.OrderBy(p => p.Name);
+                        break;
+                    case "name_desc":
+                        categories = categories.OrderByDescending(p => p.Name);
+                        break;
+                }
+            }
+
             var allCategories = await categories.ToListAsync();
 
             return PagedList<Category>.ToPagedList(allCategories,
                 paginationParameter.PageNumber,
                 paginationParameter.PageSize);
         }
+
 
         public async Task<ResponeModel> UpdateCategory(UpdateCategoryModel model)
         {

@@ -1,4 +1,5 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
@@ -20,10 +21,15 @@ namespace LMSystem.Services.Services
         {
             _courseRepository = courseRepository;
         }
-        public async Task<(IEnumerable<CourseListModel> Courses, int CurrentPage, int PageSize, int TotalCourses, int TotalPages)> GetCoursesWithFilters(CourseFilterParameters filterParams)
-        {
-            return await _courseRepository.GetCoursesWithFilters(filterParams);
-        }
+        //public async Task<(IEnumerable<CourseListModel> Courses, int CurrentPage, int PageSize, int TotalCourses, int TotalPages)> GetCoursesWithFilters(CourseFilterParameters filterParams)
+        //{
+        //    return await _courseRepository.GetCoursesWithFilters(filterParams);
+        //}
+
+        //public async Task<PagedList<CourseListModel>> GetAllCourse(PaginationParameter paginationParameter)
+        //{
+        //    return await _courseRepository.GetAllCourse(paginationParameter);
+        //}
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
         {
