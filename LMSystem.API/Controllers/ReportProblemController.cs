@@ -11,6 +11,7 @@ using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Composition;
 
 namespace LMSystem.API.Controllers
@@ -25,6 +26,34 @@ namespace LMSystem.API.Controllers
         {
             _reportProblemService = reportProblemService;
 
+        }
+
+        [HttpGet("GetAllRequest")]
+        public async Task<IActionResult> GetAllRequest([FromQuery] PaginationParameter paginationParameter)
+        {
+            try
+            {
+                var response = await _reportProblemService.GetAllReportProblem(paginationParameter);
+                var metadata = new
+                {
+                    response.TotalCount,
+                    response.PageSize,
+                    response.CurrentPage,
+                    response.TotalPages,
+                    response.HasNext,
+                    response.HasPrevious
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                if (!response.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(response);
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("SendRequest")]

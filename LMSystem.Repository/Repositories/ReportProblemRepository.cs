@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.AspNetCore.Identity;
@@ -26,6 +27,25 @@ namespace LMSystem.Repository.Repositories
 
         {
             this._context = context;
+        }
+
+        public async Task<PagedList<ReportProblem>> GetAllReportProblem(PaginationParameter paginationParameter)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+            var request = _context.ReportProblems.AsQueryable();
+            if (!string.IsNullOrEmpty(paginationParameter.Search))
+            {
+                request = request.Where(o => o.Title.Contains(paginationParameter.Search));
+            }
+
+            var allRequest = await request.ToListAsync();
+
+            return PagedList<ReportProblem>.ToPagedList(allRequest,
+                paginationParameter.PageNumber,
+                paginationParameter.PageSize);
         }
 
         public async Task<ReportProblem> SendRequestAsync(SendRequestModel model)

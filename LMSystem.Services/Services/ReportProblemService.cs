@@ -1,4 +1,5 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
@@ -18,6 +19,12 @@ namespace LMSystem.Services.Services
         {
             _reportProblemRepository = reportProblemRepository;            
         }
+
+        public async Task<PagedList<ReportProblem>> GetAllReportProblem(PaginationParameter paginationParameter)
+        {
+            return await _reportProblemRepository.GetAllReportProblem(paginationParameter);
+        }
+
 
         public async Task<ReportProblem> SendRequestAsync(SendRequestModel model)
         {
