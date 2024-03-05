@@ -36,7 +36,7 @@ namespace LMSystem.Repository.Repositories
                 Type = model.Type,
                 Title = model.Title,
                 Description = model.Description,
-                ReportStatus = "True",
+                ReportStatus = "New",
                 CreateDate = DateTime.UtcNow,
                 ProcessingDate = DateTime.UtcNow.AddDays(3)
             };

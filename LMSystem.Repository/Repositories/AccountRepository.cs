@@ -456,23 +456,18 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams)
         {
-            var accountsQuery = from user in _context.Users
-                                join userRole in _context.UserRoles on user.Id equals userRole.UserId
-                                join role in _context.Roles on userRole.RoleId equals role.Id
-                                select new AccountModelGetList
-                                {
-                                    Id = user.Id,
-                                    FirstName = user.FirstName,
-                                    LastName = user.LastName,
-                                    Email = user.Email,
-                                    Role = role.Name
-                                };
+            var query = _context.Users.AsQueryable();
+
             var accountsWithRoles = from user in _context.Users
                                     join userRole in _context.UserRoles on user.Id equals userRole.UserId into userRoles
                                     from ur in userRoles.DefaultIfEmpty()
                                     join role in _context.Roles on ur.RoleId equals role.Id into roles
                                     from r in roles.DefaultIfEmpty()
                                     select new { user, RoleName = r == null ? "" : r.Name };
+            if (!string.IsNullOrEmpty(filterParams.Search))
+            {
+                query = query.Where(a => a.FirstName.Contains(filterParams.Search) || a.LastName.Contains(filterParams.Search));
+            }
 
             switch (filterParams.SortBy.ToLower())
             {
@@ -490,13 +485,22 @@ namespace LMSystem.Repository.Repositories
                     break;
             }
 
-            int totalAccounts = await accountsQuery.CountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalAccounts / filterParams.PageSize);
+            int totalAccounts = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalAccounts / filterParams.PageSize);
 
-            var accounts = await accountsQuery
-                            .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                            .Take(filterParams.PageSize)
-                            .ToListAsync();
+            var accounts = await query.Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                                      .Take(filterParams.PageSize)
+                                      .Select(a => new AccountModelGetList
+                                      {
+                                          Id = a.Id,
+                                          FirstName = a.FirstName,
+                                          LastName = a.LastName,
+                                          Email = a.Email,
+                                          Role = _context.UserRoles.Where(ur => ur.UserId == a.Id)
+                                                    .Select(ur => _context.Roles.FirstOrDefault(r => r.Id == ur.RoleId).Name)
+                                                    .FirstOrDefault(),
+                                          // Add other properties as needed
+                                      }).ToListAsync();
 
             return new AccountListResult
             {
