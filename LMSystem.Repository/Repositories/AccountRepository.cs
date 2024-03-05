@@ -456,61 +456,126 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams)
         {
-            var query = _context.Users.AsQueryable();
+            var accountsQuery = _context.Users
+               .AsQueryable();
 
-            var accountsWithRoles = from user in _context.Users
-                                    join userRole in _context.UserRoles on user.Id equals userRole.UserId into userRoles
-                                    from ur in userRoles.DefaultIfEmpty()
-                                    join role in _context.Roles on ur.RoleId equals role.Id into roles
-                                    from r in roles.DefaultIfEmpty()
-                                    select new { user, RoleName = r == null ? "" : r.Name };
+            // Optional: Filter accounts based on search criteria
             if (!string.IsNullOrEmpty(filterParams.Search))
             {
-                query = query.Where(a => a.FirstName.Contains(filterParams.Search) || a.LastName.Contains(filterParams.Search));
+                accountsQuery = accountsQuery.Where(a => a.FirstName.Contains(filterParams.Search) ||
+                                                          a.LastName.Contains(filterParams.Search) ||
+                                                          a.Email.Contains(filterParams.Search));
             }
 
-            switch (filterParams.SortBy.ToLower())
+            // Fetch the accounts with their roles and optionally parent email
+            var accountsWithDetails = await accountsQuery
+                .Select(a => new
+                {
+                    a.Id,
+                    a.FirstName,
+                    a.LastName,
+                    a.Sex,
+                    a.PhoneNumber,
+                    a.Email,
+                    a.ParentEmail,
+                    a.Biography,
+                    a.BirthDate,
+                    a.ProfileImg,
+                    Roles = _context.UserRoles.Where(ur => ur.UserId == a.Id)
+                                              .Select(ur => _context.Roles.FirstOrDefault(r => r.Id == ur.RoleId).Name)
+                                              .ToList()
+                })
+                .ToListAsync();
+
+            var sortedAccounts = accountsWithDetails.ToList();
+
+            if (filterParams.SortBy == "role")
             {
-                case "name":
-                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.user.FirstName).ThenBy(x => x.user.LastName);
-                    break;
-                case "email":
-                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.user.Email);
-                    break;
-                case "role":
-                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.RoleName);
-                    break;
-                default:
-                    // Default sorting or handle unknown sort criteria
-                    break;
+                sortedAccounts = accountsWithDetails.OrderBy(a => a.Roles).ToList();
+            }
+            else if (filterParams.SortBy == "name")
+            {
+                sortedAccounts = accountsWithDetails.OrderBy(a => a.FirstName).ThenBy(a => a.LastName).ToList();
             }
 
-            int totalAccounts = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling((double)totalAccounts / filterParams.PageSize);
+            else if (filterParams.SortBy == "email")
+            {
+                sortedAccounts = accountsWithDetails.OrderBy(a => a.Email).ToList();
+            }
 
-            var accounts = await query.Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                                      .Take(filterParams.PageSize)
-                                      .Select(a => new AccountModelGetList
-                                      {
-                                          Id = a.Id,
-                                          FirstName = a.FirstName,
-                                          LastName = a.LastName,
-                                          Email = a.Email,
-                                          Role = _context.UserRoles.Where(ur => ur.UserId == a.Id)
-                                                    .Select(ur => _context.Roles.FirstOrDefault(r => r.Id == ur.RoleId).Name)
-                                                    .FirstOrDefault(),
-                                          // Add other properties as needed
-                                      }).ToListAsync();
+            var rearrangedAccounts = new List<dynamic>();
+            var handledAccounts = new HashSet<string>();
+            foreach (var account in sortedAccounts)
+            {
+                if (!handledAccounts.Contains(account.Id))
+                {
+                    rearrangedAccounts.Add(account);
+                    handledAccounts.Add(account.Id);
 
+                    // Find and append child accounts
+                    var childAccounts = sortedAccounts.Where(a => a.Email == account.ParentEmail).ToList();
+                    foreach (var child in childAccounts)
+                    {
+                        if (!handledAccounts.Contains(child.Id))
+                        {
+                            rearrangedAccounts.Add(child);
+                            handledAccounts.Add(child.Id);
+                        }
+                    }
+                }
+            }
+
+            // Convert to AccountModelGetList and apply pagination
+            var pagedAccounts = rearrangedAccounts
+                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                .Take(filterParams.PageSize)
+                .Select(a => new AccountModelGetList
+                {
+                    Id = a.Id,
+                    FirstName = a.FirstName,
+                    LastName = a.LastName,
+                    Sex = a.Sex,
+                    PhoneNumber = a.PhoneNumber,
+                    Email = a.Email,
+                    Role = string.Join(", ", a.Roles),
+                    Biography = a.Biography,
+                    BirthDate = a.BirthDate,
+                    ProfileImg = a.ProfileImg,
+                    ParentEmail = a.ParentEmail
+                })
+                .ToList();
+
+
+            // Assume totalAccounts and totalPages are correctly calculated based on the initial query
             return new AccountListResult
             {
-                Accounts = accounts,
+                Accounts = pagedAccounts,
                 CurrentPage = filterParams.PageNumber,
                 PageSize = filterParams.PageSize,
-                TotalAccounts = totalAccounts,
-                TotalPages = totalPages
+                TotalAccounts = rearrangedAccounts.Count,
+                TotalPages = (int)Math.Ceiling((double)rearrangedAccounts.Count / filterParams.PageSize)
             };
         }
+
+        private AccountModelGetList MapToAccountModelGetList(dynamic a)
+        {
+            return new AccountModelGetList
+            {
+                Id = a.Id,
+                FirstName = a.FirstName,
+                LastName = a.LastName,
+                Sex = a.Sex,
+                PhoneNumber = a.PhoneNumber,
+                Email = a.Email,
+                Role = string.Join(", ", a.Roles),
+                Biography = a.Biography,
+                BirthDate = a.BirthDate,
+                ProfileImg = a.ProfileImg,
+                ParentEmail = a.ParentEmail
+
+            };
+        }
+
 
         public async Task<ResponeModel> DeleteAccount(string accountId)
         {

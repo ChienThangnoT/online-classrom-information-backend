@@ -11,6 +11,7 @@ namespace LMSystem.Repository.Interfaces
     public interface IReportProblemRepository
     {
         public Task<ReportProblem> SendRequestAsync(SendRequestModel model);
+        public Task<bool> ResolveRequestAsync(int reportId, string newStatus);
 
     }
 }

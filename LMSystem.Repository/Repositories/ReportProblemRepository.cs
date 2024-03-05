@@ -38,11 +38,25 @@ namespace LMSystem.Repository.Repositories
                 Description = model.Description,
                 ReportStatus = "New",
                 CreateDate = DateTime.UtcNow,
-                ProcessingDate = DateTime.UtcNow.AddDays(3)
             };
             _context.ReportProblems.Add(report);
             await _context.SaveChangesAsync();
             return report;
+        }
+
+        public async Task<bool> ResolveRequestAsync(int reportId, string newStatus)
+        {
+            var report = await _context.ReportProblems.FirstOrDefaultAsync(r => r.ReportId == reportId);
+            if (report == null)
+            {
+                return false; 
+            }
+
+            report.ReportStatus = newStatus; 
+            report.ProcessingDate = DateTime.UtcNow; 
+
+            await _context.SaveChangesAsync();
+            return true; 
         }
     }
 }

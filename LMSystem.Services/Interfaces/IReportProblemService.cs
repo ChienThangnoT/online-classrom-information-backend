@@ -10,9 +10,7 @@ namespace LMSystem.Services.Interfaces
 {
     public interface IReportProblemService
     {
-        public Task<ReportProblem> SendRequestAsync(SendRequestModel model)
-;
-
-
+        public Task<ReportProblem> SendRequestAsync(SendRequestModel model);
+        public Task<bool> ResolveRequestAsync(int reportId, string newStatus);
     }
 }
