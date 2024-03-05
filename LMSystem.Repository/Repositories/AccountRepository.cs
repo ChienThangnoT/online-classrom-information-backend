@@ -54,6 +54,12 @@ namespace LMSystem.Repository.Repositories
         {
             var account = await userManager.FindByIdAsync(id);
             return account;
+        } 
+
+        public async Task<Account> GetAccountByIdV1(string id)
+        {
+            var account = await _context.Account.FirstOrDefaultAsync(i => i.Id == id);
+            return account;
         }
 
         public async Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel)
@@ -236,7 +242,7 @@ namespace LMSystem.Repository.Repositories
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
-                        Status = "Is Active",
+                        Status = AccountStatusEnum.Active.ToString(),
                         UserName = model.AccountEmail,
 
                         Email = model.AccountEmail,
@@ -276,7 +282,7 @@ namespace LMSystem.Repository.Repositories
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
             }
-            return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
+            return new ResponeModel { Status = "Error", Message = "Account already exist" };
         }
 
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
@@ -360,7 +366,7 @@ namespace LMSystem.Repository.Repositories
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
-                        Status = "Is Active",
+                        Status = AccountStatusEnum.Active.ToString(),
                         UserName = model.AccountEmail,
 
                         Email = model.AccountEmail,
@@ -527,6 +533,23 @@ namespace LMSystem.Repository.Repositories
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while deleting the account" };
             }
+        }
+
+        public async Task<bool> UpdateDeviceToken(string accountId, string deviceToken)
+        {
+            if (_context == null)
+            {
+                return false;
+            }
+            var account = await _context.Account.FirstOrDefaultAsync(a => a.Id == accountId && a.Status == AccountStatusEnum.Active.ToString());
+            if (account != null && !deviceToken.IsNullOrEmpty())
+            {
+                account.DeviceToken = deviceToken;
+                _context.Update(account);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }

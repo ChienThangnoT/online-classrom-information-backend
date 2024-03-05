@@ -1,5 +1,7 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
+using LMSystem.Repository.Models;
 using LMSystem.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -28,9 +30,9 @@ namespace LMSystem.Services.Services
             return await _categoryRepository.DeleteCategory(categoryId);
         }
 
-        public async Task<ResponeModel> GetAllCategory()
+        public async Task<PagedList<Category>> GetAllCategory(PaginationParameter paginationParameter)
         {
-            return await _categoryRepository.GetAllCategory();
+            return await _categoryRepository.GetAllCategory(paginationParameter);
         }
 
         public async Task<ResponeModel> UpdateCategory(UpdateCategoryModel model)

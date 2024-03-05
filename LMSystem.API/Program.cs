@@ -86,7 +86,7 @@ builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
 //{
 //    connection = Environment.GetEnvironmentVariable("azure_sql_connectionstring");
 //}
-//////config sqlazure
+////config sqlazure
 //builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
 //        options.UseSqlServer(connection));
 

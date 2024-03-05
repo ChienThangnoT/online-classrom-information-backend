@@ -97,5 +97,10 @@ namespace LMSystem.Services.Services
         {
             return await _repo.ViewAccountList(filterParams);
         }
+
+        public async Task<bool> UpdateDeviceToken(string accountId, string deviceToken)
+        {
+            return await _repo.UpdateDeviceToken(accountId, deviceToken);
+        }
     }
 }

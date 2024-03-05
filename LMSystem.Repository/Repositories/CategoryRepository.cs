@@ -1,4 +1,5 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,7 @@ namespace LMSystem.Repository.Repositories
                 _context.Categories.Add(category);
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added category successfully" , DataObject = category};
+                return new ResponeModel { Status = "Success", Message = "Added category successfully", DataObject = category };
             }
             catch (Exception ex)
             {
@@ -70,18 +71,23 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public async Task<ResponeModel> GetAllCategory()
+        public async Task<PagedList<Category>> GetAllCategory(PaginationParameter paginationParameter)
         {
-            try
+            if (_context == null)
             {
-                var categories = await _context.Categories.ToListAsync();
-                return new ResponeModel { Status = "Success", Message = "Get all categories successfully", DataObject = categories };
+                return null;
             }
-            catch (Exception ex)
+            var categories = _context.Categories.AsQueryable();
+            if (!string.IsNullOrEmpty(paginationParameter.Search))
             {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while get all categories" };
+                categories = categories.Where(o => o.Name.Contains(paginationParameter.Search));
             }
+
+            var allCategories = await categories.ToListAsync();
+
+            return PagedList<Category>.ToPagedList(allCategories,
+                paginationParameter.PageNumber,
+                paginationParameter.PageSize);
         }
 
         public async Task<ResponeModel> UpdateCategory(UpdateCategoryModel model)
