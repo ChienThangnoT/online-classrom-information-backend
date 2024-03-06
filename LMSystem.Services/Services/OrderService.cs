@@ -21,9 +21,9 @@ namespace LMSystem.Services.Services
             _orderRepository = orderRepository;
         }
 
-        public async Task<ResponeModel> CountOrderPaidByMonth(int year)
+        public async Task<ResponeModel> CountOrderByStatusGroupByMonth(string status,int year)
         {
-            return await _orderRepository.CountOrderPaidByMonth(year);
+            return await _orderRepository.CountOrderByStatusGroupByMonth(status,year);
         }
 
         public async Task<ResponeModel> CountTotalIncome()
@@ -46,14 +46,14 @@ namespace LMSystem.Services.Services
             return await _orderRepository.CountTotalOrder();
         }
 
-        public async Task<ResponeModel> CountTotalPaidOrders()
+        public async Task<ResponeModel> CountTotalOrdersByStatus(string status)
         {
-            return await _orderRepository.CountTotalPaidOrders();
+            return await _orderRepository.CountTotalOrdersByStatus(status);
         }
 
-        public async Task<ResponeModel> CountTotalPaidOrdersUpToDate(DateTime to)
+        public async Task<ResponeModel> CountTotalOrdersByStatusUpToDate(string status,DateTime to)
         {
-            return await _orderRepository.CountTotalPaidOrdersUpToDate(to);
+            return await _orderRepository.CountTotalOrdersByStatusUpToDate(status,to);
         }
 
         public async Task<IEnumerable<Order>> GetOrderHistoryAsync(string accountId)
