@@ -8,7 +8,8 @@ namespace LMSystem.Repository.Data
 {
     public enum OrderStatusEnum
     {
-        Success,
+        Completed,
         Failed,
+        Pending
     }
 }
