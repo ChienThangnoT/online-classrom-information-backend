@@ -269,5 +269,26 @@ namespace LMSystem.API.Controllers
             }
 
         }
+
+        [HttpGet("CountTotalStudent")]
+        public async Task<IActionResult> CountTotalStudent()
+        {
+            var response = await _accountService.CountTotalStudent();
+            if (response == null)
+            {
+                return NotFound();
+            }
+            return Ok(response);
+        }
+        [HttpGet("CountTotalAccount")]
+        public async Task<IActionResult> CountTotalAccount()
+        {
+            var response = await _accountService.CountTotalAccount();
+            if (response == null)
+            {
+                return NotFound();
+            }
+            return Ok(response);
+        }    
     }
 }
