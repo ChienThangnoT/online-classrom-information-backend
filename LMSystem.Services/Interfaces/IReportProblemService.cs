@@ -14,6 +14,6 @@ namespace LMSystem.Services.Interfaces
         public Task<PagedList<ReportProblem>> GetAllReportProblem(PaginationParameter paginationParameter);
 
         public Task<ReportProblem> SendRequestAsync(SendRequestModel model);
-        public Task<bool> ResolveRequestAsync(int reportId, string newStatus);
+        public Task<ResponeModel> ResolveRequestAsync(ResolveRequestModel model);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Internal;
+using Azure;
 using Humanizer;
 using LMSystem.API.Helper;
 using LMSystem.Repository.Data;
@@ -63,15 +64,16 @@ namespace LMSystem.API.Controllers
             return Ok(report);
         }
 
-        [HttpPut("ResolveRequest/{reportId}")]
-        public async Task<IActionResult> ResolveRequest(int reportId, [FromQuery] string newStatus)
+        [HttpPut("ResolveRequest")]
+        public async Task<IActionResult> ResolveRequest(ResolveRequestModel model)
         {
-            var result = await _reportProblemService.ResolveRequestAsync(reportId, newStatus);
-            if (result)
+            var result = await _reportProblemService.ResolveRequestAsync(model);
+            if (result.Status == "Error")
             {
-                return Ok();
+                return Conflict(result);
             }
-            return NotFound();
+
+            return Ok(result);
         }
     }
 }

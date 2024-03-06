@@ -31,9 +31,9 @@ namespace LMSystem.Services.Services
             return await _reportProblemRepository.SendRequestAsync(model);
         }
 
-        public async Task<bool> ResolveRequestAsync(int reportId, string newStatus)
+        public async Task<ResponeModel> ResolveRequestAsync(ResolveRequestModel model)
         {
-            return await _reportProblemRepository.ResolveRequestAsync(reportId, newStatus);
+            return await _reportProblemRepository.ResolveRequestAsync(model);
         }
     }
 }

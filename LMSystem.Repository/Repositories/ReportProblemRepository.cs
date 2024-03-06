@@ -53,10 +53,10 @@ namespace LMSystem.Repository.Repositories
             var report = new ReportProblem
             {
                 AccountId = model.AccountId,
-                Type = model.Type,
+                Type = model.Type.ToString(),
                 Title = model.Title,
                 Description = model.Description,
-                ReportStatus = "New",
+                ReportStatus = ReportStatus.Pending.ToString(),
                 CreateDate = DateTime.UtcNow,
             };
             _context.ReportProblems.Add(report);
@@ -64,19 +64,29 @@ namespace LMSystem.Repository.Repositories
             return report;
         }
 
-        public async Task<bool> ResolveRequestAsync(int reportId, string newStatus)
+        public async Task<ResponeModel> ResolveRequestAsync(ResolveRequestModel model)
         {
-            var report = await _context.ReportProblems.FirstOrDefaultAsync(r => r.ReportId == reportId);
-            if (report == null)
+            try
             {
-                return false; 
+                var report = await _context.ReportProblems.FirstOrDefaultAsync(r => r.ReportId == model.ReportId);
+                if (report == null)
+                {
+                    return new ResponeModel { Status = "Error", Message = "Request not found" };
+                }
+
+                report.ReportStatus = model.Status.ToString();
+                report.ProcessingDate = model.newProCessingDay;
+
+                await _context.SaveChangesAsync();
+                return new ResponeModel { Status = "Success", Message = "Request updated successfully" };
             }
-
-            report.ReportStatus = newStatus; 
-            report.ProcessingDate = DateTime.UtcNow; 
-
-            await _context.SaveChangesAsync();
-            return true; 
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while resolve the request" };
+            }
         }
+
+
     }
 }
