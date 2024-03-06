@@ -93,5 +93,55 @@ namespace LMSystem.API.Controllers
             }
             return Ok(response);
         }
+        [HttpGet("CountTotalCourse")]
+        public async Task<IActionResult> CountTotalCourse()
+        {
+            var response = await _courseService.CountTotalCourse();
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("CountTotalCourseUpToDate")]
+        public async Task<IActionResult> CountTotalCourseUpToDate([FromQuery] DateTime to)
+        {
+            var response = await _courseService.CountTotalCourseUpToDate(to);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("CountTotalCourseByMonth")]
+        public async Task<IActionResult> CountTotalCourseByMonth([FromQuery] int year)
+        {
+            var response = await _courseService.CountTotalCourseByMonth(year);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("GetYearList")]
+        public async Task<IActionResult> GetYearList()
+        {
+            var response = await _courseService.GetYearList();
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("CountStudentPerCourse")]
+        public async Task<IActionResult> CountStudentPerCourse()
+        {
+            var response = await _courseService.CountStudentPerCourse();
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }

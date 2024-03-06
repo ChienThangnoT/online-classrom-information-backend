@@ -14,5 +14,6 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> DeleteWishListByWishListId(int wishListId);
         public Task<ResponeModel> DeleteWishListByCourseId(int courseId, string accountId);
         public Task<List<WishListModel>> GetWishListByAccountId(string accountId);
+        public Task<ResponeModel> CountTotalWishListByAccountId(string accountId);
     }
 }

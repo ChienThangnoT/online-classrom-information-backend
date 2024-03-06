@@ -24,6 +24,11 @@ namespace LMSystem.Services.Services
             return await _wishListRepository.AddWishList(accountId, courseId);
         }
 
+        public async Task<ResponeModel> CountTotalWishListByAccountId(string accountId)
+        {
+            return await _wishListRepository.CountTotalWishListByAccountId(accountId);
+        }
+
         public async Task<ResponeModel> DeleteWishListByCourseId(int courseId, string accountId)
         {
             return await _wishListRepository.DeleteWishListByCourseId(courseId, accountId);
