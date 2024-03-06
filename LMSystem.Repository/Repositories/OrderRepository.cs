@@ -43,17 +43,38 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public async Task<ResponeModel> CountTotalPaidOrders()
+        public async Task<ResponeModel> CountTotalOrdersByStatus(string status)
         {
             try
             {
                 var totalOrders = await _context.Orders
-                    .Where(o => o.Status == OrderStatusEnum.Success.ToString())
+                    .Where(o => o.Status == status)
                     .CountAsync();
                 return new ResponeModel
                 {
                     Status = "Success",
-                    Message = "Total paid orders counted successfully",
+                    Message = $"Total {status} orders counted successfully",
+                    DataObject = totalOrders
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = $"An error occurred while counting total {status} orders in the system" };
+            }
+        }
+
+        public async Task<ResponeModel> CountTotalOrdersByStatusUpToDate(string status,DateTime to)
+        {
+            try
+            {
+                var totalOrders = await _context.Orders
+                    .Where(o => o.Status == status && o.PaymentDate <= to)
+                    .CountAsync();
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = $"Total {status} orders in the system up to {to} counted successfully",
                     DataObject = totalOrders
                 };
             }
@@ -64,34 +85,13 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public async Task<ResponeModel> CountTotalPaidOrdersUpToDate(DateTime to)
-        {
-            try
-            {
-                var totalOrders = await _context.Orders
-                    .Where(o => o.Status == OrderStatusEnum.Success.ToString() && o.PaymentDate <= to)
-                    .CountAsync();
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = $"Total students in the system up to {to} counted successfully",
-                    DataObject = totalOrders
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while counting total paid orders in the system" };
-            }
-        }
-
-        public async Task<ResponeModel> CountOrderPaidByMonth(int year)
+        public async Task<ResponeModel> CountOrderByStatusGroupByMonth(string status, int year)
         {
             //return json data for chart
             try
             {
                 var orderCounts = await _context.Orders
-                    .Where(o => o.Status == OrderStatusEnum.Success.ToString()
+                    .Where(o => o.Status == status
                             && o.PaymentDate.HasValue
                             && o.PaymentDate.Value.Year == year)
                     .GroupBy(o => o.PaymentDate.Value.Month)
@@ -116,7 +116,7 @@ namespace LMSystem.Repository.Repositories
                 return new ResponeModel
                 {
                     Status = "Success",
-                    Message = $"Order counts for each month in {year} retrieved successfully",
+                    Message = $"{status} order counts for each month in {year} retrieved successfully",
                     DataObject = jsonData
                 };
             }
@@ -143,8 +143,7 @@ namespace LMSystem.Repository.Repositories
             try
             {
                 var distinctYears = await _context.Orders
-                    .Where(o => o.PaymentDate.HasValue 
-                            && o.Status == OrderStatusEnum.Success.ToString())
+                    .Where(o => o.PaymentDate.HasValue)
                     .Select(o => o.PaymentDate.Value.Year)
                     .Distinct()
                     .OrderByDescending(year => year)
@@ -173,7 +172,7 @@ namespace LMSystem.Repository.Repositories
             try
             {
                 var totalIncome = await _context.Orders
-                    .Where(o => o.Status == OrderStatusEnum.Success.ToString()
+                    .Where(o => o.Status == OrderStatusEnum.Completed.ToString()
                             && o.PaymentDate.HasValue)
                     .SumAsync(o => o.TotalPrice);
 
@@ -200,7 +199,7 @@ namespace LMSystem.Repository.Repositories
             try
             {
                 var totalIncome = await _context.Orders
-                    .Where(o => o.Status == OrderStatusEnum.Success.ToString() 
+                    .Where(o => o.Status == OrderStatusEnum.Completed.ToString() 
                             && o.PaymentDate.HasValue 
                             && o.PaymentDate.Value <= to)
                     .SumAsync(o => o.TotalPrice);
@@ -229,7 +228,7 @@ namespace LMSystem.Repository.Repositories
             try
             {
                 var totalIncomeByMonth = await _context.Orders
-                    .Where(o => o.Status == OrderStatusEnum.Success.ToString()
+                    .Where(o => o.Status == OrderStatusEnum.Completed.ToString()
                             && o.PaymentDate.HasValue 
                             && o.PaymentDate.Value.Year == year)
                     .GroupBy(o => o.PaymentDate.Value.Month)

@@ -12,9 +12,9 @@ namespace LMSystem.Repository.Interfaces
     {
         public Task<IEnumerable<Order>> GetOrdersByAccountIdAsync(string accountId);
         public Task<ResponeModel> CountTotalOrder();
-        public Task<ResponeModel> CountTotalPaidOrders();
-        public Task<ResponeModel> CountTotalPaidOrdersUpToDate(DateTime to);
-        public Task<ResponeModel> CountOrderPaidByMonth(int year);
+        public Task<ResponeModel> CountTotalOrdersByStatus(string status);
+        public Task<ResponeModel> CountTotalOrdersByStatusUpToDate(string status, DateTime to);
+        public Task<ResponeModel> CountOrderByStatusGroupByMonth(string status, int year);
         public Task<ResponeModel> GetYearList();
         public Task<ResponeModel> CountTotalIncome();
         public Task<ResponeModel> CountTotalIncomeUpToDate(DateTime to);

@@ -38,30 +38,30 @@ namespace LMSystem.API.Controllers
             }
             return Ok(response);
         }
-        [HttpGet("TotalPaidOrders")]
-        public async Task<IActionResult> CountTotalPaidOrders()
+        [HttpGet("CountTotalOrdersByStatus")]
+        public async Task<IActionResult> CountTotalOrdersByStatus([FromQuery] string status)
         {
-            var response = await _orderService.CountTotalPaidOrders();
+            var response = await _orderService.CountTotalOrdersByStatus(status);
             if (response.Status == "Error")
             {
                 return NotFound(response);
             }
             return Ok(response);
         }
-        [HttpGet("TotalPaidOrdersUpToDate")]
-        public async Task<IActionResult> CountTotalPaidOrdersUpToDate([FromQuery] DateTime to)
+        [HttpGet("CountTotalOrdersByStatusUpToDate")]
+        public async Task<IActionResult> CountTotalOrdersByStatusUpToDate([FromQuery] string status,[FromQuery] DateTime to)
         {
-            var response = await _orderService.CountTotalPaidOrdersUpToDate(to);
+            var response = await _orderService.CountTotalOrdersByStatusUpToDate(status, to);
             if (response.Status == "Error")
             {
                 return NotFound(response);
             }
             return Ok(response);
         }
-        [HttpGet("OrderPaidByMonth")]
-        public async Task<IActionResult> CountOrderPaidByMonth([FromQuery] int year)
+        [HttpGet("CountOrderByStatusGroupByMonth")]
+        public async Task<IActionResult> CountOrderByStatusGroupByMonth([FromQuery] string status, [FromQuery] int year)
         {
-            var response = await _orderService.CountOrderPaidByMonth(year);
+            var response = await _orderService.CountOrderByStatusGroupByMonth(status, year);
             if (response.Status == "Error")
             {
                 return NotFound(response);
