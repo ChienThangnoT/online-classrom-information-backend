@@ -62,6 +62,6 @@ namespace LMSystem.Repository.Data
         [Display(Name = "Update At")]
         public DateTime? UpdateAt { get; set; }
         [Display(Name = "IsPublic")]
-        public bool? IsPublic { get; set; }
+        public bool? CourseIsActive { get; set; }
     }
 }
