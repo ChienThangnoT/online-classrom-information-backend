@@ -4,6 +4,8 @@ using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +61,7 @@ namespace LMSystem.Repository.Repositories
                 }
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject =  course };
+                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = course };
             }
             catch (Exception ex)
             {
@@ -103,6 +105,7 @@ namespace LMSystem.Repository.Repositories
                 query = query.Where(c => c.Price <= filterParams.MaxPrice.Value);
             }
 
+<<<<<<< HEAD
             if (!string.IsNullOrEmpty(filterParams.Search))
             {
                 query = query.Where(o => o.Title.Contains(filterParams.Search));
@@ -124,6 +127,8 @@ namespace LMSystem.Repository.Repositories
                     break;
             }
 
+=======
+>>>>>>> dev
             int totalCourses = await query.CountAsync();
             int totalPages = (int)Math.Ceiling(totalCourses / (double)filterParams.PageSize);
 
@@ -309,7 +314,7 @@ namespace LMSystem.Repository.Repositories
         }
 
         private Course submitCourseChange(Course course, UpdateCourseModel updateCourseModel)
-        {          
+        {
             course.Title = updateCourseModel.Title;
             course.Description = updateCourseModel.Description;
             course.ImageUrl = updateCourseModel.ImageUrl;
@@ -374,12 +379,154 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Course deleted successfully", DataObject = existingCourse};
+                return new ResponeModel { Status = "Success", Message = "Course deleted successfully", DataObject = existingCourse };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while deleting the course" };
+            }
+        }
+
+        public async Task<ResponeModel> CountTotalCourse()
+        {
+            try
+            {
+                var totalCourses = await _context.Courses.CountAsync();
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Total courses counted successfully",
+                    DataObject = totalCourses
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while counting total courses in the system" };
+            }
+        }
+
+        public async Task<ResponeModel> CountTotalCourseUpToDate(DateTime to)
+        {
+            try
+            {
+                var totalCourses = await _context.Courses
+                    .Where(c => c.CreateAt <= to)
+                    .CountAsync();
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = $"Total courses in the system up to {to} counted successfully",
+                    DataObject = totalCourses
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while counting total courses in the system" };
+            }
+        }
+
+        public async Task<ResponeModel> CountTotalCourseByMonth(int year)
+        {
+            try
+            {
+                var totalCoursesByMonth = await _context.Courses
+                    .Where(c => c.CreateAt.Value.Year == year)
+                    .GroupBy(c => c.CreateAt.Value.Month)
+                    .Select(g => new { Month = g.Key, TotalCourses = g.Count() })
+                    .OrderBy(g => g.Month)
+                    .ToListAsync();
+
+                int[] array = new int[12];
+
+                foreach (var coursesByMonth in totalCoursesByMonth)
+                {
+                    array[coursesByMonth.Month - 1] = coursesByMonth.TotalCourses;
+                }
+
+                var jsonSerializerSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
+
+                var jsonData = JsonConvert.SerializeObject(array, jsonSerializerSettings);
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = $"Total courses created for each month in {year} retrieved successfully",
+                    DataObject = jsonData
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "An error occurred while retrieving total courses by month"
+                };
+            }
+        }
+
+        public async Task<ResponeModel> GetYearList()
+        {
+            try
+            {
+                var distinctYears = await _context.Courses
+                    .Select(c => c.CreateAt.Value.Year)
+                    .Distinct()
+                    .OrderBy(year => year)
+                    .ToListAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Distinct years for courses retrieved successfully",
+                    DataObject = distinctYears
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "An error occurred while retrieving distinct years for courses"
+                };
+            }
+        }
+
+        public async Task<ResponeModel> CountStudentPerCourse()
+        {
+            try
+            {
+                var studentsPerCourse = await _context.Courses
+                    .Select(c => new StudentPerCourseModel
+                    {
+                        CourseId = c.CourseId,
+                        CourseTitle = c.Title,
+                        TotalStudents = c.RegistrationCourses.Count()
+                    })
+                    .ToListAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Total number of students per course retrieved successfully",
+                    DataObject = studentsPerCourse
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "An error occurred while retrieving total number of students per course",
+                };
             }
         }
     }

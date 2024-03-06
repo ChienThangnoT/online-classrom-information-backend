@@ -63,5 +63,30 @@ namespace LMSystem.Services.Services
         {
             return await _courseRepository.UpdateCourse(updateCourseModel);
         }
+
+        public async Task<ResponeModel> CountTotalCourse()
+        {
+            return await _courseRepository.CountTotalCourse();
+        }
+
+        public async Task<ResponeModel> CountTotalCourseUpToDate(DateTime to)
+        {
+            return await _courseRepository.CountTotalCourseUpToDate(to);
+        }
+
+        public async Task<ResponeModel> CountTotalCourseByMonth(int year)
+        {
+            return await _courseRepository.CountTotalCourseByMonth(year);
+        }
+
+        public async Task<ResponeModel> GetYearList()
+        {
+            return await _courseRepository.GetYearList();
+        }
+
+        public async Task<ResponeModel> CountStudentPerCourse()
+        {
+            return await _courseRepository.CountStudentPerCourse();
+        }
     }
 }

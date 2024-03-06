@@ -55,7 +55,7 @@ namespace LMSystem.Repository.Repositories
         {
             var account = await userManager.FindByIdAsync(id);
             return account;
-        } 
+        }
 
         public async Task<Account> GetAccountByIdV1(string id)
         {
@@ -265,10 +265,12 @@ namespace LMSystem.Repository.Repositories
                         //token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
 
-                        return new ResponeModel { 
-                            Status = "Success", 
-                            Message = "Create account successfull, Please confirm your email to login into eHubSystem", 
-                            ConfirmEmailToken = token };
+                        return new ResponeModel
+                        {
+                            Status = "Success",
+                            Message = "Create account successfull, Please confirm your email to login into eHubSystem",
+                            ConfirmEmailToken = token
+                        };
                     }
                     foreach (var ex in result.Errors)
                     {
@@ -290,7 +292,7 @@ namespace LMSystem.Repository.Repositories
         {
             throw new NotImplementedException();
         }
-        
+
         public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             try
@@ -388,7 +390,7 @@ namespace LMSystem.Repository.Repositories
                         {
                             await userManager.AddToRoleAsync(user, role.ToString());
                         }
-                         // AUTO CONFIRM EMAIL
+                        // AUTO CONFIRM EMAIL
                         var token = userManager.GenerateEmailConfirmationTokenAsync(user);
                         var confirm = await userManager.ConfirmEmailAsync(user, token.Result);
                         if (confirm.Succeeded)
@@ -420,7 +422,7 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<ResponeModel> ConfirmEmail(string email, string token)
         {
-            var user =  await userManager.FindByNameAsync(email);
+            var user = await userManager.FindByNameAsync(email);
             if (user.EmailConfirmed)
             {
                 return new ResponeModel
@@ -608,7 +610,11 @@ namespace LMSystem.Repository.Repositories
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while deleting the account" };
+                return new ResponeModel
+                { 
+                    Status = "Error",
+                    Message = "An error occurred while deleting the account" 
+                };
             }
         }
 
@@ -627,6 +633,56 @@ namespace LMSystem.Repository.Repositories
                 return true;
             }
             return false;
+        }
+
+        public async Task<ResponeModel> CountTotalStudent()
+        {
+            try
+            {
+                var students = await userManager.GetUsersInRoleAsync(RoleModel.Student.ToString());
+                var totalStudents = students.Count;
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Total students in the system counted successfully",
+                    DataObject = totalStudents
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "An error occurred while counting total students in the system"
+                };
+            }
+        }
+
+        public async Task<ResponeModel> CountTotalAccount()
+        {
+            try
+            {
+                var totalAccounts = await _context.Account
+                    .CountAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Total number of accounts retrieved successfully",
+                    DataObject = totalAccounts
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "An error occurred while retrieving total number of accounts"
+                };
+            }
         }
     }
 }
