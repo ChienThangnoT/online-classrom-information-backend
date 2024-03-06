@@ -26,5 +26,7 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> DeleteAccount(string accountId);
         public Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams);
         public Task<bool> UpdateDeviceToken(string accountId, string deviceToken);
+        public Task<ResponeModel> CountTotalStudent();
+        public Task<ResponeModel> CountTotalAccount();
     }
 }

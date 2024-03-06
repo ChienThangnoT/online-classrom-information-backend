@@ -102,5 +102,15 @@ namespace LMSystem.Services.Services
         {
             return await _repo.UpdateDeviceToken(accountId, deviceToken);
         }
+
+        public async Task<ResponeModel> CountTotalStudent()
+        {
+            return await _repo.CountTotalStudent();
+        }
+
+        public async Task<ResponeModel> CountTotalAccount()
+        {
+            return await _repo.CountTotalAccount();
+        }
     }
 }

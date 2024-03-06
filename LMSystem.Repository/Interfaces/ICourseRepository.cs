@@ -18,5 +18,11 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> AddCourse(AddCourseModel addCourseModel);
         public Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel);
         public Task<ResponeModel> DeleteCourse(int courseId);
+        public Task<ResponeModel> CountTotalCourse();
+        public Task<ResponeModel> CountTotalCourseUpToDate(DateTime to);
+        public Task<ResponeModel> CountTotalCourseByMonth(int year);
+        public Task<ResponeModel> GetYearList();
+        public Task<ResponeModel> CountStudentPerCourse();
+
     }
 }
