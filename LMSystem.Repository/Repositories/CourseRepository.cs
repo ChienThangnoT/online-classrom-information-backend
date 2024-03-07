@@ -1,4 +1,5 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.EntityFrameworkCore;
@@ -103,6 +104,26 @@ namespace LMSystem.Repository.Repositories
             {
                 query = query.Where(c => c.Price <= filterParams.MaxPrice.Value);
             }
+            if (!string.IsNullOrEmpty(filterParams.Search))
+            {
+                query = query.Where(o => o.Title.Contains(filterParams.Search));
+            }
+
+            switch (filterParams.Sort)
+            {
+                case "title_asc":
+                    query = query.OrderBy(p => p.Title);
+                    break;
+                case "title_desc":
+                    query = query.OrderByDescending(p => p.Title);
+                    break;
+                case "price_asc":
+                    query = query.OrderBy(p => p.Price);
+                    break;
+                case "price_desc":
+                    query = query.OrderByDescending(p => p.Price);
+                    break;
+            }
 
             int totalCourses = await query.CountAsync();
             int totalPages = (int)Math.Ceiling(totalCourses / (double)filterParams.PageSize);
@@ -113,16 +134,70 @@ namespace LMSystem.Repository.Repositories
                                      {
                                          CourseId = c.CourseId,
                                          Title = c.Title,
+                                         ImageUrl = c.ImageUrl,
                                          Price = c.Price,
                                          CourseCategory = string.Join(", ", c.CourseCategories.Select(cc => cc.Category.Name)),
                                          TotalDuration = c.TotalDuration,
                                          UpdateAt = c.UpdateAt,
-                                         IsPublic = c.IsPublic
+                                         CourseIsActive = c.CourseIsActive
                                      })
                                      .ToListAsync();
 
             return (Courses: courses, CurrentPage: filterParams.PageNumber, PageSize: filterParams.PageSize, TotalCourses: totalCourses, TotalPages: totalPages);
         }
+
+        //public async Task<PagedList<CourseListModel>> GetAllCourse(PaginationParameter paginationParameter)
+        //{
+        //    if (_context == null)
+        //    {
+        //        return null;
+        //    }
+
+        //    var courseQuery = _context.Courses.AsQueryable();
+
+        //    if (!string.IsNullOrEmpty(paginationParameter.Search))
+        //    {
+        //        courseQuery = courseQuery.Where(o => o.Title.Contains(paginationParameter.Search));
+        //    }
+
+        //    switch (paginationParameter.Sort)
+        //    {
+        //        case "title_asc":
+        //            courseQuery = courseQuery.OrderBy(p => p.Title);
+        //            break;
+        //        case "title_desc":
+        //            courseQuery = courseQuery.OrderByDescending(p => p.Title);
+        //            break;
+        //        case "price_asc":
+        //            courseQuery = courseQuery.OrderBy(p => p.Price);
+        //            break;
+        //        case "price_desc":
+        //            courseQuery = courseQuery.OrderByDescending(p => p.Price);
+        //            break;
+        //    }
+
+        //    var totalItems = await courseQuery.CountAsync();
+
+        //    var items = await courseQuery.Skip((paginationParameter.PageNumber - 1) * paginationParameter.PageSize)
+        //                     .Take(paginationParameter.PageSize)
+        //                     .Select(course => new CourseListModel
+        //                     {
+        //                         CourseId = course.CourseId,
+        //                         Title = course.Title,
+        //                         ImageUrl = course.ImageUrl,
+        //                         Price = course.Price,
+        //                         CourseCategory = string.Join(", ", course.CourseCategories.Select(cc => cc.Category.Name)), 
+        //                         TotalDuration = course.TotalDuration,
+        //                         UpdateAt = course.UpdateAt,
+        //                         CourseIsActive = course.CourseIsActive
+        //                     })
+        //                     .ToListAsync();
+
+
+        //    var pagedList = new PagedList<CourseListModel>(items, totalItems, paginationParameter.PageNumber, paginationParameter.PageSize);
+
+        //    return pagedList;
+        //}
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
         {

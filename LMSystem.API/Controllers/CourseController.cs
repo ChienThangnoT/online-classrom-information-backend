@@ -1,8 +1,10 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LMSystem.API.Controllers
 {
@@ -17,17 +19,45 @@ namespace LMSystem.API.Controllers
             _courseService = courseRepository;
         }
 
-        [HttpGet("SelectCourselistPagination")]
+        [HttpGet("CourselistPagination")]
         public async Task<IActionResult> GetCourses([FromQuery] CourseFilterParameters filterParams)
         {
             var (Courses, CurrentPage, PageSize, TotalCourses, TotalPages) = await _courseService.GetCoursesWithFilters(filterParams);
-            if (!Courses.Any()) 
+            if (!Courses.Any())
             {
                 return NotFound();
             }
             var response = new { Courses, CurrentPage, PageSize, TotalCourses, TotalPages };
             return Ok(response);
         }
+
+        //[HttpGet("GetAllCourse")]
+        //public async Task<IActionResult> GetAllCourse([FromQuery] PaginationParameter paginationParameter)
+        //{
+        //    try
+        //    {
+        //        var response = await _courseService.GetAllCourse(paginationParameter);
+        //        var metadata = new
+        //        {
+        //            response.TotalCount,
+        //            response.PageSize,
+        //            response.CurrentPage,
+        //            response.TotalPages,
+        //            response.HasNext,
+        //            response.HasPrevious
+        //        };
+        //        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+        //        if (!response.Any())
+        //        {
+        //            return NotFound();
+        //        }
+        //        return Ok(response);
+        //    }
+        //    catch
+        //    {
+        //        return BadRequest();
+        //    }
+        //}
 
         [HttpGet("TopFavoritesCourseBaseStudentJoined")]
         public async Task<IActionResult> GetTopCoursesByStudentJoined(int numberOfCourses)
