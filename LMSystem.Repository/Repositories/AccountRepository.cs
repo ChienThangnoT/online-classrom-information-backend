@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.AspNetCore.Identity;
@@ -457,57 +458,133 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams)
         {
-            var accountsQuery = from user in _context.Users
-                                join userRole in _context.UserRoles on user.Id equals userRole.UserId
-                                join role in _context.Roles on userRole.RoleId equals role.Id
-                                select new AccountModelGetList
-                                {
-                                    Id = user.Id,
-                                    FirstName = user.FirstName,
-                                    LastName = user.LastName,
-                                    Email = user.Email,
-                                    Role = role.Name
-                                };
-            var accountsWithRoles = from user in _context.Users
-                                    join userRole in _context.UserRoles on user.Id equals userRole.UserId into userRoles
-                                    from ur in userRoles.DefaultIfEmpty()
-                                    join role in _context.Roles on ur.RoleId equals role.Id into roles
-                                    from r in roles.DefaultIfEmpty()
-                                    select new { user, RoleName = r == null ? "" : r.Name };
+            var accountsQuery = _context.Users
+               .AsQueryable();
 
-            switch (filterParams.SortBy.ToLower())
+            if (!string.IsNullOrEmpty(filterParams.Search))
             {
-                case "name":
-                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.user.FirstName).ThenBy(x => x.user.LastName);
-                    break;
-                case "email":
-                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.user.Email);
-                    break;
-                case "role":
-                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.RoleName);
-                    break;
-                default:
-                    // Default sorting or handle unknown sort criteria
-                    break;
+                accountsQuery = accountsQuery.Where(a => a.FirstName.Contains(filterParams.Search) ||
+                                                          a.LastName.Contains(filterParams.Search) ||
+                                                          a.Email.Contains(filterParams.Search));
             }
 
-            int totalAccounts = await accountsQuery.CountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalAccounts / filterParams.PageSize);
+            var accountsWithDetails = await accountsQuery
+                .Select(a => new
+                {
+                    a.Id,
+                    a.FirstName,
+                    a.LastName,
+                    a.Sex,
+                    a.PhoneNumber,
+                    a.Email,
+                    a.ParentEmail,
+                    a.Biography,
+                    a.BirthDate,
+                    a.ProfileImg,
+                    Roles = _context.UserRoles.Where(ur => ur.UserId == a.Id)
+                                              .Select(ur => _context.Roles.FirstOrDefault(r => r.Id == ur.RoleId).Name)
+                                              .ToList()
+                })
+                .ToListAsync();
 
-            var accounts = await accountsQuery
-                            .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                            .Take(filterParams.PageSize)
-                            .ToListAsync();
+            var sortedAccounts = accountsWithDetails.ToList();
+
+            if (filterParams.SortBy == "role_asc")
+            {
+                sortedAccounts = accountsWithDetails.OrderBy(a => a.Roles).ToList();
+            }
+            if (filterParams.SortBy == "role_desc")
+            {
+                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.Roles).ToList();
+            }
+            else if (filterParams.SortBy == "name_asc")
+            {
+                sortedAccounts = accountsWithDetails.OrderBy(a => a.FirstName).ThenBy(a => a.LastName).ToList();
+            }
+            else if (filterParams.SortBy == "name_desc")
+            {
+                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.FirstName).ThenBy(a => a.LastName).ToList();
+            }
+
+            else if (filterParams.SortBy == "email_asc")
+            {
+                sortedAccounts = accountsWithDetails.OrderBy(a => a.Email).ToList();
+            }
+            else if (filterParams.SortBy == "email_desc")
+            {
+                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.Email).ToList();
+            }
+
+            var rearrangedAccounts = new List<dynamic>();
+            var handledAccounts = new HashSet<string>();
+            foreach (var account in sortedAccounts)
+            {
+                if (!handledAccounts.Contains(account.Id))
+                {
+                    rearrangedAccounts.Add(account);
+                    handledAccounts.Add(account.Id);
+
+                    var childAccounts = sortedAccounts.Where(a => a.Email == account.ParentEmail).ToList();
+                    foreach (var child in childAccounts)
+                    {
+                        if (!handledAccounts.Contains(child.Id))
+                        {
+                            rearrangedAccounts.Add(child);
+                            handledAccounts.Add(child.Id);
+                        }
+                    }
+                }
+            }
+
+            var pagedAccounts = rearrangedAccounts
+                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                .Take(filterParams.PageSize)
+                .Select(a => new AccountModelGetList
+                {
+                    Id = a.Id,
+                    FirstName = a.FirstName,
+                    LastName = a.LastName,
+                    Sex = a.Sex,
+                    PhoneNumber = a.PhoneNumber,
+                    Email = a.Email,
+                    Role = string.Join(", ", a.Roles),
+                    Biography = a.Biography,
+                    BirthDate = a.BirthDate,
+                    ProfileImg = a.ProfileImg,
+                    ParentEmail = a.ParentEmail
+                })
+                .ToList();
+
 
             return new AccountListResult
             {
-                Accounts = accounts,
+                Accounts = pagedAccounts,
                 CurrentPage = filterParams.PageNumber,
                 PageSize = filterParams.PageSize,
-                TotalAccounts = totalAccounts,
-                TotalPages = totalPages
+                TotalAccounts = rearrangedAccounts.Count,
+                TotalPages = (int)Math.Ceiling((double)rearrangedAccounts.Count / filterParams.PageSize)
             };
         }
+
+        private AccountModelGetList MapToAccountModelGetList(dynamic a)
+        {
+            return new AccountModelGetList
+            {
+                Id = a.Id,
+                FirstName = a.FirstName,
+                LastName = a.LastName,
+                Sex = a.Sex,
+                PhoneNumber = a.PhoneNumber,
+                Email = a.Email,
+                Role = string.Join(", ", a.Roles),
+                Biography = a.Biography,
+                BirthDate = a.BirthDate,
+                ProfileImg = a.ProfileImg,
+                ParentEmail = a.ParentEmail
+
+            };
+        }
+
 
         public async Task<ResponeModel> DeleteAccount(string accountId)
         {

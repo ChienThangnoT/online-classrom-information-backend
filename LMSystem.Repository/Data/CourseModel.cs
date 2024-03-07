@@ -58,10 +58,10 @@ namespace LMSystem.Repository.Data
         [Display(Name = "Total Duration")]
         public int TotalDuration { get; set; }
 
-        [Required(ErrorMessage = "Date of Birth is required!")]
+        [Required(ErrorMessage = "Total Duration is required!")]
         [Display(Name = "Update At")]
         public DateTime? UpdateAt { get; set; }
         [Display(Name = "IsPublic")]
-        public bool? IsPublic { get; set; }
+        public bool? CourseIsActive { get; set; }
     }
 }

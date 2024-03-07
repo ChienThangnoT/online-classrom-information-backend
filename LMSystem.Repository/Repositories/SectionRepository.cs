@@ -97,6 +97,7 @@ namespace LMSystem.Repository.Repositories
             {
                 var sections = await _context.Sections
                     .Where(s => s.CourseId == courseId)
+                    .OrderBy(s => s.Position)
                     .Select(s => new
                     {
                         s.SectionId,
@@ -116,6 +117,41 @@ namespace LMSystem.Repository.Repositories
             {
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while retrieve sections list" };
+            }
+        }
+
+        public async Task<ResponeModel> DeleteSection(int sectionId)
+        {
+            try
+            {
+                var sectionToDelete = await _context.Sections.FindAsync(sectionId);
+
+                if (sectionToDelete == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Section not found"
+                    };
+                }
+
+                _context.Sections.Remove(sectionToDelete);
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Section deleted successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "An error occurred while deleting the section"
+                };
             }
         }
 
