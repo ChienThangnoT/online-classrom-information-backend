@@ -207,6 +207,7 @@ namespace LMSystem.API.Controllers
                 return BadRequest("Confirm email failed!");
             }
         }
+
         [HttpGet("ViewAccountList")]
         public async Task<IActionResult> ViewAccountList([FromQuery] AccountFilterParameters filterParams)
         {
@@ -218,6 +219,7 @@ namespace LMSystem.API.Controllers
 
             return Ok(account);
         }
+
         [HttpDelete("{accountId}")]
         public async Task<IActionResult> DeleteAccount(string accountId)
         {

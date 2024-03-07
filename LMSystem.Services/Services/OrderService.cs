@@ -21,6 +21,12 @@ namespace LMSystem.Services.Services
             _orderRepository = orderRepository;
         }
 
+        public async Task<ResponeModel> AddCourseToPayment(OrderPaymentModel orderPaymentModel)
+        {
+            return await _orderRepository.AddCourseToPayment(orderPaymentModel);
+
+        }
+
         public async Task<ResponeModel> CountOrderByStatusGroupByMonth(string status,int year)
         {
             return await _orderRepository.CountOrderByStatusGroupByMonth(status,year);
@@ -54,6 +60,16 @@ namespace LMSystem.Services.Services
         public async Task<ResponeModel> CountTotalOrdersByStatusUpToDate(string status,DateTime to)
         {
             return await _orderRepository.CountTotalOrdersByStatusUpToDate(status,to);
+        }
+
+        public async Task<ResponeModel> GetOrderSuccessByAccountIdAndCourseId(string accountId, int courseId)
+        {
+            return await _orderRepository.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
+        } 
+        
+        public async Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId)
+        {
+            return await _orderRepository.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
         }
 
         public async Task<IEnumerable<Order>> GetOrderHistoryAsync(string accountId)

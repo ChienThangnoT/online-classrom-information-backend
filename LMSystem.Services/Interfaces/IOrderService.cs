@@ -20,6 +20,11 @@ namespace LMSystem.Services.Interfaces
         public Task<ResponeModel> CountTotalIncomeUpToDate(DateTime to);
         public Task<ResponeModel> CountTotalIncomeByMonth(int year);
 
+        #region  payment
+        Task<ResponeModel> AddCourseToPayment(OrderPaymentModel orderPaymentModel);
+        Task<ResponeModel> GetOrderSuccessByAccountIdAndCourseId(string accountId, int courseId);
+        Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId);
 
+        #endregion
     }
 }

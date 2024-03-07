@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using AutoMapper;
 
 namespace LMSystem.Repository.Repositories
 {
@@ -18,10 +19,16 @@ namespace LMSystem.Repository.Repositories
     {
         // Assuming you have a DbContext or similar for data access
         private readonly LMOnlineSystemDbContext _context;
+        private readonly IAccountRepository _accountRepository;
+        private readonly ICourseRepository _courseRepository;
+        private readonly IMapper _mapper;
 
-        public OrderRepository(LMOnlineSystemDbContext context)
+        public OrderRepository(LMOnlineSystemDbContext context, IAccountRepository accountRepository, ICourseRepository courseRepository, IMapper mapper)
         {
             _context = context;
+            _accountRepository = accountRepository;
+            _courseRepository = courseRepository;
+            _mapper = mapper;
         }
 
         public async Task<ResponeModel> CountTotalOrder()
@@ -265,6 +272,126 @@ namespace LMSystem.Repository.Repositories
                     Status = "Error",
                     Message = "An error occurred while retrieving total income by month",
                     DataObject = string.Empty
+                };
+            }
+        }
+
+        public async Task<ResponeModel> AddCourseToPayment(OrderPaymentModel orderPaymentModel)
+        {
+            try
+            {
+                var account = await _accountRepository.GetAccountById(orderPaymentModel.AccountId);
+                if (account == null)
+                {
+                    return new ResponeModel { Status = "Error", Message = "Account is not valid" };
+                }
+                var course = await _courseRepository.GetCourseDetailByIdAsync(orderPaymentModel.CourseId);
+
+                var checkOrderSuccess = await GetOrderSuccessByAccountIdAndCourseId(orderPaymentModel.AccountId, orderPaymentModel.CourseId);
+                var checkOrderPending = await GetOrderPendingByAccountIdAndCourseId(orderPaymentModel.AccountId, orderPaymentModel.CourseId);
+                 
+                if(checkOrderSuccess.Status == "Error" && checkOrderPending.Status =="Error")
+                {
+                    var Order = new Order
+                    {
+                        AccountId = account.Id,
+                        AccountName = account.FirstName + " " + account.LastName,
+                        CourseId = orderPaymentModel.CourseId,
+                        TotalPrice = course.Price - (course.Price * course.SalesCampaign),
+                        PaymentDate = DateTime.Now,
+                        Status = orderPaymentModel.Status,
+                    };
+                    _context.Add(Order);
+                    _context.SaveChanges();
+                    return new ResponeModel
+                    {
+                        Status = "Success",
+                        Message = "Add Order to Database success!",
+                        DataObject = _mapper.Map<OrderPaymentModel>(Order)
+
+                    };
+                }
+                else if(checkOrderSuccess.Status == "Error" && checkOrderPending.Status != "Error")
+                {
+
+                    return new ResponeModel
+                    {
+                        Status = "Success",
+                        Message = "Find Order was pending!",
+                        DataObject = _mapper.Map<OrderPaymentModel>(checkOrderPending.DataObject)
+                    };
+                }
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Order has been completed!",
+                };
+                
+            }   catch (Exception ex)
+            {
+                return new ResponeModel {
+                    Status = "Error",
+                    Message = ex.Message
+                };
+            }
+        }
+
+        public async Task<ResponeModel> GetOrderSuccessByAccountIdAndCourseId(string accountId, int courseId)
+        {
+            try
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(t => t.AccountId == accountId && t.CourseId == courseId && t.Status == OrderStatusEnum.Completed.ToString());
+                if (order == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Not found order has completed!"
+                    }; ;
+                }
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Find order has completed!",
+                    DataObject = order.OrderId
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = ex.Message
+                };
+            }
+        }
+        
+        public async Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId)
+        {
+            try
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(t => t.AccountId == accountId && t.CourseId == courseId && t.Status == OrderStatusEnum.Pending.ToString());
+                if (order == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Not found order has pending!"
+                    }; ;
+                }
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Find order was pending!",
+                    DataObject = order
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = ex.Message
                 };
             }
         }

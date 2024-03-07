@@ -107,6 +107,39 @@ namespace LMSystem.API.Controllers
                 return NotFound(response);
             }
             return Ok(response);
+        } 
+        
+        [HttpGet("GetOrderSuccessByAccountIdAndCourseId")]
+        public async Task<IActionResult> GetOrderSuccessByAccountIdAndCourseId([FromQuery]string accountId, int courseId)
+        {
+            var response = await _orderService.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        
+        [HttpGet("GetOrderPendingByAccountIdAndCourseId")]
+        public async Task<IActionResult> GetOrderPendingByAccountIdAndCourseId([FromQuery]string accountId, int courseId)
+        {
+            var response = await _orderService.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        
+        [HttpPost("AddOrderToDB")]
+        public async Task<IActionResult> AddOrderToDB(OrderPaymentModel orderPaymentModel)
+        {
+            var result = await _orderService.AddCourseToPayment(orderPaymentModel);
+            if (result.Status == "Error")
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
     }
 }
