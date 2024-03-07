@@ -104,8 +104,6 @@ namespace LMSystem.Repository.Repositories
             {
                 query = query.Where(c => c.Price <= filterParams.MaxPrice.Value);
             }
-
-<<<<<<< HEAD
             if (!string.IsNullOrEmpty(filterParams.Search))
             {
                 query = query.Where(o => o.Title.Contains(filterParams.Search));
@@ -127,8 +125,6 @@ namespace LMSystem.Repository.Repositories
                     break;
             }
 
-=======
->>>>>>> dev
             int totalCourses = await query.CountAsync();
             int totalPages = (int)Math.Ceiling(totalCourses / (double)filterParams.PageSize);
 
