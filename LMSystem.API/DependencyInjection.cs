@@ -46,6 +46,9 @@ namespace LMSystem.API
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationService, NotificationService>();
 
+            services.AddScoped<IQuizRepository, QuizRepository>();
+            services.AddScoped<IQuizService, QuizService>();
+
             services.AddScoped<IFirebaseRepository, FirebaseRepository>();
 
 

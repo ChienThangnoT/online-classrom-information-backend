@@ -16,7 +16,6 @@ namespace LMSystem.Repository.Repositories
 {
     public class CourseRepository : ICourseRepository
     {
-        // Assuming you have a DbContext or similar for data access
         private readonly LMOnlineSystemDbContext _context;
 
         public CourseRepository(LMOnlineSystemDbContext context)
@@ -88,7 +87,6 @@ namespace LMSystem.Repository.Repositories
         {
             var query = _context.Courses.AsQueryable();
 
-            // Apply filters
             if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
                 query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
@@ -137,7 +135,6 @@ namespace LMSystem.Repository.Repositories
                 .Where(c => topCourses.Contains(c.CourseId))
                 .ToListAsync();
 
-            // Fill with random courses if needed
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses
@@ -182,10 +179,10 @@ namespace LMSystem.Repository.Repositories
         public async Task<IEnumerable<Course>> GetTopCoursesByRating(int numberOfCourses)
         {
             var topCourseIds = await _context.RatingCourses
-                .Include(rc => rc.Registration) // Include Registration navigation property
-                .ThenInclude(reg => reg.Course) // Then include Course navigation property from Registration
-                .GroupBy(rc => rc.Registration.CourseId) // Group by CourseId from RegistrationCourse
-                .Select(group => new { CourseId = group.Key, AverageRating = group.Average(rc => rc.RatingStar) }) // Assuming the property is named RatingValue
+                .Include(rc => rc.Registration) 
+                .ThenInclude(reg => reg.Course) 
+                .GroupBy(rc => rc.Registration.CourseId) 
+                .Select(group => new { CourseId = group.Key, AverageRating = group.Average(rc => rc.RatingStar) }) 
                 .OrderByDescending(x => x.AverageRating)
                 .Take(numberOfCourses)
                 .Select(x => x.CourseId)
@@ -248,7 +245,7 @@ namespace LMSystem.Repository.Repositories
             course.KnowdledgeDescription = updateCourseModel.KnowdledgeDescription;
             course.LinkCertificated = updateCourseModel.LinkCertificated;
             course.UpdateAt = DateTime.UtcNow;
-            //remore old category
+
             var categoriesToRemove = course.CourseCategories
                 .Where(cc => !updateCourseModel.CategoryList.Contains(cc.CategoryId))
                 .ToList();
@@ -257,7 +254,7 @@ namespace LMSystem.Repository.Repositories
             {
                 course.CourseCategories.Remove(categoryToRemove);
             }
-            //add new category
+
             var categoriesToAdd = updateCourseModel.CategoryList
                 .Where(categoryId => !course.CourseCategories.Any(cc => cc.CategoryId == categoryId))
                 .Select(categoryId => new CourseCategory { CategoryId = categoryId })
