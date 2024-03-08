@@ -49,8 +49,8 @@ namespace LMSystem.API
             services.AddScoped<IReportProblemRepository, ReportProblemRepository>();
             services.AddScoped<IReportProblemService, ReportProblemService>();
 
-            services.AddScoped<IQuestionRepository, QuestionRepository>();
-            services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<IQuizRepository, QuizRepository>();
+            services.AddScoped<IQuizService, QuizService>();
 
             services.AddScoped<IFirebaseRepository, FirebaseRepository>();
 
