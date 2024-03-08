@@ -124,10 +124,19 @@ namespace LMSystem.Repository.Repositories
                     existingQuiz.Description = existingQuiz.Description;
                 }
 
+                if (quizModel.Title == null && quizModel.Description == null && questionModel.QuestionTitle == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Fill a field to update quiz"
+                    };
+                }
+
                 //foreach (var modelQuestion in existingQuiz.Questions)
                 //{
-                    var existingQuestion = existingQuiz.Questions
-                        .FirstOrDefault(q => q.QuestionTitle == questionModel.QuestionTitle);
+                var existingQuestion = existingQuiz.Questions
+                    .FirstOrDefault(q => q.QuestionTitle == questionModel.QuestionTitle);
 
                 if (existingQuestion != null)
                 {
@@ -159,15 +168,16 @@ namespace LMSystem.Repository.Repositories
                             CorrectAnwser = (int)questionModel.CorrectAnwser
                         };
                         existingQuiz.Questions.Add(newQuestion);
-                    }
-                    if(questionModel.Anwser == null && questionModel.CorrectAnwser == null)
-                    {
-                        return new ResponeModel
+                        if (questionModel.Anwser == null && questionModel.CorrectAnwser == null)
                         {
-                            Status = "Error",
-                            Message = "Question not exist, Answer and CorrectAnswer cannot null to add"
-                        };
+                            return new ResponeModel
+                            {
+                                Status = "Error",
+                                Message = "Question not exist, Fill Answer and CorrectAnswer to add this new question"
+                            };
+                        }
                     }
+                    
                 }
                 //}
 
