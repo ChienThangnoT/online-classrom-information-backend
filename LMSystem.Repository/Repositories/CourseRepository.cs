@@ -77,9 +77,11 @@ namespace LMSystem.Repository.Repositories
         public async Task<Course> GetCourseDetailByIdAsync(int courseId)
         {
             var course = await _context.Courses
-            .Include(c => c.Sections)
-            .ThenInclude(s => s.Steps)
-            .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                .Include(c => c.Sections)
+                .ThenInclude(s => s.Steps)
+                .Include(c => c.CourseCategories)
+                .ThenInclude(cc => cc.Category)
+                .FirstOrDefaultAsync(c => c.CourseId == courseId);
 
             return course;
         }
