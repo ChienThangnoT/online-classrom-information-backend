@@ -18,7 +18,7 @@ namespace LMSystem.Repository.Data
     public class UpdateQuestion
     {
         public string? QuestionTitle { get; set; } 
-        public int CorrectAnwser { get; set; }
+        public int? CorrectAnwser { get; set; }
         public string? Anwser { get; set; }
     }
 }
