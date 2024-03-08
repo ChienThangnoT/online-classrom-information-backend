@@ -106,29 +106,79 @@ namespace LMSystem.Repository.Repositories
                     return new ResponeModel { Status = "Error", Message = "Quiz not found" };
                 }
 
-                existingQuiz.Title = quizModel.Title;
-                existingQuiz.Description = quizModel.Description;
+                if (quizModel.Title != null)
+                {
+                    existingQuiz.Title = quizModel.Title;
+                }
+                else
+                {
+                    existingQuiz.Title = existingQuiz.Title;
+                }
+
+                if (quizModel.Description != null)
+                {
+                    existingQuiz.Description = quizModel.Description;
+                }
+                else
+                {
+                    existingQuiz.Description = existingQuiz.Description;
+                }
+
+                if (quizModel.Title == null && quizModel.Description == null && questionModel.QuestionTitle == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Fill a field to update quiz"
+                    };
+                }
 
                 //foreach (var modelQuestion in existingQuiz.Questions)
                 //{
-                    var existingQuestion = existingQuiz.Questions
-                        .FirstOrDefault(q => q.QuestionTitle == questionModel.QuestionTitle);
+                var existingQuestion = existingQuiz.Questions
+                    .FirstOrDefault(q => q.QuestionTitle == questionModel.QuestionTitle);
 
-                    if (existingQuestion != null)
+                if (existingQuestion != null)
+                {
+                    if (questionModel.Anwser != null)
                     {
                         existingQuestion.Anwser = questionModel.Anwser;
-                        existingQuestion.CorrectAnwser = questionModel.CorrectAnwser;
                     }
                     else
+                    {
+                        existingQuestion.Anwser = existingQuestion.Anwser;
+                    }
+                    if (questionModel.CorrectAnwser != null)
+                    {
+                        existingQuestion.CorrectAnwser = (int)questionModel.CorrectAnwser;
+                    }
+                    else
+                    {
+                        existingQuestion.CorrectAnwser = existingQuestion.CorrectAnwser;
+                    }
+                }
+                else
+                {
+                    if (questionModel.QuestionTitle != null) 
                     {
                         var newQuestion = new Question
                         {
                             QuestionTitle = questionModel.QuestionTitle,
                             Anwser = questionModel.Anwser,
-                            CorrectAnwser = questionModel.CorrectAnwser
+                            CorrectAnwser = (int)questionModel.CorrectAnwser
                         };
                         existingQuiz.Questions.Add(newQuestion);
+                        if (questionModel.Anwser == null && questionModel.CorrectAnwser == null)
+                        {
+                            return new ResponeModel
+                            {
+                                Status = "Error",
+                                Message = "Question not exist, Fill Answer and CorrectAnswer to add this new question"
+                            };
+                        }
                     }
+                    
+                }
                 //}
 
                 await _context.SaveChangesAsync();
