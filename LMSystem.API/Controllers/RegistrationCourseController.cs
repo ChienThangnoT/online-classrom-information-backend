@@ -23,5 +23,15 @@ namespace LMSystem.API.Controllers
             }
             return Ok(courses);
         }
+        [HttpGet("GetCompletedLearningCourseListByAccountId")]
+        public async Task<IActionResult> GetCompletedLearningCourseListByAccountId(string accountId)
+        {
+            var courses = await _registrationCourseService.GetCompletedLearningCourseByAccountId(accountId);
+            if (courses == null)
+            {
+                return NotFound();
+            }
+            return Ok(courses);
+        }
     }
 }

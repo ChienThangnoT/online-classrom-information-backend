@@ -10,5 +10,6 @@ namespace LMSystem.Repository.Interfaces
     public interface IRegistrationCourseRepository
     {
         public Task<ResponeModel> GetRegisterCourseListByAccountId(string accountId);
+        public Task<ResponeModel> GetCompletedLearningCourseByAccountId(string accountId);
     }
 }
