@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LMSystem.Repository.Data;
-using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.AspNetCore.Identity;
@@ -54,12 +53,6 @@ namespace LMSystem.Repository.Repositories
         public async Task<Account> GetAccountById(string id)
         {
             var account = await userManager.FindByIdAsync(id);
-            return account;
-        }
-
-        public async Task<Account> GetAccountByIdV1(string id)
-        {
-            var account = await _context.Account.FirstOrDefaultAsync(i => i.Id == id);
             return account;
         }
 
@@ -243,7 +236,7 @@ namespace LMSystem.Repository.Repositories
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
-                        Status = AccountStatusEnum.Active.ToString(),
+                        Status = "Is Active",
                         UserName = model.AccountEmail,
 
                         Email = model.AccountEmail,
@@ -265,12 +258,10 @@ namespace LMSystem.Repository.Repositories
                         //token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
 
-                        return new ResponeModel
-                        {
-                            Status = "Success",
-                            Message = "Create account successfull, Please confirm your email to login into eHubSystem",
-                            ConfirmEmailToken = token
-                        };
+                        return new ResponeModel { 
+                            Status = "Success", 
+                            Message = "Create account successfull, Please confirm your email to login into eHubSystem", 
+                            ConfirmEmailToken = token };
                     }
                     foreach (var ex in result.Errors)
                     {
@@ -285,14 +276,14 @@ namespace LMSystem.Repository.Repositories
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
             }
-            return new ResponeModel { Status = "Error", Message = "Account already exist" };
+            return new ResponeModel { Status = "Hihi", Message = "Account already exist" };
         }
 
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account)
         {
             throw new NotImplementedException();
         }
-
+        
         public async Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             try
@@ -369,7 +360,7 @@ namespace LMSystem.Repository.Repositories
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
-                        Status = AccountStatusEnum.Active.ToString(),
+                        Status = "Is Active",
                         UserName = model.AccountEmail,
 
                         Email = model.AccountEmail,
@@ -390,7 +381,7 @@ namespace LMSystem.Repository.Repositories
                         {
                             await userManager.AddToRoleAsync(user, role.ToString());
                         }
-                        // AUTO CONFIRM EMAIL
+                         // AUTO CONFIRM EMAIL
                         var token = userManager.GenerateEmailConfirmationTokenAsync(user);
                         var confirm = await userManager.ConfirmEmailAsync(user, token.Result);
                         if (confirm.Succeeded)
@@ -422,7 +413,7 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<ResponeModel> ConfirmEmail(string email, string token)
         {
-            var user = await userManager.FindByNameAsync(email);
+            var user =  await userManager.FindByNameAsync(email);
             if (user.EmailConfirmed)
             {
                 return new ResponeModel
@@ -458,133 +449,57 @@ namespace LMSystem.Repository.Repositories
 
         public async Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams)
         {
-            var accountsQuery = _context.Users
-               .AsQueryable();
+            var accountsQuery = from user in _context.Users
+                                join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                                join role in _context.Roles on userRole.RoleId equals role.Id
+                                select new AccountModelGetList
+                                {
+                                    Id = user.Id,
+                                    FirstName = user.FirstName,
+                                    LastName = user.LastName,
+                                    Email = user.Email,
+                                    Role = role.Name
+                                };
+            var accountsWithRoles = from user in _context.Users
+                                    join userRole in _context.UserRoles on user.Id equals userRole.UserId into userRoles
+                                    from ur in userRoles.DefaultIfEmpty()
+                                    join role in _context.Roles on ur.RoleId equals role.Id into roles
+                                    from r in roles.DefaultIfEmpty()
+                                    select new { user, RoleName = r == null ? "" : r.Name };
 
-            if (!string.IsNullOrEmpty(filterParams.Search))
+            switch (filterParams.SortBy.ToLower())
             {
-                accountsQuery = accountsQuery.Where(a => a.FirstName.Contains(filterParams.Search) ||
-                                                          a.LastName.Contains(filterParams.Search) ||
-                                                          a.Email.Contains(filterParams.Search));
+                case "name":
+                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.user.FirstName).ThenBy(x => x.user.LastName);
+                    break;
+                case "email":
+                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.user.Email);
+                    break;
+                case "role":
+                    accountsWithRoles = accountsWithRoles.OrderBy(x => x.RoleName);
+                    break;
+                default:
+                    // Default sorting or handle unknown sort criteria
+                    break;
             }
 
-            var accountsWithDetails = await accountsQuery
-                .Select(a => new
-                {
-                    a.Id,
-                    a.FirstName,
-                    a.LastName,
-                    a.Sex,
-                    a.PhoneNumber,
-                    a.Email,
-                    a.ParentEmail,
-                    a.Biography,
-                    a.BirthDate,
-                    a.ProfileImg,
-                    Roles = _context.UserRoles.Where(ur => ur.UserId == a.Id)
-                                              .Select(ur => _context.Roles.FirstOrDefault(r => r.Id == ur.RoleId).Name)
-                                              .ToList()
-                })
-                .ToListAsync();
+            int totalAccounts = await accountsQuery.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalAccounts / filterParams.PageSize);
 
-            var sortedAccounts = accountsWithDetails.ToList();
-
-            if (filterParams.SortBy == "role_asc")
-            {
-                sortedAccounts = accountsWithDetails.OrderBy(a => a.Roles).ToList();
-            }
-            if (filterParams.SortBy == "role_desc")
-            {
-                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.Roles).ToList();
-            }
-            else if (filterParams.SortBy == "name_asc")
-            {
-                sortedAccounts = accountsWithDetails.OrderBy(a => a.FirstName).ThenBy(a => a.LastName).ToList();
-            }
-            else if (filterParams.SortBy == "name_desc")
-            {
-                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.FirstName).ThenBy(a => a.LastName).ToList();
-            }
-
-            else if (filterParams.SortBy == "email_asc")
-            {
-                sortedAccounts = accountsWithDetails.OrderBy(a => a.Email).ToList();
-            }
-            else if (filterParams.SortBy == "email_desc")
-            {
-                sortedAccounts = accountsWithDetails.OrderByDescending(a => a.Email).ToList();
-            }
-
-            var rearrangedAccounts = new List<dynamic>();
-            var handledAccounts = new HashSet<string>();
-            foreach (var account in sortedAccounts)
-            {
-                if (!handledAccounts.Contains(account.Id))
-                {
-                    rearrangedAccounts.Add(account);
-                    handledAccounts.Add(account.Id);
-
-                    var childAccounts = sortedAccounts.Where(a => a.Email == account.ParentEmail).ToList();
-                    foreach (var child in childAccounts)
-                    {
-                        if (!handledAccounts.Contains(child.Id))
-                        {
-                            rearrangedAccounts.Add(child);
-                            handledAccounts.Add(child.Id);
-                        }
-                    }
-                }
-            }
-
-            var pagedAccounts = rearrangedAccounts
-                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                .Take(filterParams.PageSize)
-                .Select(a => new AccountModelGetList
-                {
-                    Id = a.Id,
-                    FirstName = a.FirstName,
-                    LastName = a.LastName,
-                    Sex = a.Sex,
-                    PhoneNumber = a.PhoneNumber,
-                    Email = a.Email,
-                    Role = string.Join(", ", a.Roles),
-                    Biography = a.Biography,
-                    BirthDate = a.BirthDate,
-                    ProfileImg = a.ProfileImg,
-                    ParentEmail = a.ParentEmail
-                })
-                .ToList();
-
+            var accounts = await accountsQuery
+                            .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                            .Take(filterParams.PageSize)
+                            .ToListAsync();
 
             return new AccountListResult
             {
-                Accounts = pagedAccounts,
+                Accounts = accounts,
                 CurrentPage = filterParams.PageNumber,
                 PageSize = filterParams.PageSize,
-                TotalAccounts = rearrangedAccounts.Count,
-                TotalPages = (int)Math.Ceiling((double)rearrangedAccounts.Count / filterParams.PageSize)
+                TotalAccounts = totalAccounts,
+                TotalPages = totalPages
             };
         }
-
-        private AccountModelGetList MapToAccountModelGetList(dynamic a)
-        {
-            return new AccountModelGetList
-            {
-                Id = a.Id,
-                FirstName = a.FirstName,
-                LastName = a.LastName,
-                Sex = a.Sex,
-                PhoneNumber = a.PhoneNumber,
-                Email = a.Email,
-                Role = string.Join(", ", a.Roles),
-                Biography = a.Biography,
-                BirthDate = a.BirthDate,
-                ProfileImg = a.ProfileImg,
-                ParentEmail = a.ParentEmail
-
-            };
-        }
-
 
         public async Task<ResponeModel> DeleteAccount(string accountId)
         {
@@ -610,78 +525,7 @@ namespace LMSystem.Repository.Repositories
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel
-                { 
-                    Status = "Error",
-                    Message = "An error occurred while deleting the account" 
-                };
-            }
-        }
-
-        public async Task<bool> UpdateDeviceToken(string accountId, string deviceToken)
-        {
-            if (_context == null)
-            {
-                return false;
-            }
-            var account = await _context.Account.FirstOrDefaultAsync(a => a.Id == accountId && a.Status == AccountStatusEnum.Active.ToString());
-            if (account != null && !deviceToken.IsNullOrEmpty())
-            {
-                account.DeviceToken = deviceToken;
-                _context.Update(account);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
-        }
-
-        public async Task<ResponeModel> CountTotalStudent()
-        {
-            try
-            {
-                var students = await userManager.GetUsersInRoleAsync(RoleModel.Student.ToString());
-                var totalStudents = students.Count;
-
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = "Total students in the system counted successfully",
-                    DataObject = totalStudents
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel
-                {
-                    Status = "Error",
-                    Message = "An error occurred while counting total students in the system"
-                };
-            }
-        }
-
-        public async Task<ResponeModel> CountTotalAccount()
-        {
-            try
-            {
-                var totalAccounts = await _context.Account
-                    .CountAsync();
-
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = "Total number of accounts retrieved successfully",
-                    DataObject = totalAccounts
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel
-                {
-                    Status = "Error",
-                    Message = "An error occurred while retrieving total number of accounts"
-                };
+                return new ResponeModel { Status = "Error", Message = "An error occurred while deleting the account" };
             }
         }
     }

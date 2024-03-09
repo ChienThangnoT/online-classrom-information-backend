@@ -79,17 +79,5 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
-        [HttpGet("CountTotalWishListByAccountId")]
-        public async Task<IActionResult> CountTotalWishListByAccountId(string accountId)
-        {
-            var response = await _wishListService.CountTotalWishListByAccountId(accountId);
-
-            if (response.Status == "Error")
-            {
-                return NotFound(response);
-            }
-
-            return Ok(response);
-        }
     }
 }

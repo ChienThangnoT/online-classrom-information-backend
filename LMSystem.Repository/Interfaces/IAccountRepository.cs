@@ -15,7 +15,6 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> SignUpAccountAsync(SignUpModel model);
         public Task<AccountModel> GetAccountByEmail(string email);
         public Task<Account> GetAccountById(string id);
-        public Task<Account> GetAccountByIdV1(string id);
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account);
         public Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel);
         public Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId);
@@ -25,8 +24,6 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> ConfirmEmail(string email, string token);
         public Task<ResponeModel> DeleteAccount(string accountId);
         public Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams);
-        public Task<bool> UpdateDeviceToken(string accountId, string deviceToken);
-        public Task<ResponeModel> CountTotalStudent();
-        public Task<ResponeModel> CountTotalAccount();
+
     }
 }
