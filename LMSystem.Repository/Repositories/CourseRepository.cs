@@ -256,10 +256,10 @@ namespace LMSystem.Repository.Repositories
         public async Task<IEnumerable<Course>> GetTopCoursesByRating(int numberOfCourses)
         {
             var topCourseIds = await _context.RatingCourses
-                .Include(rc => rc.Registration) 
-                .ThenInclude(reg => reg.Course) 
-                .GroupBy(rc => rc.Registration.CourseId) 
-                .Select(group => new { CourseId = group.Key, AverageRating = group.Average(rc => rc.RatingStar) }) 
+                .Include(rc => rc.Registration)
+                .ThenInclude(reg => reg.Course)
+                .GroupBy(rc => rc.Registration.CourseId)
+                .Select(group => new { CourseId = group.Key, AverageRating = group.Average(rc => rc.RatingStar) })
                 .OrderByDescending(x => x.AverageRating)
                 .Take(numberOfCourses)
                 .Select(x => x.CourseId)
@@ -299,7 +299,43 @@ namespace LMSystem.Repository.Repositories
                 //_context.Courses.Update(existingCourse);
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Update course successfully", DataObject = existingCourse };
+                var response = await _context.Courses
+                    .Where(c => c.CourseId == updateCourseModel.CourseId)
+                    .Select(c => new
+                    {
+                        c.CourseId,
+                        c.Title,
+                        c.Description,
+                        c.ImageUrl,
+                        c.VideoPreviewUrl,
+                        c.Price,
+                        c.SalesCampaign,
+                        c.IsPublic,
+                        c.CreateAt,
+                        c.PublicAt,
+                        c.UpdateAt,
+                        c.TotalDuration,
+                        c.CourseIsActive,
+                        c.KnowdledgeDescription,
+                        c.LinkCertificated,
+                        CourseCategories = c.CourseCategories.Select(cc => new
+                        {
+                            cc.CategoryId,
+                            Category = new
+                            {
+                                cc.Category.Name,
+                                cc.Category.Description
+                            }
+                        }).ToList()
+                    })
+                    .FirstOrDefaultAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Update course successfully",
+                    DataObject = response
+                };
             }
             catch (Exception ex)
             {
@@ -310,17 +346,61 @@ namespace LMSystem.Repository.Repositories
 
         private Course submitCourseChange(Course course, UpdateCourseModel updateCourseModel)
         {
-            course.Title = updateCourseModel.Title;
-            course.Description = updateCourseModel.Description;
-            course.ImageUrl = updateCourseModel.ImageUrl;
-            course.VideoPreviewUrl = updateCourseModel.VideoPreviewUrl;
-            course.Price = updateCourseModel.Price;
-            course.SalesCampaign = updateCourseModel.SalesCampaign;
-            course.IsPublic = updateCourseModel.IsPublic;
-            course.TotalDuration = updateCourseModel.TotalDuration;
-            course.CourseIsActive = updateCourseModel.CourseIsActive;
-            course.KnowdledgeDescription = updateCourseModel.KnowdledgeDescription;
-            course.LinkCertificated = updateCourseModel.LinkCertificated;
+            if (!string.IsNullOrEmpty(updateCourseModel.Title))
+            {
+                course.Title = updateCourseModel.Title;
+            }
+
+            if (!string.IsNullOrEmpty(updateCourseModel.Description))
+            {
+                course.Description = updateCourseModel.Description;
+            }
+
+            if (!string.IsNullOrEmpty(updateCourseModel.ImageUrl))
+            {
+                course.ImageUrl = updateCourseModel.ImageUrl;
+            }
+
+            if (!string.IsNullOrEmpty(updateCourseModel.VideoPreviewUrl))
+            {
+                course.VideoPreviewUrl = updateCourseModel.VideoPreviewUrl;
+            }
+
+            if (updateCourseModel.Price.HasValue)
+            {
+                course.Price = updateCourseModel.Price.Value;
+            }
+
+            if (updateCourseModel.SalesCampaign.HasValue)
+            {
+                course.SalesCampaign = updateCourseModel.SalesCampaign.Value;
+            }
+
+            if (updateCourseModel.IsPublic.HasValue)
+            {
+                course.IsPublic = updateCourseModel.IsPublic.Value;
+            }
+
+            if (updateCourseModel.TotalDuration.HasValue)
+            {
+                course.TotalDuration = updateCourseModel.TotalDuration.Value;
+            }
+
+            if (updateCourseModel.CourseIsActive.HasValue)
+            {
+                course.CourseIsActive = updateCourseModel.CourseIsActive.Value;
+            }
+
+            if (!string.IsNullOrEmpty(updateCourseModel.KnowdledgeDescription))
+            {
+                course.KnowdledgeDescription = updateCourseModel.KnowdledgeDescription;
+            }
+
+            if (!string.IsNullOrEmpty(updateCourseModel.LinkCertificated))
+            {
+                course.LinkCertificated = updateCourseModel.LinkCertificated;
+            }
+
             course.UpdateAt = DateTime.UtcNow;
 
             var categoriesToRemove = course.CourseCategories
