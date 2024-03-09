@@ -14,6 +14,8 @@ namespace LMSystem.Services.Interfaces
         public Task<ResponeModel> AddQuiz(AddQuizModel model);
         public Task<ResponeModel> DeleteQuiz(int quizId);
         public Task<PagedList<Quiz>> GetAllQuiz(PaginationParameter paginationParameter);
-        public Task<ResponeModel> UpdateQuiz(UpdateQuizModel quizModel, UpdateQuestion questionModel);
+        public Task<Quiz> GetQuizDetailByIdAsync(int quizId);
+        public Task<ResponeModel> UpdateQuiz(UpdateQuizModel quizModel);
+
     }
 }

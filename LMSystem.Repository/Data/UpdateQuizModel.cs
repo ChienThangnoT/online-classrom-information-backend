@@ -13,6 +13,8 @@ namespace LMSystem.Repository.Data
         public int QuizId { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
+        public List<UpdateQuestion> Questions { get; set; } = new List<UpdateQuestion>();
+
     }
 
     public class UpdateQuestion
