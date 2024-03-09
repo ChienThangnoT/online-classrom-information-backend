@@ -276,30 +276,31 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public async Task<ResponeModel> AddCourseToPayment(OrderPaymentModel orderPaymentModel)
+        public async Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel)
         {
             try
             {
-                var account = await _accountRepository.GetAccountById(orderPaymentModel.AccountId);
+                var account = await _accountRepository.GetAccountById(addOrderPaymentModel.AccountId);
                 if (account == null)
                 {
                     return new ResponeModel { Status = "Error", Message = "Account is not valid" };
                 }
-                var course = await _courseRepository.GetCourseDetailByIdAsync(orderPaymentModel.CourseId);
+                var course = await _courseRepository.GetCourseDetailByIdAsync(addOrderPaymentModel.CourseId);
 
-                var checkOrderSuccess = await GetOrderSuccessByAccountIdAndCourseId(orderPaymentModel.AccountId, orderPaymentModel.CourseId);
-                var checkOrderPending = await GetOrderPendingByAccountIdAndCourseId(orderPaymentModel.AccountId, orderPaymentModel.CourseId);
+                var checkOrderSuccess = await GetOrderSuccessByAccountIdAndCourseId(addOrderPaymentModel.AccountId, addOrderPaymentModel.CourseId);
+                var checkOrderPending = await GetOrderPendingByAccountIdAndCourseId(addOrderPaymentModel.AccountId, addOrderPaymentModel.CourseId);
                  
                 if(checkOrderSuccess.Status == "Error" && checkOrderPending.Status =="Error")
                 {
+                    var status = new OrderPaymentModel();
                     var Order = new Order
                     {
                         AccountId = account.Id,
                         AccountName = account.FirstName + " " + account.LastName,
-                        CourseId = orderPaymentModel.CourseId,
+                        CourseId = addOrderPaymentModel.CourseId,
                         TotalPrice = course.Price - (course.Price * course.SalesCampaign),
                         PaymentDate = DateTime.Now,
-                        Status = orderPaymentModel.Status,
+                        Status = status.Status,
                     };
                     _context.Add(Order);
                     _context.SaveChanges();

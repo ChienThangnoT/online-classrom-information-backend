@@ -21,9 +21,9 @@ namespace LMSystem.Services.Services
             _orderRepository = orderRepository;
         }
 
-        public async Task<ResponeModel> AddCourseToPayment(OrderPaymentModel orderPaymentModel)
+        public async Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel)
         {
-            return await _orderRepository.AddCourseToPayment(orderPaymentModel);
+            return await _orderRepository.AddCourseToPayment(addOrderPaymentModel);
 
         }
 
@@ -69,7 +69,7 @@ namespace LMSystem.Services.Services
         
         public async Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId)
         {
-            return await _orderRepository.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
+            return await _orderRepository.GetOrderPendingByAccountIdAndCourseId(accountId, courseId);
         }
 
         public async Task<IEnumerable<Order>> GetOrderHistoryAsync(string accountId)

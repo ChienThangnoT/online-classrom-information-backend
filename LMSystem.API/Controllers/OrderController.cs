@@ -1,8 +1,10 @@
-﻿using LMSystem.Repository.Data;
+﻿using LMSystem.Library;
+using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMSystem.API.Controllers
@@ -12,10 +14,12 @@ namespace LMSystem.API.Controllers
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
+        private readonly PaypalClient _paypalClient;
 
-        public OrderController(IOrderService orderRepository)
+        public OrderController(IOrderService orderRepository, PaypalClient paypalClient)
         {
             _orderService = orderRepository;
+            _paypalClient = paypalClient;
         }
 
         [HttpGet("PaymentHistory")]
@@ -123,18 +127,26 @@ namespace LMSystem.API.Controllers
         [HttpGet("GetOrderPendingByAccountIdAndCourseId")]
         public async Task<IActionResult> GetOrderPendingByAccountIdAndCourseId([FromQuery]string accountId, int courseId)
         {
-            var response = await _orderService.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
+            var response = await _orderService.GetOrderPendingByAccountIdAndCourseId(accountId, courseId);
             if (response.Status == "Error")
             {
                 return NotFound(response);
             }
             return Ok(response);
         }
+
+        [Authorize]
+        [HttpGet("GetClientId")]
+        public async Task<IActionResult> GetClientId()
+        {
+            var result =  _paypalClient.ClientId;
+            return result == null ? NotFound(result) : Ok(result);
+        }
         
         [HttpPost("AddOrderToDB")]
-        public async Task<IActionResult> AddOrderToDB(OrderPaymentModel orderPaymentModel)
+        public async Task<IActionResult> AddOrderToDB(AddOrderPaymentModel addOrderPaymentModel)
         {
-            var result = await _orderService.AddCourseToPayment(orderPaymentModel);
+            var result = await _orderService.AddCourseToPayment(addOrderPaymentModel);
             if (result.Status == "Error")
             {
                 return BadRequest(result);

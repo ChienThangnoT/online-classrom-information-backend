@@ -21,4 +21,11 @@ namespace LMSystem.Repository.Data
 
         public string? Status { get; set; } = OrderStatusEnum.Pending.ToString();
     }
+    
+    public class AddOrderPaymentModel
+    {
+        public string AccountId { get; set; }
+
+        public int CourseId { get; set; }
+    }
 }

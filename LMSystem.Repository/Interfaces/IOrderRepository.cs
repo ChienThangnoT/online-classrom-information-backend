@@ -21,7 +21,7 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> CountTotalIncomeByMonth(int year);
 
         #region  payment
-        Task<ResponeModel> AddCourseToPayment(OrderPaymentModel orderPaymentModel);
+        Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel);
         Task<ResponeModel> GetOrderSuccessByAccountIdAndCourseId(string accountId, int courseId);
         Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId);
 
