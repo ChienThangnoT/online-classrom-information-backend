@@ -93,7 +93,16 @@ namespace LMSystem.Repository.Repositories
                 paginationParameter.PageSize);
         }
 
-        public async Task<ResponeModel> UpdateQuiz(UpdateQuizModel quizModel, UpdateQuestion questionModel)
+        public async Task<Quiz> GetQuizDetailByIdAsync(int quizId)
+        {
+            var quiz = await _context.Quizzes
+                .Include(c => c.Questions)
+                .FirstOrDefaultAsync(c => c.QuizId == quizId);
+
+            return quiz;
+        }
+
+        public async Task<ResponeModel> UpdateQuiz(UpdateQuizModel quizModel)
         {
             try
             {
@@ -106,89 +115,46 @@ namespace LMSystem.Repository.Repositories
                     return new ResponeModel { Status = "Error", Message = "Quiz not found" };
                 }
 
-                if (quizModel.Title != null)
-                {
-                    existingQuiz.Title = quizModel.Title;
-                }
-                else
-                {
-                    existingQuiz.Title = existingQuiz.Title;
-                }
+                existingQuiz.Title = quizModel.Title ?? existingQuiz.Title;
+                existingQuiz.Description = quizModel.Description ?? existingQuiz.Description;
 
-                if (quizModel.Description != null)
+                // Process each question in the list
+                foreach (var questionModel in quizModel.Questions)
                 {
-                    existingQuiz.Description = quizModel.Description;
-                }
-                else
-                {
-                    existingQuiz.Description = existingQuiz.Description;
-                }
+                    var existingQuestion = existingQuiz.Questions
+                        .FirstOrDefault(q => q.QuestionTitle == questionModel.QuestionTitle);
 
-                if (quizModel.Title == null && quizModel.Description == null && questionModel.QuestionTitle == null)
-                {
-                    return new ResponeModel
+                    if (existingQuestion != null)
                     {
-                        Status = "Error",
-                        Message = "Fill a field to update quiz"
-                    };
-                }
-
-                //foreach (var modelQuestion in existingQuiz.Questions)
-                //{
-                var existingQuestion = existingQuiz.Questions
-                    .FirstOrDefault(q => q.QuestionTitle == questionModel.QuestionTitle);
-
-                if (existingQuestion != null)
-                {
-                    if (questionModel.Anwser != null)
-                    {
-                        existingQuestion.Anwser = questionModel.Anwser;
+                        // Update existing question
+                        existingQuestion.Anwser = questionModel.Anwser ?? existingQuestion.Anwser;
+                        existingQuestion.CorrectAnwser = questionModel.CorrectAnwser ?? existingQuestion.CorrectAnwser;
                     }
                     else
                     {
-                        existingQuestion.Anwser = existingQuestion.Anwser;
-                    }
-                    if (questionModel.CorrectAnwser != null)
-                    {
-                        existingQuestion.CorrectAnwser = (int)questionModel.CorrectAnwser;
-                    }
-                    else
-                    {
-                        existingQuestion.CorrectAnwser = existingQuestion.CorrectAnwser;
-                    }
-                }
-                else
-                {
-                    if (questionModel.QuestionTitle != null) 
-                    {
-                        var newQuestion = new Question
+                        // Add new question if the title is not null
+                        if (!string.IsNullOrEmpty(questionModel.QuestionTitle))
                         {
-                            QuestionTitle = questionModel.QuestionTitle,
-                            Anwser = questionModel.Anwser,
-                            CorrectAnwser = (int)questionModel.CorrectAnwser
-                        };
-                        existingQuiz.Questions.Add(newQuestion);
-                        if (questionModel.Anwser == null && questionModel.CorrectAnwser == null)
-                        {
-                            return new ResponeModel
+                            var newQuestion = new Question
                             {
-                                Status = "Error",
-                                Message = "Question not exist, Fill Answer and CorrectAnswer to add this new question"
+                                QuestionTitle = questionModel.QuestionTitle,
+                                Anwser = questionModel.Anwser,
+                                CorrectAnwser = (int)questionModel.CorrectAnwser
                             };
+                            existingQuiz.Questions.Add(newQuestion);
                         }
                     }
-                    
                 }
-                //}
 
                 await _context.SaveChangesAsync();
-                return new ResponeModel { Status = "Success", Message = "Update quiz successfully", DataObject = existingQuiz };
+                return new ResponeModel { Status = "Success", Message = "Quiz updated successfully", DataObject = existingQuiz };
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while updating the quiz" };
+                // Handle exception
+                return new ResponeModel { Status = "Error", Message = $"An error occurred: {ex.Message}" };
             }
         }
+
     }
 }

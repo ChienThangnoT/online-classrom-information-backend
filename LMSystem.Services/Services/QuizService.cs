@@ -34,10 +34,14 @@ namespace LMSystem.Services.Services
         {
             return await _quizRepository.GetAllQuiz(paginationParameter);
         }
-
-        public async Task<ResponeModel> UpdateQuiz(UpdateQuizModel quizModel, UpdateQuestion questionModel)
+        public async Task<Quiz> GetQuizDetailByIdAsync(int quizId)
         {
-            return await _quizRepository.UpdateQuiz(quizModel, questionModel);
+            return await _quizRepository.GetQuizDetailByIdAsync(quizId);
+        }
+
+        public async Task<ResponeModel> UpdateQuiz(UpdateQuizModel quizModel)
+        {
+            return await _quizRepository.UpdateQuiz(quizModel);
         }
     }
 }

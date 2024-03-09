@@ -71,10 +71,21 @@ namespace LMSystem.API.Controllers
             }
         }
 
-        [HttpPut("UpdateQuiz")]
-        public async Task<IActionResult> UpdateQuiz([FromQuery] UpdateQuizModel quizModel, UpdateQuestion questionModel)
+        [HttpGet("GetQuizDetail/{quizId}")]
+        public async Task<IActionResult> GetQuizDetailById(int quizId)
         {
-            var response = await _quizService.UpdateQuiz(quizModel, questionModel);
+            var quiz = await _quizService.GetQuizDetailByIdAsync(quizId);
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+            return Ok(quiz);
+        }
+
+        [HttpPut("UpdateQuiz")]
+        public async Task<IActionResult> UpdateQuiz(UpdateQuizModel quizModel)
+        {
+            var response = await _quizService.UpdateQuiz(quizModel);
 
             if (response.Status == "Error")
             {
