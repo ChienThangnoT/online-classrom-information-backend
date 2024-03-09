@@ -1,10 +1,8 @@
 ﻿using LMSystem.Repository.Data;
-using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace LMSystem.API.Controllers
 {
@@ -19,45 +17,17 @@ namespace LMSystem.API.Controllers
             _courseService = courseRepository;
         }
 
-        [HttpGet("CourselistPagination")]
+        [HttpGet("SelectCourselistPagination")]
         public async Task<IActionResult> GetCourses([FromQuery] CourseFilterParameters filterParams)
         {
             var (Courses, CurrentPage, PageSize, TotalCourses, TotalPages) = await _courseService.GetCoursesWithFilters(filterParams);
-            if (!Courses.Any())
+            if (!Courses.Any()) 
             {
                 return NotFound();
             }
             var response = new { Courses, CurrentPage, PageSize, TotalCourses, TotalPages };
             return Ok(response);
         }
-
-        //[HttpGet("GetAllCourse")]
-        //public async Task<IActionResult> GetAllCourse([FromQuery] PaginationParameter paginationParameter)
-        //{
-        //    try
-        //    {
-        //        var response = await _courseService.GetAllCourse(paginationParameter);
-        //        var metadata = new
-        //        {
-        //            response.TotalCount,
-        //            response.PageSize,
-        //            response.CurrentPage,
-        //            response.TotalPages,
-        //            response.HasNext,
-        //            response.HasPrevious
-        //        };
-        //        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-        //        if (!response.Any())
-        //        {
-        //            return NotFound();
-        //        }
-        //        return Ok(response);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
 
         [HttpGet("TopFavoritesCourseBaseStudentJoined")]
         public async Task<IActionResult> GetTopCoursesByStudentJoined(int numberOfCourses)
@@ -117,56 +87,6 @@ namespace LMSystem.API.Controllers
         public async Task<IActionResult> DeleteCourse(int courseId)
         {
             var response = await _courseService.DeleteCourse(courseId);
-            if (response.Status == "Error")
-            {
-                return NotFound(response);
-            }
-            return Ok(response);
-        }
-        [HttpGet("CountTotalCourse")]
-        public async Task<IActionResult> CountTotalCourse()
-        {
-            var response = await _courseService.CountTotalCourse();
-            if (response.Status == "Error")
-            {
-                return NotFound(response);
-            }
-            return Ok(response);
-        }
-        [HttpGet("CountTotalCourseUpToDate")]
-        public async Task<IActionResult> CountTotalCourseUpToDate([FromQuery] DateTime to)
-        {
-            var response = await _courseService.CountTotalCourseUpToDate(to);
-            if (response.Status == "Error")
-            {
-                return NotFound(response);
-            }
-            return Ok(response);
-        }
-        [HttpGet("CountTotalCourseByMonth")]
-        public async Task<IActionResult> CountTotalCourseByMonth([FromQuery] int year)
-        {
-            var response = await _courseService.CountTotalCourseByMonth(year);
-            if (response.Status == "Error")
-            {
-                return NotFound(response);
-            }
-            return Ok(response);
-        }
-        [HttpGet("GetYearList")]
-        public async Task<IActionResult> GetYearList()
-        {
-            var response = await _courseService.GetYearList();
-            if (response.Status == "Error")
-            {
-                return NotFound(response);
-            }
-            return Ok(response);
-        }
-        [HttpGet("CountStudentPerCourse")]
-        public async Task<IActionResult> CountStudentPerCourse()
-        {
-            var response = await _courseService.CountStudentPerCourse();
             if (response.Status == "Error")
             {
                 return NotFound(response);

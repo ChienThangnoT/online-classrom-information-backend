@@ -9,11 +9,11 @@ namespace LMSystem.Repository.Data
 {
     public class UpdateCategoryModel
     {
-        //[Required(ErrorMessage = "Id is required!")]
+        [Required(ErrorMessage = "Id is required!")]
         public int CategoryId { get; set; }
-        //[Required(ErrorMessage = "CategoryName is required!")]
+        [Required(ErrorMessage = "CategoryName is required!")]
         public string CategoryName { get; set; }
-        //[Required(ErrorMessage = "CategoryDescription is required!")]
+        [Required(ErrorMessage = "CategoryDescription is required!")]
         public string CategoryDescription { get; set; }
 
     }

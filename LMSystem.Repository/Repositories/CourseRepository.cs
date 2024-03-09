@@ -1,11 +1,8 @@
 ﻿using LMSystem.Repository.Data;
-using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +14,7 @@ namespace LMSystem.Repository.Repositories
 {
     public class CourseRepository : ICourseRepository
     {
+        // Assuming you have a DbContext or similar for data access
         private readonly LMOnlineSystemDbContext _context;
 
         public CourseRepository(LMOnlineSystemDbContext context)
@@ -60,7 +58,7 @@ namespace LMSystem.Repository.Repositories
                 }
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject = course };
+                return new ResponeModel { Status = "Success", Message = "Added course successfully", DataObject =  course };
             }
             catch (Exception ex)
             {
@@ -77,11 +75,9 @@ namespace LMSystem.Repository.Repositories
         public async Task<Course> GetCourseDetailByIdAsync(int courseId)
         {
             var course = await _context.Courses
-                .Include(c => c.Sections)
-                .ThenInclude(s => s.Steps)
-                .Include(c => c.CourseCategories)
-                .ThenInclude(cc => cc.Category)
-                .FirstOrDefaultAsync(c => c.CourseId == courseId);
+            .Include(c => c.Sections)
+            .ThenInclude(s => s.Steps)
+            .FirstOrDefaultAsync(c => c.CourseId == courseId);
 
             return course;
         }
@@ -90,6 +86,7 @@ namespace LMSystem.Repository.Repositories
         {
             var query = _context.Courses.AsQueryable();
 
+            // Apply filters
             if (filterParams.CategoryIds != null && filterParams.CategoryIds.Any())
             {
                 query = query.Where(c => c.CourseCategories.Any(cc => filterParams.CategoryIds.Contains(cc.CategoryId)));
@@ -104,28 +101,8 @@ namespace LMSystem.Repository.Repositories
             {
                 query = query.Where(c => c.Price <= filterParams.MaxPrice.Value);
             }
-            if (!string.IsNullOrEmpty(filterParams.Search))
-            {
-                query = query.Where(o => o.Title.Contains(filterParams.Search));
-            }
 
-            switch (filterParams.Sort)
-            {
-                case "title_asc":
-                    query = query.OrderBy(p => p.Title);
-                    break;
-                case "title_desc":
-                    query = query.OrderByDescending(p => p.Title);
-                    break;
-                case "price_asc":
-                    query = query.OrderBy(p => p.Price);
-                    break;
-                case "price_desc":
-                    query = query.OrderByDescending(p => p.Price);
-                    break;
-            }
-
-            int totalCourses = await query.CountAsync();
+            int totalCourses = await query.CountAsync(); 
             int totalPages = (int)Math.Ceiling(totalCourses / (double)filterParams.PageSize);
 
             var courses = await query.Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
@@ -134,70 +111,16 @@ namespace LMSystem.Repository.Repositories
                                      {
                                          CourseId = c.CourseId,
                                          Title = c.Title,
-                                         ImageUrl = c.ImageUrl,
                                          Price = c.Price,
                                          CourseCategory = string.Join(", ", c.CourseCategories.Select(cc => cc.Category.Name)),
                                          TotalDuration = c.TotalDuration,
                                          UpdateAt = c.UpdateAt,
-                                         CourseIsActive = c.CourseIsActive
+                                         IsPublic = c.IsPublic
                                      })
                                      .ToListAsync();
 
             return (Courses: courses, CurrentPage: filterParams.PageNumber, PageSize: filterParams.PageSize, TotalCourses: totalCourses, TotalPages: totalPages);
         }
-
-        //public async Task<PagedList<CourseListModel>> GetAllCourse(PaginationParameter paginationParameter)
-        //{
-        //    if (_context == null)
-        //    {
-        //        return null;
-        //    }
-
-        //    var courseQuery = _context.Courses.AsQueryable();
-
-        //    if (!string.IsNullOrEmpty(paginationParameter.Search))
-        //    {
-        //        courseQuery = courseQuery.Where(o => o.Title.Contains(paginationParameter.Search));
-        //    }
-
-        //    switch (paginationParameter.Sort)
-        //    {
-        //        case "title_asc":
-        //            courseQuery = courseQuery.OrderBy(p => p.Title);
-        //            break;
-        //        case "title_desc":
-        //            courseQuery = courseQuery.OrderByDescending(p => p.Title);
-        //            break;
-        //        case "price_asc":
-        //            courseQuery = courseQuery.OrderBy(p => p.Price);
-        //            break;
-        //        case "price_desc":
-        //            courseQuery = courseQuery.OrderByDescending(p => p.Price);
-        //            break;
-        //    }
-
-        //    var totalItems = await courseQuery.CountAsync();
-
-        //    var items = await courseQuery.Skip((paginationParameter.PageNumber - 1) * paginationParameter.PageSize)
-        //                     .Take(paginationParameter.PageSize)
-        //                     .Select(course => new CourseListModel
-        //                     {
-        //                         CourseId = course.CourseId,
-        //                         Title = course.Title,
-        //                         ImageUrl = course.ImageUrl,
-        //                         Price = course.Price,
-        //                         CourseCategory = string.Join(", ", course.CourseCategories.Select(cc => cc.Category.Name)), 
-        //                         TotalDuration = course.TotalDuration,
-        //                         UpdateAt = course.UpdateAt,
-        //                         CourseIsActive = course.CourseIsActive
-        //                     })
-        //                     .ToListAsync();
-
-
-        //    var pagedList = new PagedList<CourseListModel>(items, totalItems, paginationParameter.PageNumber, paginationParameter.PageSize);
-
-        //    return pagedList;
-        //}
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
         {
@@ -212,6 +135,7 @@ namespace LMSystem.Repository.Repositories
                 .Where(c => topCourses.Contains(c.CourseId))
                 .ToListAsync();
 
+            // Fill with random courses if needed
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses
@@ -256,10 +180,10 @@ namespace LMSystem.Repository.Repositories
         public async Task<IEnumerable<Course>> GetTopCoursesByRating(int numberOfCourses)
         {
             var topCourseIds = await _context.RatingCourses
-                .Include(rc => rc.Registration) 
-                .ThenInclude(reg => reg.Course) 
-                .GroupBy(rc => rc.Registration.CourseId) 
-                .Select(group => new { CourseId = group.Key, AverageRating = group.Average(rc => rc.RatingStar) }) 
+                .Include(rc => rc.Registration) // Include Registration navigation property
+                .ThenInclude(reg => reg.Course) // Then include Course navigation property from Registration
+                .GroupBy(rc => rc.Registration.CourseId) // Group by CourseId from RegistrationCourse
+                .Select(group => new { CourseId = group.Key, AverageRating = group.Average(rc => rc.RatingStar) }) // Assuming the property is named RatingValue
                 .OrderByDescending(x => x.AverageRating)
                 .Take(numberOfCourses)
                 .Select(x => x.CourseId)
@@ -309,7 +233,7 @@ namespace LMSystem.Repository.Repositories
         }
 
         private Course submitCourseChange(Course course, UpdateCourseModel updateCourseModel)
-        {
+        {          
             course.Title = updateCourseModel.Title;
             course.Description = updateCourseModel.Description;
             course.ImageUrl = updateCourseModel.ImageUrl;
@@ -322,7 +246,7 @@ namespace LMSystem.Repository.Repositories
             course.KnowdledgeDescription = updateCourseModel.KnowdledgeDescription;
             course.LinkCertificated = updateCourseModel.LinkCertificated;
             course.UpdateAt = DateTime.UtcNow;
-
+            //remore old category
             var categoriesToRemove = course.CourseCategories
                 .Where(cc => !updateCourseModel.CategoryList.Contains(cc.CategoryId))
                 .ToList();
@@ -331,7 +255,7 @@ namespace LMSystem.Repository.Repositories
             {
                 course.CourseCategories.Remove(categoryToRemove);
             }
-
+            //add new category
             var categoriesToAdd = updateCourseModel.CategoryList
                 .Where(categoryId => !course.CourseCategories.Any(cc => cc.CategoryId == categoryId))
                 .Select(categoryId => new CourseCategory { CategoryId = categoryId })
@@ -374,154 +298,12 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Course deleted successfully", DataObject = existingCourse };
+                return new ResponeModel { Status = "Success", Message = "Course deleted successfully", DataObject = existingCourse};
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while deleting the course" };
-            }
-        }
-
-        public async Task<ResponeModel> CountTotalCourse()
-        {
-            try
-            {
-                var totalCourses = await _context.Courses.CountAsync();
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = "Total courses counted successfully",
-                    DataObject = totalCourses
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while counting total courses in the system" };
-            }
-        }
-
-        public async Task<ResponeModel> CountTotalCourseUpToDate(DateTime to)
-        {
-            try
-            {
-                var totalCourses = await _context.Courses
-                    .Where(c => c.CreateAt <= to)
-                    .CountAsync();
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = $"Total courses in the system up to {to} counted successfully",
-                    DataObject = totalCourses
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while counting total courses in the system" };
-            }
-        }
-
-        public async Task<ResponeModel> CountTotalCourseByMonth(int year)
-        {
-            try
-            {
-                var totalCoursesByMonth = await _context.Courses
-                    .Where(c => c.CreateAt.Value.Year == year)
-                    .GroupBy(c => c.CreateAt.Value.Month)
-                    .Select(g => new { Month = g.Key, TotalCourses = g.Count() })
-                    .OrderBy(g => g.Month)
-                    .ToListAsync();
-
-                int[] array = new int[12];
-
-                foreach (var coursesByMonth in totalCoursesByMonth)
-                {
-                    array[coursesByMonth.Month - 1] = coursesByMonth.TotalCourses;
-                }
-
-                var jsonSerializerSettings = new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                };
-
-                var jsonData = JsonConvert.SerializeObject(array, jsonSerializerSettings);
-
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = $"Total courses created for each month in {year} retrieved successfully",
-                    DataObject = jsonData
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel
-                {
-                    Status = "Error",
-                    Message = "An error occurred while retrieving total courses by month"
-                };
-            }
-        }
-
-        public async Task<ResponeModel> GetYearList()
-        {
-            try
-            {
-                var distinctYears = await _context.Courses
-                    .Select(c => c.CreateAt.Value.Year)
-                    .Distinct()
-                    .OrderBy(year => year)
-                    .ToListAsync();
-
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = "Distinct years for courses retrieved successfully",
-                    DataObject = distinctYears
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel
-                {
-                    Status = "Error",
-                    Message = "An error occurred while retrieving distinct years for courses"
-                };
-            }
-        }
-
-        public async Task<ResponeModel> CountStudentPerCourse()
-        {
-            try
-            {
-                var studentsPerCourse = await _context.Courses
-                    .Select(c => new StudentPerCourseModel
-                    {
-                        CourseId = c.CourseId,
-                        CourseTitle = c.Title,
-                        TotalStudents = c.RegistrationCourses.Count()
-                    })
-                    .ToListAsync();
-
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = "Total number of students per course retrieved successfully",
-                    DataObject = studentsPerCourse
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel
-                {
-                    Status = "Error",
-                    Message = "An error occurred while retrieving total number of students per course",
-                };
             }
         }
     }

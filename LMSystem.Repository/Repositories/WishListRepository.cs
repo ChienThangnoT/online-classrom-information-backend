@@ -48,32 +48,6 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public async Task<ResponeModel> CountTotalWishListByAccountId(string accountId)
-        {
-            try
-            {
-                var totalWishListItems = await _context.WishLists
-                    .Where(w => w.AccountId == accountId)
-                    .CountAsync();
-
-                return new ResponeModel
-                {
-                    Status = "Success",
-                    Message = "Total number of wishlist items retrieved successfully",
-                    DataObject = totalWishListItems
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel
-                {
-                    Status = "Error",
-                    Message = "An error occurred while retrieving total number of wishlist items"
-                };
-            }
-        }
-
         public async Task<ResponeModel> DeleteWishListByCourseId(int courseId, string accountId)
         {
             try

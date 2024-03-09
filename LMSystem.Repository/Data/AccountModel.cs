@@ -35,7 +35,6 @@ namespace LMSystem.Repository.Data
 
         public string Sex { get; set; }
         public string? ParentEmail { get; set; }
-        public string? DeviceToken { get; set; } = "";
     }
 
     public class AccountModelGetList

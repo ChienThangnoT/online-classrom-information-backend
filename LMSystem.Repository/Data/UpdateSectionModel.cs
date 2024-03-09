@@ -9,12 +9,12 @@ namespace LMSystem.Repository.Data
 {
     public class UpdateSectionModel
     {
-        //[Required(ErrorMessage = "SectionId is required!")]
+        [Required(ErrorMessage = "SectionId is required!")]
         public int SectionId { get; set; }
 
-        //[Required(ErrorMessage = "Title is required!")]
+        [Required(ErrorMessage = "Title is required!")]
         public string Title { get; set; }
-        //[Required(ErrorMessage = "Position is required!")]
+        [Required(ErrorMessage = "Position is required!")]
         public int Position { get; set; }
     }
 }

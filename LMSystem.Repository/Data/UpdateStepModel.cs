@@ -9,20 +9,20 @@ namespace LMSystem.Repository.Data
 {
     public class UpdateStepModel
     {
-        //[Required(ErrorMessage = "StepId is required!")]
+        [Required(ErrorMessage = "StepId is required!")]
         public int StepId { get; set; }
 
-        //[Required(ErrorMessage = "Duration is required!")]
+        [Required(ErrorMessage = "Duration is required!")]
         public int Duration { get; set; }
 
-        //[Required(ErrorMessage = "Title is required!")]
+        [Required(ErrorMessage = "Title is required!")]
         public string Title { get; set; }
-        //[Required(ErrorMessage = "VideoUrl is required!")]
+        [Required(ErrorMessage = "VideoUrl is required!")]
         public string VideoUrl { get; set; }
-        //[Required(ErrorMessage = "Position is required!")]
+        [Required(ErrorMessage = "Position is required!")]
         public int Position { get; set; }
 
-        //[Required(ErrorMessage = "StepDescription is required!")]
+        [Required(ErrorMessage = "StepDescription is required!")]
         public string StepDescription { get; set; }
 
         public int QuizId { get; set; }
