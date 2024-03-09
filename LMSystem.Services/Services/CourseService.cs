@@ -1,4 +1,5 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
@@ -24,6 +25,11 @@ namespace LMSystem.Services.Services
         {
             return await _courseRepository.GetCoursesWithFilters(filterParams);
         }
+
+        //public async Task<PagedList<CourseListModel>> GetAllCourse(PaginationParameter paginationParameter)
+        //{
+        //    return await _courseRepository.GetAllCourse(paginationParameter);
+        //}
 
         public async Task<IEnumerable<Course>> GetTopCoursesByStudentJoined(int numberOfCourses)
         {
@@ -56,6 +62,31 @@ namespace LMSystem.Services.Services
         public async Task<ResponeModel> UpdateCourse(UpdateCourseModel updateCourseModel)
         {
             return await _courseRepository.UpdateCourse(updateCourseModel);
+        }
+
+        public async Task<ResponeModel> CountTotalCourse()
+        {
+            return await _courseRepository.CountTotalCourse();
+        }
+
+        public async Task<ResponeModel> CountTotalCourseUpToDate(DateTime to)
+        {
+            return await _courseRepository.CountTotalCourseUpToDate(to);
+        }
+
+        public async Task<ResponeModel> CountTotalCourseByMonth(int year)
+        {
+            return await _courseRepository.CountTotalCourseByMonth(year);
+        }
+
+        public async Task<ResponeModel> GetYearList()
+        {
+            return await _courseRepository.GetYearList();
+        }
+
+        public async Task<ResponeModel> CountStudentPerCourse()
+        {
+            return await _courseRepository.CountStudentPerCourse();
         }
     }
 }

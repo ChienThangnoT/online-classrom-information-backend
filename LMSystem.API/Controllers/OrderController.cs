@@ -28,5 +28,118 @@ namespace LMSystem.API.Controllers
             }
             return Ok(orderHistory);
         }
+        [HttpGet("TotalOrders")]
+        public async Task<IActionResult> CountTotalOrder()
+        {
+            var response = await _orderService.CountTotalOrder();
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("CountTotalOrdersByStatus")]
+        public async Task<IActionResult> CountTotalOrdersByStatus([FromQuery] string status)
+        {
+            var response = await _orderService.CountTotalOrdersByStatus(status);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("CountTotalOrdersByStatusUpToDate")]
+        public async Task<IActionResult> CountTotalOrdersByStatusUpToDate([FromQuery] string status,[FromQuery] DateTime to)
+        {
+            var response = await _orderService.CountTotalOrdersByStatusUpToDate(status, to);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("CountOrderByStatusGroupByMonth")]
+        public async Task<IActionResult> CountOrderByStatusGroupByMonth([FromQuery] string status, [FromQuery] int year)
+        {
+            var response = await _orderService.CountOrderByStatusGroupByMonth(status, year);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("YearList")]
+        public async Task<IActionResult> GetYearList()
+        {
+            var response = await _orderService.GetYearList();
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("TotalIncome")]
+        public async Task<IActionResult> CountTotalIncome()
+        {
+            var response = await _orderService.CountTotalIncome();
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("TotalIncomeUpToDate")]
+        public async Task<IActionResult> CountTotalIncomeUpToDate([FromQuery] DateTime to)
+        {
+            var response = await _orderService.CountTotalIncomeUpToDate(to);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("TotalIncomeByMonth")]
+        public async Task<IActionResult> CountTotalIncomeByMonth([FromQuery] int year)
+        {
+            var response = await _orderService.CountTotalIncomeByMonth(year);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        } 
+        
+        [HttpGet("GetOrderSuccessByAccountIdAndCourseId")]
+        public async Task<IActionResult> GetOrderSuccessByAccountIdAndCourseId([FromQuery]string accountId, int courseId)
+        {
+            var response = await _orderService.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        
+        [HttpGet("GetOrderPendingByAccountIdAndCourseId")]
+        public async Task<IActionResult> GetOrderPendingByAccountIdAndCourseId([FromQuery]string accountId, int courseId)
+        {
+            var response = await _orderService.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        
+        [HttpPost("AddOrderToDB")]
+        public async Task<IActionResult> AddOrderToDB(OrderPaymentModel orderPaymentModel)
+        {
+            var result = await _orderService.AddCourseToPayment(orderPaymentModel);
+            if (result.Status == "Error")
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }
