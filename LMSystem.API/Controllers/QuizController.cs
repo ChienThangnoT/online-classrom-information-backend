@@ -72,7 +72,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPut("UpdateQuiz")]
-        public async Task<IActionResult> UpdateQuiz([FromQuery] UpdateQuizModel quizModel, [FromQuery] UpdateQuestion questionModel)
+        public async Task<IActionResult> UpdateQuiz([FromQuery] UpdateQuizModel quizModel, UpdateQuestion questionModel)
         {
             var response = await _quizService.UpdateQuiz(quizModel, questionModel);
 
