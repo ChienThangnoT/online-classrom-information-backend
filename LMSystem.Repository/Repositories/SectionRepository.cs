@@ -82,7 +82,35 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Updated section successfully", DataObject = section };
+                var response = await _context.Sections
+                    .Where(section => section.SectionId == updateSectionModel.SectionId)
+                    .Include(section => section.Steps)
+                    .Select(section => new
+                    {
+                        section.SectionId,
+                        section.CourseId,
+                        section.Title,
+                        section.Position,
+                        Steps = section.Steps.Select(step => new
+                        {
+                            step.StepId,
+                            step.QuizId,
+                            step.Title,
+                            step.Position,
+                            step.Duration,
+                            step.StepDescription,
+                            step.VideoUrl,
+                        }).ToList()
+                    })
+                    .FirstOrDefaultAsync();
+
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Updated section successfully",
+                    DataObject = response
+                };
             }
             catch (Exception ex)
             {
