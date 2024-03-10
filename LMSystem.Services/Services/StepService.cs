@@ -38,5 +38,10 @@ namespace LMSystem.Services.Services
         {
             return await _stepRepository.GetStepsBySectionId(sectionId);
         }
+
+        public async Task<ResponeModel> DeleteStep(int stepId)
+        {
+            return await _stepRepository.DeleteStep(stepId);
+        }
     }
 }
