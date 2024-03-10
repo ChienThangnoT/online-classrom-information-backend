@@ -78,7 +78,7 @@ namespace LMSystem.Repository.Repositories
         {
             var course = await _context.Courses
                 .Include(c => c.Sections)
-                .ThenInclude(s => s.Steps)
+                .ThenInclude(s => s.Steps.OrderBy(step => step.Position))
                 .Include(c => c.CourseCategories)
                 .ThenInclude(cc => cc.Category)
                 .FirstOrDefaultAsync(c => c.CourseId == courseId);
