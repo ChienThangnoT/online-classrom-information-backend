@@ -12,6 +12,7 @@ namespace LMSystem.Services.Interfaces
     {
         public Task<ResponeModel> AddStep(AddStepModel addStepModel);
         public Task<ResponeModel> UpdateStep(UpdateStepModel updateStepModel);
+        public Task<ResponeModel> DeleteStep(int stepId);
         public Task<LearningProgressModel> CheckCourseProgress(int registrationId);
         public Task<ResponeModel> GetStepsBySectionId(int sectionId);
 

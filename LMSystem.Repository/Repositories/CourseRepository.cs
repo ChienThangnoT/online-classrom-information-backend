@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Collections.Specialized.BitVector32;
 
 namespace LMSystem.Repository.Repositories
 {
@@ -77,8 +78,8 @@ namespace LMSystem.Repository.Repositories
         public async Task<Course> GetCourseDetailByIdAsync(int courseId)
         {
             var course = await _context.Courses
-                .Include(c => c.Sections)
-                .ThenInclude(s => s.Steps)
+                .Include(c => c.Sections.OrderBy(section => section.Position))
+                .ThenInclude(s => s.Steps.OrderBy(step => step.Position))
                 .Include(c => c.CourseCategories)
                 .ThenInclude(cc => cc.Category)
                 .FirstOrDefaultAsync(c => c.CourseId == courseId);
