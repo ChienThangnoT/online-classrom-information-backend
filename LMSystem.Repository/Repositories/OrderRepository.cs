@@ -12,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using AutoMapper;
+using System.Globalization;
+using Microsoft.SqlServer.Server;
 
 namespace LMSystem.Repository.Repositories
 {
@@ -71,7 +73,7 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public async Task<ResponeModel> CountTotalOrdersByStatusUpToDate(string status,DateTime to)
+        public async Task<ResponeModel> CountTotalOrdersByStatusUpToDate(string status, DateTime to)
         {
             try
             {
@@ -206,8 +208,8 @@ namespace LMSystem.Repository.Repositories
             try
             {
                 var totalIncome = await _context.Orders
-                    .Where(o => o.Status == OrderStatusEnum.Completed.ToString() 
-                            && o.PaymentDate.HasValue 
+                    .Where(o => o.Status == OrderStatusEnum.Completed.ToString()
+                            && o.PaymentDate.HasValue
                             && o.PaymentDate.Value <= to)
                     .SumAsync(o => o.TotalPrice);
 
@@ -236,14 +238,14 @@ namespace LMSystem.Repository.Repositories
             {
                 var totalIncomeByMonth = await _context.Orders
                     .Where(o => o.Status == OrderStatusEnum.Completed.ToString()
-                            && o.PaymentDate.HasValue 
+                            && o.PaymentDate.HasValue
                             && o.PaymentDate.Value.Year == year)
                     .GroupBy(o => o.PaymentDate.Value.Month)
                     .Select(g => new { Month = g.Key, TotalPrice = g.Sum(o => o.TotalPrice) })
                     .OrderBy(g => g.Month)
                     .ToListAsync();
 
-                double?[] array = new double?[12]; 
+                double?[] array = new double?[12];
 
                 foreach (var incomeByMonth in totalIncomeByMonth)
                 {
@@ -276,6 +278,7 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
+        #region  payment
         public async Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel)
         {
             try
@@ -289,16 +292,20 @@ namespace LMSystem.Repository.Repositories
 
                 var checkOrderSuccess = await GetOrderSuccessByAccountIdAndCourseId(addOrderPaymentModel.AccountId, addOrderPaymentModel.CourseId);
                 var checkOrderPending = await GetOrderPendingByAccountIdAndCourseId(addOrderPaymentModel.AccountId, addOrderPaymentModel.CourseId);
-                 
-                if(checkOrderSuccess.Status == "Error" && checkOrderPending.Status =="Error")
+
+                if (checkOrderSuccess.Status == "Error" && checkOrderPending.Status == "Error")
                 {
                     var status = new OrderPaymentModel();
+                    var totalPrice = Math.Round((double)((course.Price - (course.Price * course.SalesCampaign)) / 24640), 2);
+                    //var formattedTotalPrice = totalPrice.ToString("0.00", CultureInfo.InvariantCulture);
+
+
                     var Order = new Order
                     {
                         AccountId = account.Id,
                         AccountName = account.FirstName + " " + account.LastName,
                         CourseId = addOrderPaymentModel.CourseId,
-                        TotalPrice = course.Price - (course.Price * course.SalesCampaign),
+                        TotalPrice = totalPrice,
                         PaymentDate = DateTime.Now,
                         Status = status.Status,
                     };
@@ -312,7 +319,7 @@ namespace LMSystem.Repository.Repositories
 
                     };
                 }
-                else if(checkOrderSuccess.Status == "Error" && checkOrderPending.Status != "Error")
+                else if (checkOrderSuccess.Status == "Error" && checkOrderPending.Status != "Error")
                 {
 
                     return new ResponeModel
@@ -327,10 +334,12 @@ namespace LMSystem.Repository.Repositories
                     Status = "Error",
                     Message = "Order has been completed!",
                 };
-                
-            }   catch (Exception ex)
+
+            }
+            catch (Exception ex)
             {
-                return new ResponeModel {
+                return new ResponeModel
+                {
                     Status = "Error",
                     Message = ex.Message
                 };
@@ -354,7 +363,7 @@ namespace LMSystem.Repository.Repositories
                 {
                     Status = "Success",
                     Message = "Find order has completed!",
-                    DataObject = order.OrderId
+                    DataObject = order
                 };
             }
             catch (Exception ex)
@@ -366,7 +375,7 @@ namespace LMSystem.Repository.Repositories
                 };
             }
         }
-        
+
         public async Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId)
         {
             try
@@ -396,5 +405,36 @@ namespace LMSystem.Repository.Repositories
                 };
             }
         }
+
+        public async Task<ResponeModel> GetOrderByTransactionId(string transactionId)
+        {
+            try
+            {
+                var transaction = await _context.Orders.FirstOrDefaultAsync(t => t.TransactionNo == transactionId);
+                if (transaction == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Not found order has transactionId!"
+                    };
+                }
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Find order was pending!",
+                    DataObject = transaction
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = ex.Message
+                };
+            }
+        }
+        #endregion
     }
 }

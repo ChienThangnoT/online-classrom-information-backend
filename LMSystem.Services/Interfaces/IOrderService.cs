@@ -24,6 +24,9 @@ namespace LMSystem.Services.Interfaces
         Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel);
         Task<ResponeModel> GetOrderSuccessByAccountIdAndCourseId(string accountId, int courseId);
         Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId);
+        Task<ResponeModel> CreatePaymentWithPayPal(string accountId, int courseId);
+        Task<ResponeModel> CreateCapturetWithPayPal(string transactionId);
+        Task<ResponeModel> GetOrderByTransactionId(string transactionId);
 
         #endregion
     }
