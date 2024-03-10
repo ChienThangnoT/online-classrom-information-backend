@@ -21,6 +21,11 @@ namespace LMSystem.Services.Services
             return await _sectionRepository.AddSection(addSectionModel);
         }
 
+        public async Task<ResponeModel> DeleteSection(int sectionId)
+        {
+            return await _sectionRepository.DeleteSection(sectionId);
+        }
+
         public async Task<ResponeModel> GetSectionsByCourseId(int courseId)
         {
             return await _sectionRepository.GetSectionsByCourseId(courseId);

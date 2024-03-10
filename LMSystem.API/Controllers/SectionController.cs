@@ -49,5 +49,17 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete("DeleteSection")]
+        public async Task<IActionResult> DeleteSection(int sectionId)
+        {
+            var response = await _sectionService.DeleteSection(sectionId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
