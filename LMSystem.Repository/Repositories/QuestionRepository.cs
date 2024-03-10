@@ -85,7 +85,10 @@ namespace LMSystem.Repository.Repositories
             {
                 return null;
             }
-            var questions = _context.Questions.AsQueryable();
+            var questions = _context.Questions
+                                    .Include (c => c.AnswerHistories)
+                                    .AsQueryable();
+
             if (!string.IsNullOrEmpty(paginationParameter.Search))
             {
                 questions = questions.Where(o => o.QuestionTitle.Contains(paginationParameter.Search));

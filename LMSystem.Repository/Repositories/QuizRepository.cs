@@ -80,7 +80,12 @@ namespace LMSystem.Repository.Repositories
             {
                 return null;
             }
-            var quizzes = _context.Quizzes.AsQueryable();
+            var quizzes = _context.Quizzes
+                                .Include(q => q.Questions)
+                                .ThenInclude(a => a.AnswerHistories)
+                                .Include(s => s.Steps)
+                                .AsQueryable();
+
             if (!string.IsNullOrEmpty(paginationParameter.Search))
             {
                 quizzes = quizzes.Where(o => o.Title.Contains(paginationParameter.Search));
@@ -96,7 +101,8 @@ namespace LMSystem.Repository.Repositories
         public async Task<Quiz> GetQuizDetailByIdAsync(int quizId)
         {
             var quiz = await _context.Quizzes
-                .Include(c => c.Questions)
+                .Include(q => q.Questions)
+                .ThenInclude(a => a.AnswerHistories)
                 .FirstOrDefaultAsync(c => c.QuizId == quizId);
 
             return quiz;
