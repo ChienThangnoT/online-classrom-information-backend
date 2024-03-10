@@ -152,7 +152,9 @@ namespace LMSystem.Repository.Repositories
         {
             try
             {
-                var sectionToDelete = await _context.Sections.FindAsync(sectionId);
+                var sectionToDelete = await _context.Sections
+                    .Include(s => s.Steps)
+                    .FirstOrDefaultAsync(s => s.SectionId == sectionId);
 
                 if (sectionToDelete == null)
                 {
@@ -163,6 +165,7 @@ namespace LMSystem.Repository.Repositories
                     };
                 }
 
+                _context.Steps.RemoveRange(sectionToDelete.Steps);
                 _context.Sections.Remove(sectionToDelete);
                 await _context.SaveChangesAsync();
 

@@ -62,5 +62,17 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete("DeleteStep")]
+        public async Task<IActionResult> DeleteStep(int stepId)
+        {
+            var response = await _stepService.DeleteStep(stepId);
+            if (response.Status == "Error")
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
