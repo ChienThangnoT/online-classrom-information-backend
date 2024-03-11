@@ -152,7 +152,8 @@ namespace LMSystem.Services.Services
                 orders.PaymentMethod = "PayPal";
                 orders.CurrencyCode = "USD";
                 orders.Status = OrderStatusEnum.Completed.ToString();
-
+                _context.Orders.Update(orders);
+                await _context.SaveChangesAsync();
 
                 return new ResponeModel
                 {
