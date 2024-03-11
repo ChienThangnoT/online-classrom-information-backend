@@ -286,10 +286,13 @@ namespace LMSystem.Repository.Repositories
                 var account = await _accountRepository.GetAccountById(addOrderPaymentModel.AccountId);
                 if (account == null)
                 {
-                    return new ResponeModel { Status = "Error", Message = "Account is not valid" };
+                    return new ResponeModel { Status = "Error", Message = "Account is not exist" };
                 }
                 var course = await _courseRepository.GetCourseDetailByIdAsync(addOrderPaymentModel.CourseId);
-
+                if (course == null)
+                {
+                    return new ResponeModel { Status = "Error", Message = "Course is not exist" };
+                }
                 var checkOrderSuccess = await GetOrderSuccessByAccountIdAndCourseId(addOrderPaymentModel.AccountId, addOrderPaymentModel.CourseId);
                 var checkOrderPending = await GetOrderPendingByAccountIdAndCourseId(addOrderPaymentModel.AccountId, addOrderPaymentModel.CourseId);
 

@@ -154,7 +154,14 @@ namespace LMSystem.Services.Services
                 orders.Status = OrderStatusEnum.Completed.ToString();
                 _context.Orders.Update(orders);
                 await _context.SaveChangesAsync();
-
+                var registration = new RegistrationCourse();
+                registration.AccountId = orders.AccountId;
+                registration.CourseId = orders.CourseId;
+                registration.EnrollmentDate = DateTime.Now;
+                registration.IsCompleted = false;
+                registration.LearningProgress = 0;
+                _context.RegistrationCourses.Add(registration);
+                await _context.SaveChangesAsync();
                 return new ResponeModel
                 {
                     Status = "Success",
