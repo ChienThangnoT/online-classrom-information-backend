@@ -128,7 +128,6 @@ namespace LMSystem.Services.Services
                     Status = "Success",
                     Message = "Create order",
                     DataObject = result
-
                 };
             }
             catch (Exception ex)

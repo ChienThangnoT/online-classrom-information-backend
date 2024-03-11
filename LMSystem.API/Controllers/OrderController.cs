@@ -163,7 +163,7 @@ namespace LMSystem.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("AddOrderToDB")]
+        [HttpPost("AddOrderToCartWaitingPAYMENT")]
         public async Task<IActionResult> AddOrderToDB(AddOrderPaymentModel addOrderPaymentModel)
         {
             var result = await _orderService.AddCourseToPayment(addOrderPaymentModel);
@@ -174,7 +174,7 @@ namespace LMSystem.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("CreateOrderPaypal")]
+        [HttpPost("CreateOrderWithPaypal")]
         public async Task<IActionResult> CreateOrderPaypal(string accountId, int courseId)
         {
             var result = await _orderService.CreatePaymentWithPayPal(accountId, courseId);
