@@ -102,5 +102,14 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
+        public async Task<bool> CheckRegistrationCourse(string accountId, int courseId)
+        {
+            var registrationExists = await _context.RegistrationCourses
+        .AnyAsync(rc => rc.AccountId == accountId && rc.CourseId == courseId);
+
+            return registrationExists;
+        }
+
+
     }
 }
