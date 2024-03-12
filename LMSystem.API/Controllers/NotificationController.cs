@@ -142,7 +142,7 @@ namespace LMSystem.API.Controllers
                 {
                     Status = "Success",
                     Message = "Get number of unread notifications successfully",
-                    DataObject = result.ToString()
+                    DataObject = result
                 };
                 return Ok(rs);
             }
