@@ -47,5 +47,15 @@ namespace LMSystem.Repository.Repositories
                 return new ResponeModel { Status = "Error", Message = "An error occurred while get the register course list" };
                 }
         }
+
+        public async Task<bool> CheckRegistrationCourse(string accountId, int courseId)
+        {
+            var registrationExists = await _context.RegistrationCourses
+        .AnyAsync(rc => rc.AccountId == accountId && rc.CourseId == courseId);
+
+            return registrationExists;
+        }
+
+
     }
 }

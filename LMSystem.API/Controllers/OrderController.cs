@@ -6,6 +6,8 @@ using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using NuGet.Protocol;
 
 namespace LMSystem.API.Controllers
 {
@@ -137,16 +139,56 @@ namespace LMSystem.API.Controllers
 
         [Authorize]
         [HttpGet("GetClientId")]
-        public async Task<IActionResult> GetClientId()
+        public IActionResult GetClientId()
         {
-            var result =  _paypalClient.ClientId;
-            return result == null ? NotFound(result) : Ok(result);
+            var result = _paypalClient.ClientId;
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            var jsonResult = JsonConvert.SerializeObject(result);
+            return Ok(jsonResult);
         }
         
-        [HttpPost("AddOrderToDB")]
+        [HttpGet("GetOrderByTransactionId")]
+        public async Task<IActionResult> GetOrderByTransactionId(string transactionId)
+        {
+            var result = await _orderService.GetOrderByTransactionId(transactionId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost("AddOrderToCartWaitingPAYMENT")]
         public async Task<IActionResult> AddOrderToDB(AddOrderPaymentModel addOrderPaymentModel)
         {
             var result = await _orderService.AddCourseToPayment(addOrderPaymentModel);
+            if (result.Status == "Error")
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("CreateOrderWithPaypal")]
+        public async Task<IActionResult> CreateOrderPaypal(string accountId, int courseId)
+        {
+            var result = await _orderService.CreatePaymentWithPayPal(accountId, courseId);
+            if (result.Status == "Error")
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+        
+        [HttpPost("CreateCapturetWithPayPal")]
+        public async Task<IActionResult> CreateCapturetWithPayPal(string transactionId)
+        {
+            var result = await _orderService.CreateCapturetWithPayPal(transactionId);
             if (result.Status == "Error")
             {
                 return BadRequest(result);

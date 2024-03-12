@@ -20,5 +20,11 @@ namespace LMSystem.Services.Services
         {
             return await _registrationCourseRepository.GetRegisterCourseListByAccountId(accountId);
         }
+
+        public async Task<bool> CheckRegistrationCourse(string accountId, int courseId)
+        {
+            return await _registrationCourseRepository.CheckRegistrationCourse(accountId, courseId);
+        }
+
     }
 }

@@ -24,7 +24,7 @@ namespace LMSystem.Repository.Interfaces
         Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel);
         Task<ResponeModel> GetOrderSuccessByAccountIdAndCourseId(string accountId, int courseId);
         Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId);
-
+        Task<ResponeModel> GetOrderByTransactionId(string transactionId);
         #endregion
     }
 }
