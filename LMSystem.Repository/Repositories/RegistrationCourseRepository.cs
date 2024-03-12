@@ -73,9 +73,9 @@ namespace LMSystem.Repository.Repositories
                         EnrollmentDate = r.EnrollmentDate,
                         IsCompleted = r.IsCompleted,
                         LearningProgress = r.LearningProgress,
-                        // You can add more Course details as needed
-                        CourseTitle = r.Course.Title, // Assuming Course has a Title property
-                        CourseDescription = r.Course.Description // Assuming Course has a Description property
+                        CourseTitle = r.Course.Title, 
+                        CourseDescription = r.Course.Description, 
+                        CourseImg = r.Course.ImageUrl
                     })
                     .ToListAsync();
 
