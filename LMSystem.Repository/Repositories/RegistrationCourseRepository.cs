@@ -17,7 +17,46 @@ namespace LMSystem.Repository.Repositories
         public RegistrationCourseRepository(LMOnlineSystemDbContext context)
         {
             _context = context;
-        }   
+        }
+
+        public async Task<ResponeModel> GetCompletedLearningCourseByAccountId(string accountId)
+        {
+            try
+            {
+                var completedCourseList = await _context.RegistrationCourses
+                    .Where(r => r.AccountId == accountId
+                            && r.IsCompleted == true)
+                    .Select(r => new {
+                        r.CourseId,
+                        r.Course.Title,
+                        r.Course.ImageUrl,
+                        r.EnrollmentDate
+                    })
+                    .ToListAsync();
+
+                if (completedCourseList == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No completed course were found for the specified account id"
+                    };
+                }
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "List completed course successfully",
+                    DataObject = completedCourseList
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while get the completed course list" };
+            }
+        }
+
         public async Task<ResponeModel> GetRegisterCourseListByAccountId(string accountId)
         {
             try
