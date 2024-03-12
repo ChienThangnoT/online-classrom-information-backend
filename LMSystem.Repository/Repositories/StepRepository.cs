@@ -76,7 +76,7 @@ namespace LMSystem.Repository.Repositories
             step.QuizId = updateStepModel.QuizId;
 
             return step;
-        }   
+        }
 
         public async Task<LearningProgressModel> CheckCourseProgress(int registrationId)
         {
@@ -107,7 +107,7 @@ namespace LMSystem.Repository.Repositories
             var progressPercentage = totalSteps > 0
                 ? (double)completedStepIds.Count / totalSteps
                 : 0;
-            
+
             var isComplete = progressPercentage < 1
                 ? registration.IsCompleted = false : registration.IsCompleted = true;
 
@@ -132,7 +132,7 @@ namespace LMSystem.Repository.Repositories
                 CurrentSection = latestStep?.Section?.Title,
                 ProgressPercentage = progressPercentage,
                 IsCompleted = isComplete,
-                EnrollDay = registration.EnrollmentDate.GetValueOrDefault(), 
+                EnrollDay = registration.EnrollmentDate.GetValueOrDefault(),
                 StepCompleteDay = latestCompletionDate.GetValueOrDefault()
             };
         }
@@ -143,6 +143,7 @@ namespace LMSystem.Repository.Repositories
             {
                 var steps = await _context.Steps
                     .Where(s => s.SectionId == sectionId)
+                    .OrderBy(s => s.Position)
                     .Select(s => new
                     {
                         s.StepId,
@@ -166,6 +167,41 @@ namespace LMSystem.Repository.Repositories
             {
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while retrieve steps list" };
+            }
+        }
+
+        public async Task<ResponeModel> DeleteStep(int stepId)
+        {
+            try
+            {
+                var stepToDelete = await _context.Steps.FindAsync(stepId);
+
+                if (stepToDelete == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Step not found"
+                    };
+                }
+
+                _context.Steps.Remove(stepToDelete);
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Step deleted successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "An error occurred while deleting the step"
+                };
             }
         }
     }
