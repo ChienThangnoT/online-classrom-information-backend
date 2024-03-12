@@ -19,6 +19,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using LMSystem.Library;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+//config Paypal
+builder.Services.AddSingleton(x =>
+    new PaypalClient(
+        builder.Configuration["PayPalOptions:ClientId"],
+        builder.Configuration["PayPalOptions:ClientSecret"],
+        builder.Configuration["PayPalOptions:Mode"]
+    )
+);
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -73,9 +83,9 @@ builder.Services
 
 
 
-//--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
+--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
 
-//config database to deploy on azure
+config database to deploy on azure
 var connection = string.Empty;
 if (builder.Environment.IsDevelopment())
 {
@@ -90,7 +100,7 @@ else
 builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
         options.UseSqlServer(connection));
 
--------------------OPEN COMMENT CHAT KOO ---------------------------
+// ------------------- OPEN COMMENT CHAT KOO ---------------------------
 
 //add cors
 builder.Services.AddCors(options =>
