@@ -11,6 +11,7 @@ namespace LMSystem.Services.Interfaces
     {
         public Task<ResponeModel> AddSection(AddSectionModel addSectionModel);
         public Task<ResponeModel> UpdateSection(UpdateSectionModel updateSectionModel);
+        public Task<ResponeModel> DeleteSection(int sectionId);
         public Task<ResponeModel> GetSectionsByCourseId(int courseId);
     }
 }

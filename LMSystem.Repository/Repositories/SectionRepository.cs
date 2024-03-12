@@ -82,7 +82,35 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Updated section successfully", DataObject = section };
+                var response = await _context.Sections
+                    .Where(section => section.SectionId == updateSectionModel.SectionId)
+                    .Include(section => section.Steps)
+                    .Select(section => new
+                    {
+                        section.SectionId,
+                        section.CourseId,
+                        section.Title,
+                        section.Position,
+                        Steps = section.Steps.Select(step => new
+                        {
+                            step.StepId,
+                            step.QuizId,
+                            step.Title,
+                            step.Position,
+                            step.Duration,
+                            step.StepDescription,
+                            step.VideoUrl,
+                        }).ToList()
+                    })
+                    .FirstOrDefaultAsync();
+
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Updated section successfully",
+                    DataObject = response
+                };
             }
             catch (Exception ex)
             {
@@ -97,6 +125,7 @@ namespace LMSystem.Repository.Repositories
             {
                 var sections = await _context.Sections
                     .Where(s => s.CourseId == courseId)
+                    .OrderBy(s => s.Position)
                     .Select(s => new
                     {
                         s.SectionId,
@@ -116,6 +145,44 @@ namespace LMSystem.Repository.Repositories
             {
                 Console.WriteLine($"Exception: {ex.Message}");
                 return new ResponeModel { Status = "Error", Message = "An error occurred while retrieve sections list" };
+            }
+        }
+
+        public async Task<ResponeModel> DeleteSection(int sectionId)
+        {
+            try
+            {
+                var sectionToDelete = await _context.Sections
+                    .Include(s => s.Steps)
+                    .FirstOrDefaultAsync(s => s.SectionId == sectionId);
+
+                if (sectionToDelete == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "Section not found"
+                    };
+                }
+
+                _context.Steps.RemoveRange(sectionToDelete.Steps);
+                _context.Sections.Remove(sectionToDelete);
+                await _context.SaveChangesAsync();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Section deleted successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "An error occurred while deleting the section"
+                };
             }
         }
 

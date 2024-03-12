@@ -1,9 +1,12 @@
-﻿using LMSystem.Repository.Data;
+﻿using LMSystem.Library;
+using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Identity.Client;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +18,65 @@ namespace LMSystem.Services.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly PaypalClient _paypalClient;
+        private readonly LMOnlineSystemDbContext _context;
 
-        public OrderService(IOrderRepository orderRepository)
+        public OrderService(IOrderRepository orderRepository, PaypalClient paypalClient, LMOnlineSystemDbContext context)
         {
             _orderRepository = orderRepository;
+            _paypalClient = paypalClient;
+            _context = context;
+        }
+
+        public async Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel)
+        {
+            return await _orderRepository.AddCourseToPayment(addOrderPaymentModel);
+
+        }
+
+        public async Task<ResponeModel> CountOrderByStatusGroupByMonth(string status, int year)
+        {
+            return await _orderRepository.CountOrderByStatusGroupByMonth(status, year);
+        }
+
+        public async Task<ResponeModel> CountTotalIncome()
+        {
+            return await _orderRepository.CountTotalIncome();
+        }
+
+        public async Task<ResponeModel> CountTotalIncomeByMonth(int year)
+        {
+            return await _orderRepository.CountTotalIncomeByMonth(year);
+        }
+
+        public async Task<ResponeModel> CountTotalIncomeUpToDate(DateTime to)
+        {
+            return await _orderRepository.CountTotalIncomeUpToDate(to);
+        }
+
+        public async Task<ResponeModel> CountTotalOrder()
+        {
+            return await _orderRepository.CountTotalOrder();
+        }
+
+        public async Task<ResponeModel> CountTotalOrdersByStatus(string status)
+        {
+            return await _orderRepository.CountTotalOrdersByStatus(status);
+        }
+
+        public async Task<ResponeModel> CountTotalOrdersByStatusUpToDate(string status, DateTime to)
+        {
+            return await _orderRepository.CountTotalOrdersByStatusUpToDate(status, to);
+        }
+
+        public async Task<ResponeModel> GetOrderSuccessByAccountIdAndCourseId(string accountId, int courseId)
+        {
+            return await _orderRepository.GetOrderSuccessByAccountIdAndCourseId(accountId, courseId);
+        }
+
+        public async Task<ResponeModel> GetOrderPendingByAccountIdAndCourseId(string accountId, int courseId)
+        {
+            return await _orderRepository.GetOrderPendingByAccountIdAndCourseId(accountId, courseId);
         }
 
         public async Task<IEnumerable<Order>> GetOrderHistoryAsync(string accountId)
@@ -38,6 +96,93 @@ namespace LMSystem.Services.Services
                 AccountName = order.AccountName,
                 Status = order.Status
             });
+        }
+
+        public async Task<ResponeModel> GetYearList()
+        {
+            return await _orderRepository.GetYearList();
+        }
+
+
+        public async Task<ResponeModel> CreatePaymentWithPayPal(string accountId, int courseId)
+        {
+            var orderResponse = await GetOrderPendingByAccountIdAndCourseId(accountId, courseId);
+            //init infor order to send to paypal
+            if (orderResponse.Status != "Success")
+            {
+                return orderResponse;
+            }
+
+            var order = (Order)orderResponse.DataObject;
+            var value = order.TotalPrice.ToString().Replace(",", ".");
+            var currency = "USD";
+            var referenceId = order.OrderId + DateTime.Now.Ticks.ToString();
+            try
+            {
+                var result = await _paypalClient.CreateOrder(value, currency, referenceId);
+                order.TransactionNo = result.id;
+                _context.Orders.Update(order);
+                await _context.SaveChangesAsync();
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Create order",
+                    DataObject = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = ex.Message
+                };
+            }
+        }
+
+        public async Task<ResponeModel> CreateCapturetWithPayPal(string transactionId)
+        {
+            try
+            {
+                var result = await _paypalClient.CaptureOrder(transactionId);
+                var order = await GetOrderByTransactionId(transactionId);
+
+                var orders = (Order)order.DataObject;
+                orders.PaymentDate = DateTime.Now;
+                orders.PaymentMethod = "PayPal";
+                orders.CurrencyCode = "USD";
+                orders.Status = OrderStatusEnum.Completed.ToString();
+                _context.Orders.Update(orders);
+                await _context.SaveChangesAsync();
+                var registration = new RegistrationCourse();
+                registration.AccountId = orders.AccountId;
+                registration.CourseId = orders.CourseId;
+                registration.EnrollmentDate = DateTime.Now;
+                registration.IsCompleted = false;
+                registration.LearningProgress = 0;
+                _context.RegistrationCourses.Add(registration);
+                await _context.SaveChangesAsync();
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Capture order success",
+                    DataObject = result
+
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponeModel
+                {
+                    Status = "Error",
+                    Message = ex.Message
+                };
+            }
+        }
+
+        public async Task<ResponeModel> GetOrderByTransactionId(string transactionId)
+        {
+            return await _orderRepository.GetOrderByTransactionId(transactionId); 
         }
     }
 }
