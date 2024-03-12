@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 
 namespace LMSystem.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class NotificationController : Controller
     {
         private readonly INotificationService _notificationService;
@@ -20,7 +22,7 @@ namespace LMSystem.API.Controllers
 
 
         [HttpGet("GetAllNotificationsByAccountId")]
-        public async Task<ActionResult> GetAllNotificationsByAccountIdAsync(PaginationParameter paginationParameter, string accountId)
+        public async Task<ActionResult> GetAllNotificationsByAccountIdAsync([FromQuery]PaginationParameter paginationParameter, string accountId)
         {
             try
             {

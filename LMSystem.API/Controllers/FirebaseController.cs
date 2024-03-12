@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMSystem.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class FirebaseController : Controller
     {
         private readonly IFirebaseRepository _firebaseRepository;
