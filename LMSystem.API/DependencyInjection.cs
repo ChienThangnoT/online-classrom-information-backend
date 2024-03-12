@@ -57,6 +57,8 @@ namespace LMSystem.API
 
             services.AddScoped<IFirebaseRepository, FirebaseRepository>();
 
+            services.AddScoped<IStepCompletedRepository, StepCompletedRepository>();
+            services.AddScoped<IStepCompletedService, StepCompletedService>();
 
             return services;
         }
