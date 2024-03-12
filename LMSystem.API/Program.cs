@@ -83,9 +83,9 @@ builder.Services
 
 
 
---------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
+//--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
 
-config database to deploy on azure
+//config database to deploy on azure
 var connection = string.Empty;
 if (builder.Environment.IsDevelopment())
 {
