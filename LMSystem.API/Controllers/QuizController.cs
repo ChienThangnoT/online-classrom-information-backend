@@ -1,6 +1,7 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Repository.Helpers;
 using LMSystem.Services.Interfaces;
+using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -9,19 +10,19 @@ namespace LMSystem.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class QuizController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IQuizService _quizService;
 
-        public CategoryController(ICategoryService categoryService)
+        public QuizController(IQuizService quizService)
         {
-            _categoryService = categoryService;
+            _quizService = quizService;
         }
 
-        [HttpPost("AddCategory")]
-        public async Task<IActionResult> AddCategory(AddCategoryModel model)
+        [HttpPost("AddQuiz")]
+        public async Task<IActionResult> AddQuiz([FromQuery] AddQuizModel model)
         {
-            var response = await _categoryService.AddCategory(model);
+            var response = await _quizService.AddQuiz(model);
 
             if (response.Status == "Error")
             {
@@ -30,10 +31,10 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
-        [HttpDelete("DeleteCategory")]
-        public async Task<IActionResult> DeleteCategory(int categoryId)
+        [HttpDelete("DeleteQuiz")]
+        public async Task<IActionResult> DeleteQuiz([FromQuery] int quizId)
         {
-            var response = await _categoryService.DeleteCategory(categoryId);
+            var response = await _quizService.DeleteQuiz(quizId);
 
             if (response.Status == "Error")
             {
@@ -42,12 +43,12 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
-        [HttpGet("GetAllCategory")]
-        public async Task<IActionResult> GetAllCategory([FromQuery] PaginationParameter paginationParameter)
+        [HttpGet("GetAllQuiz")]
+        public async Task<IActionResult> GetAllQuiz([FromQuery] PaginationParameter paginationParameter)
         {
             try
             {
-                var response = await _categoryService.GetAllCategory(paginationParameter);
+                var response = await _quizService.GetAllQuiz(paginationParameter);
                 var metadata = new
                 {
                     response.TotalCount,
@@ -70,10 +71,21 @@ namespace LMSystem.API.Controllers
             }
         }
 
-        [HttpPut("UpdateCategory")]
-        public async Task<IActionResult> UpdateCategory(UpdateCategoryModel model)
+        [HttpGet("GetQuizDetail/{quizId}")]
+        public async Task<IActionResult> GetQuizDetailById(int quizId)
         {
-            var response = await _categoryService.UpdateCategory(model);
+            var quiz = await _quizService.GetQuizDetailByIdAsync(quizId);
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+            return Ok(quiz);
+        }
+
+        [HttpPut("UpdateQuiz")]
+        public async Task<IActionResult> UpdateQuiz(UpdateQuizModel quizModel)
+        {
+            var response = await _quizService.UpdateQuiz(quizModel);
 
             if (response.Status == "Error")
             {

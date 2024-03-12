@@ -1,6 +1,7 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Repository.Helpers;
 using LMSystem.Services.Interfaces;
+using LMSystem.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -9,19 +10,19 @@ namespace LMSystem.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class QuestionController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IQuestionService _questionService;
 
-        public CategoryController(ICategoryService categoryService)
+        public QuestionController(IQuestionService questionService)
         {
-            _categoryService = categoryService;
+            _questionService = questionService;
         }
 
-        [HttpPost("AddCategory")]
-        public async Task<IActionResult> AddCategory(AddCategoryModel model)
+        [HttpPost("AddQuestion")]
+        public async Task<IActionResult> AddQuestion([FromQuery] AddQuestionModel model)
         {
-            var response = await _categoryService.AddCategory(model);
+            var response = await _questionService.AddQuestion(model);
 
             if (response.Status == "Error")
             {
@@ -30,10 +31,10 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
-        [HttpDelete("DeleteCategory")]
-        public async Task<IActionResult> DeleteCategory(int categoryId)
+        [HttpDelete("DeleteQuestion")]
+        public async Task<IActionResult> DeleteQuestion([FromQuery] int questionId)
         {
-            var response = await _categoryService.DeleteCategory(categoryId);
+            var response = await _questionService.DeleteQuestion(questionId);
 
             if (response.Status == "Error")
             {
@@ -42,12 +43,12 @@ namespace LMSystem.API.Controllers
 
             return Ok(response);
         }
-        [HttpGet("GetAllCategory")]
-        public async Task<IActionResult> GetAllCategory([FromQuery] PaginationParameter paginationParameter)
+        [HttpGet("GetAllQuestion")]
+        public async Task<IActionResult> GetAllQuestion([FromQuery] PaginationParameter paginationParameter)
         {
             try
             {
-                var response = await _categoryService.GetAllCategory(paginationParameter);
+                var response = await _questionService.GetAllQuestion(paginationParameter);
                 var metadata = new
                 {
                     response.TotalCount,
@@ -70,10 +71,10 @@ namespace LMSystem.API.Controllers
             }
         }
 
-        [HttpPut("UpdateCategory")]
-        public async Task<IActionResult> UpdateCategory(UpdateCategoryModel model)
+        [HttpPut("UpdateQuestion")]
+        public async Task<IActionResult> UpdateQuestion([FromQuery] UpdateQuestionModel model)
         {
-            var response = await _categoryService.UpdateCategory(model);
+            var response = await _questionService.UpdateQuestion(model);
 
             if (response.Status == "Error")
             {

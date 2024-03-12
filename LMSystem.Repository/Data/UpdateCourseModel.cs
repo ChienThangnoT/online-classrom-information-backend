@@ -9,7 +9,7 @@ namespace LMSystem.Repository.Data
 {
     public class UpdateCourseModel
     {
-        [Required(ErrorMessage = "CourseId is required!")]
+        //[Required(ErrorMessage = "CourseId is required!")]
         public int CourseId { get; set; }
         //[Required(ErrorMessage = "Title is required!")]
         public string? Title { get; set; }
@@ -33,7 +33,7 @@ namespace LMSystem.Repository.Data
         //[Required(ErrorMessage = "LinkCertificated is required!")]
         public string? LinkCertificated {  get; set; }
 
-        [Required(ErrorMessage = "CategoryList is required!")]
+        //[Required(ErrorMessage = "CategoryList is required!")]
         public List<int> CategoryList { get; set; }
     }
 }

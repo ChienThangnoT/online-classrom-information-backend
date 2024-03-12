@@ -21,16 +21,18 @@ namespace LMSystem.API.Controllers
         private readonly IAccountService _accountService;
         private readonly IEmailTemplateReader _emailTemplateReader;
         private readonly IMailService _mailService;
+        private readonly INotificationService _notificationService;
 
-        public AccountController(IAccountService accountRepository, IEmailTemplateReader emailTemplateReader, IMailService mailService)
+        public AccountController(IAccountService accountRepository, IEmailTemplateReader emailTemplateReader, IMailService mailService, INotificationService notificationService)
         {
             _accountService = accountRepository;
             _emailTemplateReader = emailTemplateReader;
             _mailService = mailService;
+            _notificationService = notificationService;
         }
 
         [HttpPost("SignUp")]
-        public async Task<ActionResult> SignUp(SignUpModel signUpModel)
+        public async Task<IActionResult> SignUp(SignUpModel signUpModel)
         {
             try
             {
@@ -40,7 +42,7 @@ namespace LMSystem.API.Controllers
                     if (result.Status.Equals("Success"))
                     {
                         var token = result.ConfirmEmailToken;
-                        var url = Url.Action("ConfirmEmail", "Account", new {memberEmail = signUpModel.AccountEmail, tokenReset = token.Result}, Request.Scheme);
+                        var url = Url.Action("ConfirmEmail", "Account", new { memberEmail = signUpModel.AccountEmail, tokenReset = token.Result }, Request.Scheme);
                         result.ConfirmEmailToken = null;
 
                         //var body = await _emailTemplateReader.GetTemplate("Helper\\EmailTemplate.html");
@@ -50,7 +52,7 @@ namespace LMSystem.API.Controllers
                         {
                             To = signUpModel.AccountEmail,
                             Subject = "Confirm Email For Register",
-                            Content =  MailTemplate.ConfirmTemplate(signUpModel.AccountEmail, url)
+                            Content = MailTemplate.ConfirmTemplate(signUpModel.AccountEmail, url)
                         };
 
                         await _mailService.SendConFirmEmailAsync(messageRequest);
@@ -66,9 +68,9 @@ namespace LMSystem.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpPost("SignUpStaffAdmin")]
-        public async Task<ActionResult> SignUpStaffAdminParent(SignUpModel signUpModel, RoleModel role)
+        public async Task<IActionResult> SignUpStaffAdminParent(SignUpModel signUpModel, RoleModel role)
         {
             try
             {
@@ -90,7 +92,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("SignIn")]
-        public async Task<ActionResult> SignIn(SignInModel signInModel)
+        public async Task<IActionResult> SignIn(SignInModel signInModel)
         {
             try
             {
@@ -147,7 +149,7 @@ namespace LMSystem.API.Controllers
 
         [HttpGet("{email}")]
         [Authorize]
-        public async Task<ActionResult<AccountModel>> GetAccountByEmail(string email)
+        public async Task<IActionResult> GetAccountByEmail(string email)
         {
             var data = await _accountService.GetAccountByEmail(email);
             if (data != null)
@@ -160,7 +162,7 @@ namespace LMSystem.API.Controllers
             }
         }
         [HttpPut("UpdateProfile")]
-        public async Task<ActionResult> UpdateProfile(UpdateProfileModel updateProfileModel, string accountId)
+        public async Task<IActionResult> UpdateProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             var account = await _accountService.GetAccountById(accountId);
 
@@ -184,15 +186,30 @@ namespace LMSystem.API.Controllers
                 {
                     return Unauthorized(result);
                 }
-                return Redirect("https://online-class-room-fe.vercel.app/login");
+                var account = await _accountService.GetAccountByEmail(memberEmail);
+                if (account != null)
+                {
+                    Notification notification = new Notification
+                    {
+                        AccountId = account.Id,
+                        SendDate = DateTime.Now,
+                        Type = NotificationType.System.ToString(),
+                        Title = "Chào mừng bạn đến với eStudyHub",
+                        Message = "Cảm ơn bạn đã chọn eStudyHub để học tập. Hãy cùng nhau trải nghiệm các khóa học nhé!"
+                    };
+                    await _notificationService.AddNotificationByAccountId(account.Id, notification);
+                    return Redirect("https://online-class-room-fe.vercel.app/login");
+                }
+                return Ok(result);
             }
             catch
             {
                 return BadRequest("Confirm email failed!");
             }
         }
+
         [HttpGet("ViewAccountList")]
-        public async Task<ActionResult> ViewAccountList([FromQuery] AccountFilterParameters filterParams)
+        public async Task<IActionResult> ViewAccountList([FromQuery] AccountFilterParameters filterParams)
         {
             var account = await _accountService.ViewAccountList(filterParams);
             if (account == null)
@@ -202,8 +219,9 @@ namespace LMSystem.API.Controllers
 
             return Ok(account);
         }
-        [HttpDelete("DeleteAccount/{accountId}")]
-        public async Task<ActionResult> DeleteAccount(string accountId)
+
+        [HttpDelete("{accountId}")]
+        public async Task<IActionResult> DeleteAccount(string accountId)
         {
             var result = await _accountService.DeleteAccount(accountId);
             if (result.Status.Equals("Success"))
@@ -214,7 +232,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("Send-email")]
-        public async Task<ActionResult> SendEmail([FromForm] EmailRequest email)
+        public async Task<IActionResult> SendEmail([FromForm] EmailRequest email)
         {
             try
             {
@@ -226,5 +244,53 @@ namespace LMSystem.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("Update device token")]
+        public async Task<IActionResult> UpdateDeviceToken(DeviceTokenModal deviceToken)
+        {
+            try
+            {
+                var result = await _accountService.UpdateDeviceToken(deviceToken.AccountId, deviceToken.DeviceToken);
+                if (result)
+                {
+                    return Ok(new ResponeModel
+                    {
+                        Status = "Success",
+                        Message = "Update token successfully"
+                    });
+                }
+                return BadRequest(new ResponeModel
+                {
+                    Status = "Error",
+                    Message = "Can not update token"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpGet("CountTotalStudent")]
+        public async Task<IActionResult> CountTotalStudent()
+        {
+            var response = await _accountService.CountTotalStudent();
+            if (response == null)
+            {
+                return NotFound();
+            }
+            return Ok(response);
+        }
+        [HttpGet("CountTotalAccount")]
+        public async Task<IActionResult> CountTotalAccount()
+        {
+            var response = await _accountService.CountTotalAccount();
+            if (response == null)
+            {
+                return NotFound();
+            }
+            return Ok(response);
+        }    
     }
 }

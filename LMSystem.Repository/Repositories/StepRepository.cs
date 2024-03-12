@@ -76,7 +76,7 @@ namespace LMSystem.Repository.Repositories
             step.QuizId = updateStepModel.QuizId;
 
             return step;
-        }
+        }   
 
         public async Task<LearningProgressModel> CheckCourseProgress(int registrationId)
         {
@@ -107,7 +107,7 @@ namespace LMSystem.Repository.Repositories
             var progressPercentage = totalSteps > 0
                 ? (double)completedStepIds.Count / totalSteps
                 : 0;
-
+            
             var isComplete = progressPercentage < 1
                 ? registration.IsCompleted = false : registration.IsCompleted = true;
 
@@ -132,7 +132,7 @@ namespace LMSystem.Repository.Repositories
                 CurrentSection = latestStep?.Section?.Title,
                 ProgressPercentage = progressPercentage,
                 IsCompleted = isComplete,
-                EnrollDay = registration.EnrollmentDate.GetValueOrDefault(),
+                EnrollDay = registration.EnrollmentDate.GetValueOrDefault(), 
                 StepCompleteDay = latestCompletionDate.GetValueOrDefault()
             };
         }

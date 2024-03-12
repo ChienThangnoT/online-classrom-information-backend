@@ -16,6 +16,7 @@ namespace LMSystem.Services.Services
         {
             _registrationCourseRepository = registrationCourseRepository;
         }
+
         public async Task<ResponeModel> GetCompletedLearningCourseByAccountId(string accountId)
         {
             return await _registrationCourseRepository.GetCompletedLearningCourseByAccountId(accountId);

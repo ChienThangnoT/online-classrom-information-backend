@@ -36,7 +36,7 @@ namespace LMSystem.API.Controllers
         public async Task<IActionResult> GetCourseRating(int courseId)
         {
             var averageRating = await _ratingCourseService.GetCourseRating(courseId);
-            if (averageRating == 0) // Assuming 0 is an indicator of no ratings
+            if (averageRating == null)
             {
                 return NotFound("No ratings found for this course.");
             }
