@@ -76,16 +76,16 @@ builder.Services
     .AddDefaultTokenProviders();
 
 //Congig local db
-//builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
-//{
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
-//});
+builder.Services.AddDbContext<LMOnlineSystemDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("LMOnlineSystemDB"));
+});
 
 
 
---------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
+//--------------------PLEASE MUST DON'T OPEN THIS COMMENT BELOW :)-------
 
-config database to deploy on azure
+//config database to deploy on azure
 var connection = string.Empty;
 if (builder.Environment.IsDevelopment())
 {

@@ -51,19 +51,19 @@ namespace LMSystem.API.Controllers
         [HttpGet("GetNotificationById")]
         public async Task<IActionResult> GetNotificationById(int id)
         {
-            try
-            {
+            //try
+            //{
                 var notification = await _notificationService.GetNotificationById(id);
                 if(notification == null)
                 {
                     return NotFound();
                 }
                 return Ok(notification);
-            }
-            catch
-            {
-                return BadRequest();
-            }
+            //}
+            //catch
+            //{
+            //    return BadRequest();
+            //}
         }
 
         [HttpGet("MarkAllNotificationByAccountIdIsRead")]
