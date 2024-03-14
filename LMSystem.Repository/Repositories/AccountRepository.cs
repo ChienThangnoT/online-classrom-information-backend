@@ -605,7 +605,7 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Account deleted successfully" };
+                return new ResponeModel { Status = "Success", Message = "Account deleted successfully " + existingAccount.Id };
             }
             catch (Exception ex)
             {
