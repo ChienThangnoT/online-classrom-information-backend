@@ -245,7 +245,7 @@ namespace LMSystem.API.Controllers
             }
         }
 
-        [HttpPut("Update device token")]
+        [HttpPut("Update-device-token")]
         public async Task<IActionResult> UpdateDeviceToken(DeviceTokenModal deviceToken)
         {
             try
