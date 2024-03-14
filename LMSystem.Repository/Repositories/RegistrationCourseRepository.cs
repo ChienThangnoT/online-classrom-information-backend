@@ -102,12 +102,44 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public async Task<bool> CheckRegistrationCourse(string accountId, int courseId)
+        public async Task<ResponeModel> CheckRegistrationCourse(string accountId, int courseId)
         {
-            var registrationExists = await _context.RegistrationCourses
-        .AnyAsync(rc => rc.AccountId == accountId && rc.CourseId == courseId);
+            try
+            {
+                var registrationCourse = await _context.RegistrationCourses
+                    .Where(r => r.AccountId == accountId && r.CourseId == courseId)
+                    .Select(r => new
+                    {
+                        r.RegistrationId,
+                        r.CourseId,
+                        r.AccountId,
+                        r.EnrollmentDate,
+                        r.IsCompleted,
+                        r.LearningProgress
+                    })
+                    .FirstOrDefaultAsync();
 
-            return registrationExists;
+                if (registrationCourse == null)
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No registration course were found for the specified account id and course id"
+                    };
+                }
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Check registration course successfully",
+                    DataObject = registrationCourse
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while check registration course" };
+            }
         }
 
 

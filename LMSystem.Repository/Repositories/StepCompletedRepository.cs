@@ -120,5 +120,31 @@ namespace LMSystem.Repository.Repositories
                 return new ResponeModel { Status = "Error", Message = "An error occurred while check step complete" };
             }
         }
+
+        public async Task<ResponeModel> GetStepIdByRegistrationId(int registrationId)
+        {
+            try
+            {
+                var stepId = await _context.StepCompleteds
+                    .Where(s => s.RegistrationId == registrationId)
+                    .Select(s => s.StepId)
+                    .FirstOrDefaultAsync();
+                if (stepId == 0)
+                    return new ResponeModel { Status = "Error", Message = "No step were found for the specified registration id" };
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Get step id successfully",
+                    DataObject = new { stepId }
+                };
+               
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while get stepId by the specified registration id" };
+
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace LMSystem.Services.Interfaces
     {
         public Task<ResponeModel> GetRegisterCourseListByAccountId(string accountId);
         public Task<ResponeModel> GetCompletedLearningCourseByAccountId(string accountId);
-        public Task<bool> CheckRegistrationCourse(string accountId, int courseId);
+        public Task<ResponeModel> CheckRegistrationCourse(string accountId, int courseId);
 
     }
 }

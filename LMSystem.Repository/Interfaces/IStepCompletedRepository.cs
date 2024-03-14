@@ -10,5 +10,6 @@ namespace LMSystem.Repository.Interfaces
     public interface IStepCompletedRepository
     {
         public Task<ResponeModel> AddOrUpdateStepCompleted(int registrationId, int stepId );
+        public Task<ResponeModel> GetStepIdByRegistrationId(int registrationId);
     }
 }

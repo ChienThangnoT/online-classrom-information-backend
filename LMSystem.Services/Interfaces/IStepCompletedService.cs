@@ -10,5 +10,6 @@ namespace LMSystem.Services.Interfaces
     public interface IStepCompletedService
     {
         public Task<ResponeModel> AddOrUpdateStepCompleted(int registrationId, int stepId );
+        public Task<ResponeModel> GetStepIdByRegistrationId(int registrationId);
     }
 }

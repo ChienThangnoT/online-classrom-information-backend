@@ -37,20 +37,12 @@ namespace LMSystem.API.Controllers
         [HttpGet("CheckRegistration")]
         public async Task<IActionResult> CheckRegistrationCourse([FromQuery] string accountId, [FromQuery] int courseId)
         {
-            if (string.IsNullOrEmpty(accountId) || courseId <= 0) 
+            var result = await _registrationCourseService.CheckRegistrationCourse(accountId, courseId);
+            if (result == null)
             {
-                return BadRequest("Account ID and Course ID must be provided.");
+                return NotFound();
             }
-
-            var isRegistered = await _registrationCourseService.CheckRegistrationCourse(accountId, courseId);
-            if (isRegistered)
-            {
-                return Ok(new { IsRegistered = true });
-            }
-            else
-            {
-                return Ok(new { IsRegistered = false });
-            }
+            return Ok(result);
         }
 
     }

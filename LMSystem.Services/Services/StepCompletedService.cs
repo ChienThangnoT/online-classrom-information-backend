@@ -21,5 +21,10 @@ namespace LMSystem.Services.Services
         {
             return await _stepCompletedRepository.AddOrUpdateStepCompleted(registrationId, stepId);
         }
+
+        public async Task<ResponeModel> GetStepIdByRegistrationId(int registrationId)
+        {
+            return await _stepCompletedRepository.GetStepIdByRegistrationId(registrationId);
+        }
     }
 }

@@ -22,5 +22,15 @@ namespace LMSystem.API.Controllers
             }
             return Ok(response);
         }
+        [HttpGet("GetStepIdByRegistrationId")]
+        public async Task<IActionResult> GetStepIdByRegistrationId(int registrationId)
+        {
+            var response = await _stepCompletedService.GetStepIdByRegistrationId(registrationId);
+            if (response == null)
+            {
+                return NotFound();
+            }
+            return Ok(response);
+        }
     }
 }
