@@ -86,6 +86,27 @@ namespace LMSystem.Repository.Repositories
 
             return course;
         }
+        
+        public async Task<CourseListModel> GetCourseDetailByCourseIdAsync(int courseId)
+        {
+            var course = await _context.Courses
+                .Include(c => c.Sections.OrderBy(section => section.Position))
+                .ThenInclude(s => s.Steps.OrderBy(step => step.Position))
+                .Include(c => c.CourseCategories)
+                .ThenInclude(cc => cc.Category)
+                .FirstOrDefaultAsync(c => c.CourseId == courseId);
+
+            return new CourseListModel { 
+                CourseId = course.CourseId,
+                ImageUrl = course.ImageUrl,
+                Title = course.Title,
+                Price = course.Price,
+                TotalDuration = course.TotalDuration,
+                UpdateAt = course.UpdateAt,
+                CourseIsActive = course.CourseIsActive,
+                CourseCategory= string.Join(", ", course.CourseCategories.Select(cc => cc.Category.Name))
+            };
+        }
 
         public async Task<(IEnumerable<CourseListModel> Courses, int CurrentPage, int PageSize, int TotalCourses, int TotalPages)> GetCoursesWithFilters(CourseFilterParameters filterParams)
         {

@@ -48,6 +48,11 @@ namespace LMSystem.Services.Services
         public async Task<Course> GetCourseDetailByIdAsync(int courseId)
         {
             return await _courseRepository.GetCourseDetailByIdAsync(courseId);
+        } 
+        
+        public async Task<CourseListModel> GetCourseDetailByCourseIdAsync(int courseId)
+        {
+            return await _courseRepository.GetCourseDetailByCourseIdAsync(courseId);
         }
 
         public async Task<ResponeModel> AddCourse(AddCourseModel addCourseModel)
