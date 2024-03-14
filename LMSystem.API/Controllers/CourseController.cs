@@ -91,6 +91,17 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
 
+        [HttpGet("GetCourseDetailByCourseId-v2/{courseId}")]
+        public async Task<IActionResult> GetCourseDetailByIdAsync(int courseId)
+        {
+            var courses = await _courseService.GetCourseDetailByIdAsync(courseId);
+            if (courses == null)
+            {
+                return NotFound();
+            }
+            return Ok(courses);
+        }
+
         [HttpPost("AddCourse")]
         public async Task<IActionResult> AddCourse(AddCourseModel addCourseModel)
         {
