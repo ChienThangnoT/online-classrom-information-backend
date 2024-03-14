@@ -81,9 +81,9 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("GetCourseDetailById/{courseId}")]
-        public async Task<IActionResult> GetCourseDetailByCourseIdAsync(int courseId)
+        public async Task<IActionResult> GetCourseDetailByIdAsync(int courseId)
         {
-            var courses = await _courseService.GetCourseDetailByCourseIdAsync(courseId);
+            var courses = await _courseService.GetCourseDetailByIdAsync(courseId);
             if (courses == null)
             {
                 return NotFound();
@@ -92,9 +92,9 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("GetCourseDetailByCourseId-v2/{courseId}")]
-        public async Task<IActionResult> GetCourseDetailByIdAsync(int courseId)
+        public async Task<IActionResult> GetCourseDetailByCourseIdAsync(int courseId)
         {
-            var courses = await _courseService.GetCourseDetailByIdAsync(courseId);
+            var courses = await _courseService.GetCourseDetailByCourseIdAsync(courseId);
             if (courses == null)
             {
                 return NotFound();
