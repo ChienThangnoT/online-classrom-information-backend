@@ -49,6 +49,12 @@ namespace LMSystem.Services.Services
             return result;
         }
 
+        public async Task<ResponeModel> GetAccountByParentAccountId(string accountId)
+        {
+            var result = await _repo.GetAccountByParentAccountId(accountId);
+            return result;
+        }
+
         public async Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel)
         {
             var result = await _repo.RefreshToken(tokenModel);

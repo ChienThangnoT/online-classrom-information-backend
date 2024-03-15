@@ -65,7 +65,7 @@ namespace LMSystem.Repository.Repositories
                 // First, get the parent email associated with the given accountId.
                 var parentEmail = await _context.Account
                     .Where(a => a.Id == accountId)
-                    .Select(a => a.ParentEmail)
+                    .Select(a => a.Email)
                     .FirstOrDefaultAsync();
 
                 if (string.IsNullOrEmpty(parentEmail))
@@ -79,7 +79,7 @@ namespace LMSystem.Repository.Repositories
 
                 // Now find all accounts where the ParentEmail matches the account's email.
                 var childAccountIds = await _context.Account
-                    .Where(a => a.Email == parentEmail)
+                    .Where(a => a.ParentEmail == parentEmail)
                     .Select(a => a.Id)
                     .ToListAsync();
 
@@ -131,7 +131,7 @@ namespace LMSystem.Repository.Repositories
                 // First, get the parent email associated with the given accountId.
                 var parentEmail = await _context.Account
                     .Where(a => a.Id == accountId)
-                    .Select(a => a.ParentEmail)
+                    .Select(a => a.Email)
                     .FirstOrDefaultAsync();
 
                 if (string.IsNullOrEmpty(parentEmail))
@@ -145,7 +145,7 @@ namespace LMSystem.Repository.Repositories
 
                 // Now find all accounts where the ParentEmail matches the account's email.
                 var childAccountIds = await _context.Account
-                    .Where(a => a.Email == parentEmail)
+                    .Where(a => a.ParentEmail == parentEmail)
                     .Select(a => a.Id)
                     .ToListAsync();
 
@@ -192,7 +192,7 @@ namespace LMSystem.Repository.Repositories
                 // First, get the parent email associated with the given accountId.
                 var parentEmail = await _context.Account
                     .Where(a => a.Id == accountId)
-                    .Select(a => a.ParentEmail)
+                    .Select(a => a.Email)
                     .FirstOrDefaultAsync();
 
                 if (string.IsNullOrEmpty(parentEmail))
@@ -206,7 +206,7 @@ namespace LMSystem.Repository.Repositories
 
                 // Now find all accounts where the ParentEmail matches the account's email.
                 var childAccountIds = await _context.Account
-                    .Where(a => a.Email == parentEmail)
+                    .Where(a => a.ParentEmail == parentEmail)
                     .Select(a => a.Id)
                     .ToListAsync();
 

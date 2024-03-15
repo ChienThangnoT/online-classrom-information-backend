@@ -63,6 +63,56 @@ namespace LMSystem.Repository.Repositories
             return account;
         }
 
+        public async Task<ResponeModel> GetAccountByParentAccountId(string accountId)
+        {
+            try
+            {
+                // Get the parent email associated with the given accountId.
+                var parentAccount = await _context.Account
+                    .Where(a => a.Id == accountId)
+                    .Select(a => new { a.Email, a.ParentEmail })
+                    .FirstOrDefaultAsync();
+
+                if (parentAccount == null || string.IsNullOrEmpty(parentAccount.ParentEmail))
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No parent email associated with the provided account ID."
+                    };
+                }
+
+                // Find all child accounts where the ParentEmail matches the account's email.
+                var childAccounts = await _context.Account
+                    .Where(a => a.ParentEmail == parentAccount.Email)
+                    .ToListAsync();
+
+                if (childAccounts == null || !childAccounts.Any())
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No child accounts found for the provided account ID."
+                    };
+                }
+
+                // Optionally map the child accounts to a model if necessary, or directly return the accounts
+                //var childAccountModels = childAccounts.Select(a => MapToAccountModelGetList(a)).ToList();
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "Child accounts retrieved successfully.",
+                    DataObject = childAccounts
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while retrieving the child accounts." };
+            }
+        }
+
         public async Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel)
         {
             if (tokenModel is null)

@@ -16,6 +16,7 @@ namespace LMSystem.Repository.Interfaces
         public Task<AccountModel> GetAccountByEmail(string email);
         public Task<Account> GetAccountById(string id);
         public Task<Account> GetAccountByIdV1(string id);
+        public Task<ResponeModel> GetAccountByParentAccountId(string accountId);
         public Task<AccountModel> UpdateAccountByEmail(AccountModel account);
         public Task<AuthenticationResponseModel> RefreshToken(TokenModel tokenModel);
         public Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId);

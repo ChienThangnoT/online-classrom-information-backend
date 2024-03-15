@@ -274,6 +274,18 @@ namespace LMSystem.API.Controllers
             return Ok(account);
         }
 
+        [HttpGet("GetAccountByParentAccountId")]
+        public async Task<IActionResult> GetAccountByParentAccountId(string accountId)
+        {
+            var account = await _accountService.GetAccountByParentAccountId(accountId);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(account);
+        }
+
         [HttpDelete("{accountId}")]
         public async Task<IActionResult> DeleteAccount(string accountId)
         {
