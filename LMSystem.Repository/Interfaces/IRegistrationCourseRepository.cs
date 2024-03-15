@@ -14,6 +14,7 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> CheckRegistrationCourse(string accountId, int courseId);
         public Task<ResponeModel> GetRegisterCourseListByParentAccountId(string accountId);
         public Task<ResponeModel> GetCompletedLearningCourseByParentAccountId(string accountId);
+        public Task<ResponeModel> GetUncompletedLearningCourseByParentAccountId(string accountId);
 
 
     }

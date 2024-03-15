@@ -66,5 +66,16 @@ namespace LMSystem.API.Controllers
             }
             return Ok(courses);
         }
+
+        [HttpGet("GetUncompletedLearningCourseByParentAccountId")]
+        public async Task<IActionResult> GetUncompletedLearningCourseByParentAccountId(string accountId)
+        {
+            var courses = await _registrationCourseService.GetUncompletedLearningCourseByParentAccountId(accountId);
+            if (courses == null)
+            {
+                return NotFound();
+            }
+            return Ok(courses);
+        }
     }
 }

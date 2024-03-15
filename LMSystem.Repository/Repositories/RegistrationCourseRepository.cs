@@ -185,6 +185,68 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
+        public async Task<ResponeModel> GetUncompletedLearningCourseByParentAccountId(string accountId)
+        {
+            try
+            {
+                // First, get the parent email associated with the given accountId.
+                var parentEmail = await _context.Account
+                    .Where(a => a.Id == accountId)
+                    .Select(a => a.ParentEmail)
+                    .FirstOrDefaultAsync();
+
+                if (string.IsNullOrEmpty(parentEmail))
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No parent email associated with the provided account ID."
+                    };
+                }
+
+                // Now find all accounts where the ParentEmail matches the account's email.
+                var childAccountIds = await _context.Account
+                    .Where(a => a.Email == parentEmail)
+                    .Select(a => a.Id)
+                    .ToListAsync();
+
+                // Retrieve the list of courses registered by the child accounts.
+                var registerCourseList = await _context.RegistrationCourses
+                    .Where(rc => childAccountIds.Contains(rc.AccountId) && rc.IsCompleted == false)
+                    .Include(rc => rc.Course)
+                    .Select(rc => new
+                    {
+                        rc.CourseId,
+                        rc.Course.Title,
+                        rc.Course.ImageUrl,
+                        rc.LearningProgress,
+                        rc.EnrollmentDate
+                    })
+                    .ToListAsync();
+
+                if (!registerCourseList.Any())
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No completed course were found for the specified account id."
+                    };
+                }
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "List completed course successfully.",
+                    DataObject = registerCourseList
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while get the completed course list" };
+            }
+        }
+
         public async Task<ResponeModel> GetRegisterCourseListByAccountId(string accountId)
         {
             try
