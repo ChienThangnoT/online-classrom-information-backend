@@ -22,13 +22,15 @@ namespace LMSystem.Services.Services
         private readonly PaypalClient _paypalClient;
         private readonly LMOnlineSystemDbContext _context;
         private readonly INotificationRepository _notificationRepository;
+        private readonly ICourseRepository _courseRepository;
 
-        public OrderService(IOrderRepository orderRepository, PaypalClient paypalClient, LMOnlineSystemDbContext context, INotificationRepository notificationRepository)
+        public OrderService(IOrderRepository orderRepository, ICourseRepository courseRepository, PaypalClient paypalClient, LMOnlineSystemDbContext context, INotificationRepository notificationRepository)
         {
             _orderRepository = orderRepository;
             _paypalClient = paypalClient;
             _context = context;
             _notificationRepository = notificationRepository;
+            _courseRepository = courseRepository;
         }
 
         public async Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel)
@@ -157,6 +159,10 @@ namespace LMSystem.Services.Services
                 orders.Status = OrderStatusEnum.Completed.ToString();
                 _context.Orders.Update(orders);
                 await _context.SaveChangesAsync();
+
+                var course = await _courseRepository.GetCourseDetailByIdAsync(orders.CourseId);
+
+
                 var registration = new RegistrationCourse();
                 registration.AccountId = orders.AccountId;
                 registration.CourseId = orders.CourseId;
@@ -171,7 +177,7 @@ namespace LMSystem.Services.Services
                     AccountId = registration.AccountId,
                     SendDate = DateTime.Now,
                     Type = NotificationType.System.ToString(),
-                    Title = "Bạn đã thanh toán thành công khóa học "+ orders.Course.Title,
+                    Title = "Bạn đã thanh toán thành công khóa học " + course.Title,
                     Message = "Cảm ơn bạn đã tin tưởng lựa chọn eStudyHub. Hãy trải nghiệm khóa học để có kiến thức bổ ích!"
                 };
                 await _notificationRepository.AddNotificationByAccountId(notification.AccountId, notification);
@@ -195,7 +201,7 @@ namespace LMSystem.Services.Services
 
         public async Task<ResponeModel> GetOrderByTransactionId(string transactionId)
         {
-            return await _orderRepository.GetOrderByTransactionId(transactionId); 
+            return await _orderRepository.GetOrderByTransactionId(transactionId);
         }
     }
 }
