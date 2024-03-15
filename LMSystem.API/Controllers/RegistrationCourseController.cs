@@ -45,5 +45,26 @@ namespace LMSystem.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetRegisterCourseListByParentAccountId")]
+        public async Task<IActionResult> GetRegisterCourseListByParentAccountId(string accountId)
+        {
+            var courses = await _registrationCourseService.GetRegisterCourseListByParentAccountId(accountId);
+            if (courses == null)
+            {
+                return NotFound();
+            }
+            return Ok(courses);
+        }
+
+        [HttpGet("GetCompletedLearningCourseByParentAccountId")]
+        public async Task<IActionResult> GetCompletedLearningCourseByParentAccountId(string accountId)
+        {
+            var courses = await _registrationCourseService.GetCompletedLearningCourseByParentAccountId(accountId);
+            if (courses == null)
+            {
+                return NotFound();
+            }
+            return Ok(courses);
+        }
     }
 }

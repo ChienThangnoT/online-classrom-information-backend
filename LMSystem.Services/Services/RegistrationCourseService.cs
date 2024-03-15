@@ -1,5 +1,6 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Repository.Interfaces;
+using LMSystem.Repository.Models;
 using LMSystem.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,15 @@ namespace LMSystem.Services.Services
         public async Task<ResponeModel> CheckRegistrationCourse(string accountId, int courseId)
         {
             return await _registrationCourseRepository.CheckRegistrationCourse(accountId, courseId);
+        }
+
+        public async Task<ResponeModel> GetRegisterCourseListByParentAccountId(string accountId)
+        {
+            return await _registrationCourseRepository.GetRegisterCourseListByParentAccountId(accountId);
+        }
+        public async Task<ResponeModel> GetCompletedLearningCourseByParentAccountId(string accountId)
+        {
+            return await _registrationCourseRepository.GetCompletedLearningCourseByParentAccountId(accountId);
         }
 
     }

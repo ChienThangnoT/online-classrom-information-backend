@@ -23,6 +23,7 @@ namespace LMSystem.Repository.Repositories
         {
             try
             {
+
                 var completedCourseList = await _context.RegistrationCourses
                     .Where(r => r.AccountId == accountId 
                             && r.IsCompleted==true)
@@ -48,6 +49,133 @@ namespace LMSystem.Repository.Repositories
                     Status = "Success",
                     Message = "List completed course successfully",
                     DataObject = completedCourseList
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while get the completed course list" };
+            }
+        }
+
+        public async Task<ResponeModel> GetRegisterCourseListByParentAccountId(string accountId)
+        {
+            try
+            {
+                // First, get the parent email associated with the given accountId.
+                var parentEmail = await _context.Account
+                    .Where(a => a.Id == accountId)
+                    .Select(a => a.ParentEmail)
+                    .FirstOrDefaultAsync();
+
+                if (string.IsNullOrEmpty(parentEmail))
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No parent email associated with the provided account ID."
+                    };
+                }
+
+                // Now find all accounts where the ParentEmail matches the account's email.
+                var childAccountIds = await _context.Account
+                    .Where(a => a.Email == parentEmail)
+                    .Select(a => a.Id)
+                    .ToListAsync();
+
+                // Retrieve the list of courses registered by the child accounts.
+                var registerCourseList = await _context.RegistrationCourses
+                    .Where(rc => childAccountIds.Contains(rc.AccountId))
+                    .Include(rc => rc.Course)
+                    .Select(rc => new
+                    {
+                        RegistrationId = rc.RegistrationId,
+                        CourseId = rc.CourseId,
+                        AccountId = rc.AccountId,
+                        EnrollmentDate = rc.EnrollmentDate,
+                        IsCompleted = rc.IsCompleted,
+                        LearningProgress = rc.LearningProgress,
+                        CourseTitle = rc.Course.Title,
+                        CourseDescription = rc.Course.Description,
+                        CourseImg = rc.Course.ImageUrl
+                    })
+                    .ToListAsync();
+
+                if (!registerCourseList.Any())
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No registered courses found for the children of the provided account ID."
+                    };
+                }
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "List of registered courses for the children of the provided account ID retrieved successfully.",
+                    DataObject = registerCourseList
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while retrieving the registered course list." };
+            }
+        }
+
+        public async Task<ResponeModel> GetCompletedLearningCourseByParentAccountId(string accountId)
+        {
+            try
+            {
+                // First, get the parent email associated with the given accountId.
+                var parentEmail = await _context.Account
+                    .Where(a => a.Id == accountId)
+                    .Select(a => a.ParentEmail)
+                    .FirstOrDefaultAsync();
+
+                if (string.IsNullOrEmpty(parentEmail))
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No parent email associated with the provided account ID."
+                    };
+                }
+
+                // Now find all accounts where the ParentEmail matches the account's email.
+                var childAccountIds = await _context.Account
+                    .Where(a => a.Email == parentEmail)
+                    .Select(a => a.Id)
+                    .ToListAsync();
+
+                // Retrieve the list of courses registered by the child accounts.
+                var registerCourseList = await _context.RegistrationCourses
+                    .Where(rc => childAccountIds.Contains(rc.AccountId) && rc.IsCompleted == true)
+                    .Include(rc => rc.Course)
+                    .Select(rc => new
+                    {
+                        rc.CourseId,
+                        rc.Course.Title,
+                        rc.Course.ImageUrl,
+                        rc.EnrollmentDate
+                    })
+                    .ToListAsync();
+
+                if (!registerCourseList.Any())
+                {
+                    return new ResponeModel
+                    {
+                        Status = "Error",
+                        Message = "No completed course were found for the specified account id."
+                    };
+                }
+
+                return new ResponeModel
+                {
+                    Status = "Success",
+                    Message = "List completed course successfully.",
+                    DataObject = registerCourseList
                 };
             }
             catch (Exception ex)
