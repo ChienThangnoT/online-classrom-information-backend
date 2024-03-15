@@ -245,7 +245,7 @@ namespace LMSystem.Repository.Repositories
                         BirthDate = model.BirthDate,
                         Status = AccountStatusEnum.Active.ToString(),
                         UserName = model.AccountEmail,
-
+                        ParentEmail = model.ParentEmail,
                         Email = model.AccountEmail,
                         PhoneNumber = model.AccountPhone
                     };
@@ -415,9 +415,92 @@ namespace LMSystem.Repository.Repositories
             }
         }
 
-        public Task<ResponeModel> SignUpParentAsync(SignUpModel model)
+        public async Task<ResponeModel> SignUpParentAsync(string parentEmail)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var exsistAccount = await userManager.FindByNameAsync(parentEmail);
+                if (exsistAccount == null)
+                {
+                    int passwordLength = 12; // You can change the length according to your requirements
+
+                    // Define the character groups to use in password generation
+                    string lowerCase = "abcdefghijklmnopqrstuvwxyz";
+                    string upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    string digits = "0123456789";
+                    string specialChars = "!@#$%^&*()_-+=<>?";
+
+                    // Combine all character groups into one
+                    string allChars = lowerCase + upperCase + digits + specialChars;
+
+                    // Use the Random class for generating random indices
+                    Random random = new Random();
+
+                    // Build the password one character at a time
+                    char[] passwordChars = new char[passwordLength];
+                    for (int i = 0; i < passwordLength; i++)
+                    {
+                        // Ensure the password is a mix of different types of characters
+                        string currentCharGroup = i switch
+                        {
+                            0 => lowerCase,
+                            1 => upperCase,
+                            2 => digits,
+                            _ => allChars // Use all characters for the rest of the password
+                        };
+                        int index = random.Next(currentCharGroup.Length);
+                        passwordChars[i] = currentCharGroup[index];
+                    }
+
+                    // Shuffle the password to ensure there's no predictable pattern
+                    passwordChars = passwordChars.OrderBy(x => random.Next()).ToArray();
+
+                    // Convert the character array into a string
+                    string password = new string(passwordChars);
+                    var user = new Account
+                    {
+                        Status = AccountStatusEnum.Active.ToString(),
+                        UserName = parentEmail,
+                        Email = parentEmail,
+                    };
+                    var result = await userManager.CreateAsync(user, password);
+                    string errorMessage = null;
+                    if (result.Succeeded)
+                    {
+                        if (!await roleManager.RoleExistsAsync(RoleModel.Parent.ToString()))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole(RoleModel.Parent.ToString()));
+                        }
+                        if (await roleManager.RoleExistsAsync(RoleModel.Parent.ToString()))
+                        {
+                            await userManager.AddToRoleAsync(user, RoleModel.Parent.ToString());
+                        }
+                        var token = userManager.GenerateEmailConfirmationTokenAsync(user);
+                        //token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+
+                        return new ResponeModel
+                        {
+                            Status = "Success",
+                            Message = "Create parent account successfull, Please check parent account in parent email",
+                            ConfirmEmailToken = token,
+                            DataObject = password
+                        };
+                    }
+                    foreach (var ex in result.Errors)
+                    {
+                        errorMessage = ex.Description;
+                    }
+                    return new ResponeModel { Status = "Error", Message = errorMessage };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or print the exception details
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new ResponeModel { Status = "Error", Message = "An error occurred while checking if the account exists." };
+            }
+            return new ResponeModel { Status = "Error", Message = "Account already exist" };
         }
 
         public async Task<ResponeModel> ConfirmEmail(string email, string token)

@@ -1,0 +1,46 @@
+﻿namespace LMSystem.API.Helper
+{
+    public class ParentConfirmEmailTemplate
+    {
+        public static string ConfirmTemplate(string email, string token, string password)
+        {
+            string body =
+                         $@"
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset=""utf-8"" />
+                            <title>Confirm Email</title>
+                        </head>
+                        <body>
+                            <div class=""container"">
+                                <div class=""header"">
+                                    <img src=""https://firebasestorage.googleapis.com/v0/b/estudyhub-a1699.appspot.com/o/logo%2Flogo-black.png?alt=media&token=892e67fd-fa5a-4a95-8705-de863eb9afe5"" alt=""Logo"" style=""width:120px;"">
+                                </div>
+                                <div class=""content"">
+                                    <h3>Xác thực tài khoản phụ huynh của bạn</h3>
+                                    <p style=""font-size: 15px;"">Bạn đã được đăng ký {email} tại eStudyHub Online System.</p>
+                                    <p style=""font-size: 15px;""> Đây là tài khoản để bạn đăng nhập vào hệ thống:</p>
+                                    <p style=""font-size: 15px;""> Tài khoản: {email}</p>
+                                    <p style=""font-size: 15px;""> Mật khẩu: {password}</p>
+                                    <p style=""font-size: 15px;"">Trước khi đăng nhập bạn cần xác thực tài khoản.Để xác thực địa chỉ email của bạn hãy nhấn vào nút bên dưới.</p>
+                                    <div class=""push-button"">
+                                        <a href=""{token}"" style=""background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; font-size: 16px; border-radius: 5px; display: inline-block;""><strong>XÁC NHẬN</strong></a>
+                                    </div>
+                                    <div class=""note"">
+                                        <p style=""font-size: 15px; font-style: italic;"">* Lưu ý: Tài khoản chỉ có thể đăng nhập được khi đã xác thực.</p>
+                                    </div>
+                                </div>
+                                <div class=""footer"">
+                                    <div class=""info"">
+                                        <p>Liên lạc đến estudyhubservice@gmail.com để hiểu rõ hơn.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </body>
+                ";
+            return body;
+
+        }
+    }
+}

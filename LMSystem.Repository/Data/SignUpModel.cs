@@ -31,5 +31,6 @@ namespace LMSystem.Repository.Data
         [StringLength(12, MinimumLength = 7, ErrorMessage = "Password must be 7-12 Character")]
         [PasswordPropertyText]
         public string ConfirmAccountPassword { get; set; } = "";
+        public string? ParentEmail { get; set; } = "";
     }
 }

@@ -77,6 +77,12 @@ namespace LMSystem.Services.Services
             var result = await _repo.SignUpAccountAsync(model);
             return result;
         }
+        
+        public async Task<ResponeModel> SignUpParentAsync(string parentEmail)
+        {
+            var result = await _repo.SignUpParentAsync(parentEmail);
+            return result;
+        }
 
         public async Task<ResponeModel> SignUpAdminStaffAsync(SignUpModel model, RoleModel role)
         {
