@@ -21,7 +21,7 @@ namespace LMSystem.Repository.Interfaces
         public Task<ResponeModel> UpdateAccountProfile(UpdateProfileModel updateProfileModel, string accountId);
         public Task<ResponeModel> ChangePasswordAsync(ChangePasswordModel changePassword);
         public Task<ResponeModel> SignUpAdminStaffAsync (SignUpModel model, RoleModel role);
-        public Task<ResponeModel> SignUpParentAsync (SignUpModel model);
+        public Task<ResponeModel> SignUpParentAsync (string parentEmail);
         public Task<ResponeModel> ConfirmEmail(string email, string token);
         public Task<ResponeModel> DeleteAccount(string accountId);
         public Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams);

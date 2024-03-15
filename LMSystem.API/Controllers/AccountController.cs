@@ -39,8 +39,11 @@ namespace LMSystem.API.Controllers
                 if (ModelState.IsValid)
                 {
                     var result = await _accountService.SignUpAccountAsync(signUpModel);
-                    if (result.Status.Equals("Success"))
+                    var parentResult = await _accountService.SignUpParentAsync(signUpModel.ParentEmail);
+
+                    if (result.Status.Equals("Success") && parentResult.Status.Equals("Success"))
                     {
+                        // account student
                         var token = result.ConfirmEmailToken;
                         var url = Url.Action("ConfirmEmail", "Account", new { memberEmail = signUpModel.AccountEmail, tokenReset = token.Result }, Request.Scheme);
                         result.ConfirmEmailToken = null;
@@ -51,11 +54,29 @@ namespace LMSystem.API.Controllers
                         var messageRequest = new EmailRequest
                         {
                             To = signUpModel.AccountEmail,
-                            Subject = "Confirm Email For Register",
+                            Subject = "Xác thực email đã đăng ký",
                             Content = MailTemplate.ConfirmTemplate(signUpModel.AccountEmail, url)
                         };
 
                         await _mailService.SendConFirmEmailAsync(messageRequest);
+
+                        //account parent
+                        var parenToken = parentResult.ConfirmEmailToken;
+                        var parentUrl = Url.Action("ConfirmParentEmail", "Account", new { memberEmail = signUpModel.ParentEmail, tokenReset = parenToken.Result }, Request.Scheme);
+                        parentResult.ConfirmEmailToken = null;
+
+                        //var body = await _emailTemplateReader.GetTemplate("Helper\\EmailTemplate.html");
+                        //body = string.Format(body, signUpModel.AccountEmail, url);
+
+                        var messageParentRequest = new EmailRequest
+                        {
+                            To = signUpModel.ParentEmail,
+                            Subject = "Xác thực email phụ huynh mà học sinh tên " + signUpModel.FirstName + " "+ signUpModel.LastName +" đã đăng ký",
+                            Content = ParentConfirmEmailTemplate.ConfirmTemplate(signUpModel.ParentEmail, parentUrl, parentResult.DataObject.ToString())
+                        };
+
+                        
+                        await _mailService.SendConFirmEmailAsync(messageParentRequest);
 
                         return Ok(result);
                     }
@@ -208,6 +229,39 @@ namespace LMSystem.API.Controllers
             }
         }
 
+
+        [HttpGet("ConfirmParentEmail")]
+        public async Task<IActionResult> ConfirmParentEmail(string tokenReset, string memberEmail)
+        {
+            try
+            {
+                var result = await _accountService.ConfirmEmail(memberEmail, tokenReset);
+                if (result.Status.Equals(false))
+                {
+                    return Unauthorized(result);
+                }
+                var account = await _accountService.GetAccountByEmail(memberEmail);
+                if (account != null)
+                {
+                    Notification notification = new Notification
+                    {
+                        AccountId = account.Id,
+                        SendDate = DateTime.Now,
+                        Type = NotificationType.System.ToString(),
+                        Title = "Chào mừng phụ huynh đến với eStudyHub",
+                        Message = "Cảm ơn bạn đã tin tưởng lựa chọn eStudyHub để cho con mình học tập. Hãy cùng nhau trải nghiệm các khóa học bổ ích!"
+                    };
+                    await _notificationService.AddNotificationByAccountId(account.Id, notification);
+                    return Redirect("https://online-class-room-fe.vercel.app/login");
+                }
+                return Ok(result);
+            }
+            catch
+            {
+                return BadRequest("Confirm email failed!");
+            }
+        }
+
         [HttpGet("ViewAccountList")]
         public async Task<IActionResult> ViewAccountList([FromQuery] AccountFilterParameters filterParams)
         {
@@ -291,6 +345,6 @@ namespace LMSystem.API.Controllers
                 return NotFound();
             }
             return Ok(response);
-        }    
+        }
     }
 }
