@@ -150,7 +150,7 @@ namespace LMSystem.Repository.Repositories
                     .ToListAsync();
 
                 // Retrieve the list of courses registered by the child accounts.
-                var registerCourseList = await _context.RegistrationCourses
+                var completedCourseList = await _context.RegistrationCourses
                     .Where(rc => childAccountIds.Contains(rc.AccountId) && rc.IsCompleted == true)
                     .Include(rc => rc.Course)
                     .Select(rc => new
@@ -162,7 +162,7 @@ namespace LMSystem.Repository.Repositories
                     })
                     .ToListAsync();
 
-                if (!registerCourseList.Any())
+                if (!completedCourseList.Any())
                 {
                     return new ResponeModel
                     {
@@ -175,7 +175,7 @@ namespace LMSystem.Repository.Repositories
                 {
                     Status = "Success",
                     Message = "List completed course successfully.",
-                    DataObject = registerCourseList
+                    DataObject = completedCourseList
                 };
             }
             catch (Exception ex)
@@ -211,7 +211,7 @@ namespace LMSystem.Repository.Repositories
                     .ToListAsync();
 
                 // Retrieve the list of courses registered by the child accounts.
-                var registerCourseList = await _context.RegistrationCourses
+                var uncompletedCourseList = await _context.RegistrationCourses
                     .Where(rc => childAccountIds.Contains(rc.AccountId) && rc.IsCompleted == false)
                     .Include(rc => rc.Course)
                     .Select(rc => new
@@ -224,26 +224,26 @@ namespace LMSystem.Repository.Repositories
                     })
                     .ToListAsync();
 
-                if (!registerCourseList.Any())
+                if (!uncompletedCourseList.Any())
                 {
                     return new ResponeModel
                     {
                         Status = "Error",
-                        Message = "No completed course were found for the specified account id."
+                        Message = "No uncompleted course were found for the specified account id."
                     };
                 }
 
                 return new ResponeModel
                 {
                     Status = "Success",
-                    Message = "List completed course successfully.",
-                    DataObject = registerCourseList
+                    Message = "List uncompleted course successfully.",
+                    DataObject = uncompletedCourseList
                 };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex.Message}");
-                return new ResponeModel { Status = "Error", Message = "An error occurred while get the completed course list" };
+                return new ResponeModel { Status = "Error", Message = "An error occurred while get the uncompleted course list" };
             }
         }
 
