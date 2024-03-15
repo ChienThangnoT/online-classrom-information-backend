@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,12 +21,14 @@ namespace LMSystem.Services.Services
         private readonly IOrderRepository _orderRepository;
         private readonly PaypalClient _paypalClient;
         private readonly LMOnlineSystemDbContext _context;
+        private readonly INotificationRepository _notificationRepository;
 
-        public OrderService(IOrderRepository orderRepository, PaypalClient paypalClient, LMOnlineSystemDbContext context)
+        public OrderService(IOrderRepository orderRepository, PaypalClient paypalClient, LMOnlineSystemDbContext context, INotificationRepository notificationRepository)
         {
             _orderRepository = orderRepository;
             _paypalClient = paypalClient;
             _context = context;
+            _notificationRepository = notificationRepository;
         }
 
         public async Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel)
@@ -162,6 +165,16 @@ namespace LMSystem.Services.Services
                 registration.LearningProgress = 0;
                 _context.RegistrationCourses.Add(registration);
                 await _context.SaveChangesAsync();
+
+                Notification notification = new Notification
+                {
+                    AccountId = registration.AccountId,
+                    SendDate = DateTime.Now,
+                    Type = NotificationType.System.ToString(),
+                    Title = "Bạn đã thanh toán thành công khóa học "+ orders.Course.Title,
+                    Message = "Cảm ơn bạn đã tin tưởng lựa chọn eStudyHub. Hãy trải nghiệm khóa học để có kiến thức bổ ích!"
+                };
+                await _notificationRepository.AddNotificationByAccountId(notification.AccountId, notification);
                 return new ResponeModel
                 {
                     Status = "Success",
