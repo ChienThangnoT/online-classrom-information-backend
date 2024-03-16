@@ -232,13 +232,13 @@ namespace LMSystem.Repository.Repositories
                 .ToListAsync();
 
             var courses = await _context.Courses
-                .Where(c => topCourses.Contains(c.CourseId))
+                .Where(c => topCourses.Contains(c.CourseId) && c.IsPublic==true && c.CourseIsActive==true)
                 .ToListAsync();
 
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses
-                    .Where(c => !topCourses.Contains(c.CourseId))
+                    .Where(c => !topCourses.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                     .OrderBy(c => Guid.NewGuid())
                     .Take(numberOfCourses - courses.Count)
                     .ToListAsync();
@@ -259,13 +259,13 @@ namespace LMSystem.Repository.Repositories
                 .ToListAsync();
 
             var courses = await _context.Courses
-                .Where(c => topCourses.Contains(c.CourseId))
+                .Where(c => topCourses.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                 .ToListAsync();
 
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses
-                    .Where(c => !topCourses.Contains(c.CourseId))
+                    .Where(c => !topCourses.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                     .OrderBy(c => Guid.NewGuid())
                     .Take(numberOfCourses - courses.Count)
                     .ToListAsync();
@@ -289,13 +289,13 @@ namespace LMSystem.Repository.Repositories
                 .ToListAsync();
 
             var courses = await _context.Courses
-                .Where(c => topCourseIds.Contains(c.CourseId))
+                .Where(c => topCourseIds.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                 .ToListAsync();
 
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses
-                    .Where(c => !topCourseIds.Contains(c.CourseId))
+                    .Where(c => !topCourseIds.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                     .OrderBy(c => Guid.NewGuid())
                     .Take(numberOfCourses - courses.Count)
                     .ToListAsync();
