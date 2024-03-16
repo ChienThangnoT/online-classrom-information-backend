@@ -446,34 +446,33 @@ namespace LMSystem.Repository.Repositories
             {
                 var query = _context.Orders.AsQueryable();
 
+                if (string.IsNullOrEmpty(status))
+                {
+                    var allOrders = await query.ToListAsync();
+                    return PagedList<Order>.ToPagedList(allOrders, paginationParameter.PageNumber, paginationParameter.PageSize);
+                }
+
                 switch (status)
                 {
                     case "Completed":
-                        query = query
-                            .Where(o => o.Status == OrderStatusEnum.Completed.ToString())
-                            .OrderBy(o => o.OrderId);
+                        query = query.Where(o => 
+                        o.Status == OrderStatusEnum.Completed.ToString());
                         break;
                     case "Failed":
-                        query = query
-                            .Where(o => o.Status == OrderStatusEnum.Failed.ToString())
-                            .OrderBy(o => o.OrderId);
+                        query = query.Where(o => 
+                        o.Status == OrderStatusEnum.Failed.ToString());
                         break;
                     case "Pending":
-                        query = query
-                            .Where(o => o.Status == OrderStatusEnum.Pending.ToString())
-                            .OrderBy(o => o.OrderId);
+                        query = query.Where(o => 
+                        o.Status == OrderStatusEnum.Pending.ToString());
                         break;
                     default:
                         return new PagedList<Order>(new List<Order>(), 0, 0, 0);
                 }
 
-                var orders = await query.ToListAsync();
+                var orders = await query.OrderBy(o => o.OrderId).ToListAsync();
 
-                return PagedList<Order>.ToPagedList(
-                    orders, 
-                    paginationParameter.PageNumber, 
-                    paginationParameter.PageSize
-                    );           
+                return PagedList<Order>.ToPagedList(orders, paginationParameter.PageNumber, paginationParameter.PageSize);
             }
             catch (Exception ex)
             {
@@ -481,5 +480,7 @@ namespace LMSystem.Repository.Repositories
                 return new PagedList<Order>(new List<Order>(), 0, 0, 0);
             }
         }
+
     }
 }
+

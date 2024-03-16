@@ -197,7 +197,7 @@ namespace LMSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet("GetAllOrderByStatus")]
-        public async Task<IActionResult> GetAllOrderByStatus([FromQuery] PaginationParameter paginationParameter, [FromQuery] string status)
+        public async Task<IActionResult> GetAllOrderByStatus([FromQuery] PaginationParameter paginationParameter, [FromQuery] string? status)
         {
             try
             {
