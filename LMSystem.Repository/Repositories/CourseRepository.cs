@@ -376,8 +376,8 @@ namespace LMSystem.Repository.Repositories
 
                     Notification notificationFirseBase = new Notification
                     {
-                        Title = $"Hệ thống đã thêm khóa học mới: {response.Title}",
-                        Message = "Hãy trải nghiệm thêm các khóa học mới để có kiến thức bổ ích!",
+                        Title = $"Hệ thống đã thêm khóa học mới",
+                        Message = $"Hệ thống đã thêm khóa học mới: {response.Title}",
                     };
                     await _firebaseRepository.PushNotificationFireBase(notificationFirseBase.Title, notificationFirseBase.Message, accountId);
                 }
