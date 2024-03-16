@@ -212,9 +212,9 @@ namespace LMSystem.Services.Services
             return await _orderRepository.GetOrderByTransactionId(transactionId);
         }
 
-        public async Task<PagedList<Order>> GetAllOrderByStatus(PaginationParameter paginationParameter, string status)
+        public async Task<PagedList<Order>> GetOrderWithFilter(PaginationParameter paginationParameter, OrderFilterParameter orderFilterParameter)
         {
-            return await _orderRepository.GetAllOrderByStatus(paginationParameter, status);
+            return await _orderRepository.GetOrderWithFilter(paginationParameter, orderFilterParameter);
         }
     }
 }
