@@ -611,6 +611,7 @@ namespace LMSystem.Repository.Repositories
                     a.PhoneNumber,
                     a.Email,
                     a.ParentEmail,
+                    a.Status,
                     a.Biography,
                     a.BirthDate,
                     a.ProfileImg,
@@ -680,11 +681,12 @@ namespace LMSystem.Repository.Repositories
                     Sex = a.Sex,
                     PhoneNumber = a.PhoneNumber,
                     Email = a.Email,
+                    ParentEmail = a.ParentEmail,
+                    Status = a.Status,
                     Role = string.Join(", ", a.Roles),
                     Biography = a.Biography,
                     BirthDate = a.BirthDate,
-                    ProfileImg = a.ProfileImg,
-                    ParentEmail = a.ParentEmail
+                    ProfileImg = a.ProfileImg
                 })
                 .ToList();
 
