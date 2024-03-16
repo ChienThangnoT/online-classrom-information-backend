@@ -450,24 +450,21 @@ namespace LMSystem.Repository.Repositories
                 {
                     case "Completed":
                         query = query
-                            .Where(o => o.Status == OrderStatusEnum.Completed.ToString())
-                            .OrderBy(o => o.OrderId);
+                            .Where(o => o.Status == OrderStatusEnum.Completed.ToString());
                         break;
                     case "Failed":
                         query = query
-                            .Where(o => o.Status == OrderStatusEnum.Failed.ToString())
-                            .OrderBy(o => o.OrderId);
+                            .Where(o => o.Status == OrderStatusEnum.Failed.ToString());
                         break;
                     case "Pending":
                         query = query
-                            .Where(o => o.Status == OrderStatusEnum.Pending.ToString())
-                            .OrderBy(o => o.OrderId);
+                            .Where(o => o.Status == OrderStatusEnum.Pending.ToString());
                         break;
                     default:
-                        return new PagedList<Order>(new List<Order>(), 0, 0, 0);
+                        break;
                 }
 
-                var orders = await query.ToListAsync();
+                var orders = await query.OrderBy(o => o.OrderId).ToListAsync();
 
                 return PagedList<Order>.ToPagedList(
                     orders, 
