@@ -10,6 +10,7 @@ namespace LMSystem.Repository.Data
     {
         Service,
         Order,
-        System
+        System,
+        Course
     }
 }
