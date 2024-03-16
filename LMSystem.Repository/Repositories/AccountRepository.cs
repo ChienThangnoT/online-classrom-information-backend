@@ -580,6 +580,16 @@ namespace LMSystem.Repository.Repositories
             };
         }
 
+        public async Task<List<string>> GetListAccountIds()
+        {
+            var accountList = await _context.Account
+                .Where(a => a.Status.Equals("Active"))
+                .Select(a => a.Id)
+                .ToListAsync();
+
+            return accountList;
+        }
+
         public async Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams)
         {
             var accountsQuery = _context.Users

@@ -179,7 +179,8 @@ namespace LMSystem.Services.Services
                     SendDate = ConvertToLocalTime(DateTime.UtcNow),
                     Type = NotificationType.Order.ToString(),
                     Title = $"Bạn đã thanh toán thành công khóa học {course.Title}",
-                    Message = "Cảm ơn bạn đã tin tưởng lựa chọn eStudyHub. Hãy trải nghiệm khóa học để có kiến thức bổ ích!"
+                    Message = "Cảm ơn bạn đã tin tưởng lựa chọn eStudyHub. Hãy trải nghiệm khóa học để có kiến thức bổ ích!",
+                    ModelId = course.CourseId
                 };
                 await _notificationRepository.AddNotificationByAccountId(notification.AccountId, notification);
 
