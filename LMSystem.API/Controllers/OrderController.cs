@@ -196,12 +196,12 @@ namespace LMSystem.API.Controllers
             }
             return Ok(result);
         }
-        [HttpGet("GetAllOrderByStatus")]
-        public async Task<IActionResult> GetAllOrderByStatus([FromQuery] PaginationParameter paginationParameter, [FromQuery] string? status)
+        [HttpGet("GetOrderWithFilter")]
+        public async Task<IActionResult> GetOrderWithFilter([FromQuery] PaginationParameter paginationParameter, [FromQuery] OrderFilterParameter orderFilterParameter)
         {
             try
             {
-                var response = await _orderService.GetAllOrderByStatus(paginationParameter, status);
+                var response = await _orderService.GetOrderWithFilter(paginationParameter, orderFilterParameter);
                 var metadata = new
                 {
                     response.TotalCount,

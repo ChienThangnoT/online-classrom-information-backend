@@ -15,6 +15,7 @@ using AutoMapper;
 using System.Globalization;
 using Microsoft.SqlServer.Server;
 using LMSystem.Repository.Helpers;
+using System.Net.NetworkInformation;
 
 namespace LMSystem.Repository.Repositories
 {
@@ -440,35 +441,45 @@ namespace LMSystem.Repository.Repositories
             }
         }
         #endregion
-        public async Task<PagedList<Order>> GetAllOrderByStatus(PaginationParameter paginationParameter, string status)
+        public async Task<PagedList<Order>> GetOrderWithFilter(PaginationParameter paginationParameter, OrderFilterParameter orderFilterParameter)
         {
             try
             {
                 var query = _context.Orders.AsQueryable();
 
-                if (string.IsNullOrEmpty(status))
+                if (!string.IsNullOrEmpty(orderFilterParameter.Status))
                 {
-                    var allOrders = await query.ToListAsync();
-                    return PagedList<Order>.ToPagedList(allOrders, paginationParameter.PageNumber, paginationParameter.PageSize);
-                }
-
-                switch (status)
-                {
-                    case "Completed":
-                        query = query.Where(o => 
-                        o.Status == OrderStatusEnum.Completed.ToString());
-                        break;
-                    case "Failed":
-                        query = query.Where(o => 
-                        o.Status == OrderStatusEnum.Failed.ToString());
-                        break;
-                    case "Pending":
-                        query = query.Where(o => 
-                        o.Status == OrderStatusEnum.Pending.ToString());
-                        break;
-                    default:
+                    if (!Enum.TryParse(orderFilterParameter.Status, out OrderStatusEnum status))
+                    {
                         return new PagedList<Order>(new List<Order>(), 0, 0, 0);
+                    }
+                    switch (orderFilterParameter.Status)
+                    {
+                        case "Completed":
+                            query = query.Where(o =>
+                            o.Status == OrderStatusEnum.Completed.ToString());
+                            break;
+                        case "Failed":
+                            query = query.Where(o =>
+                            o.Status == OrderStatusEnum.Failed.ToString());
+                            break;
+                        case "Pending":
+                            query = query.Where(o =>
+                            o.Status == OrderStatusEnum.Pending.ToString());
+                            break;
+                    }
                 }
+                if (!string.IsNullOrEmpty(orderFilterParameter.AccountId))
+                {
+                    query = query.Where(o => o.AccountId == orderFilterParameter.AccountId);
+                    bool accountExists = await _context.Account.AnyAsync(a => a.Id == orderFilterParameter.AccountId);
+                    if (!accountExists)
+                    {
+                        // Return empty list if account ID doesn't exist
+                        return new PagedList<Order>(new List<Order>(), 0, 0, 0);
+                    }
+                }
+          
 
                 var orders = await query.OrderBy(o => o.OrderId).ToListAsync();
 
