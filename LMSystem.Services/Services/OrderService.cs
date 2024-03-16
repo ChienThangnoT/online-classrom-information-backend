@@ -1,5 +1,6 @@
 ﻿using LMSystem.Library;
 using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
@@ -7,7 +8,6 @@ using LMSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -150,10 +150,10 @@ namespace LMSystem.Services.Services
             try
             {
                 var result = await _paypalClient.CaptureOrder(transactionId);
-                var order = await GetOrderByTransactionId(transactionId);
+                var order = await GetOrderByTransactionId(transactionId); // Giả định bạn có phương thức này
 
                 var orders = (Order)order.DataObject;
-                orders.PaymentDate = DateTime.Now;
+                orders.PaymentDate = ConvertToLocalTime(DateTime.UtcNow);
                 orders.PaymentMethod = "PayPal";
                 orders.CurrencyCode = "USD";
                 orders.Status = OrderStatusEnum.Completed.ToString();
@@ -162,31 +162,33 @@ namespace LMSystem.Services.Services
 
                 var course = await _courseRepository.GetCourseDetailByIdAsync(orders.CourseId);
 
-
-                var registration = new RegistrationCourse();
-                registration.AccountId = orders.AccountId;
-                registration.CourseId = orders.CourseId;
-                registration.EnrollmentDate = DateTime.Now;
-                registration.IsCompleted = false;
-                registration.LearningProgress = 0;
+                var registration = new RegistrationCourse
+                {
+                    AccountId = orders.AccountId,
+                    CourseId = orders.CourseId,
+                    EnrollmentDate = ConvertToLocalTime(DateTime.UtcNow),
+                    IsCompleted = false,
+                    LearningProgress = 0
+                };
                 _context.RegistrationCourses.Add(registration);
                 await _context.SaveChangesAsync();
 
                 Notification notification = new Notification
                 {
                     AccountId = registration.AccountId,
-                    SendDate = DateTime.Now,
-                    Type = NotificationType.System.ToString(),
-                    Title = "Bạn đã thanh toán thành công khóa học " + course.Title,
-                    Message = "Cảm ơn bạn đã tin tưởng lựa chọn eStudyHub. Hãy trải nghiệm khóa học để có kiến thức bổ ích!"
+                    SendDate = ConvertToLocalTime(DateTime.UtcNow),
+                    Type = NotificationType.Order.ToString(),
+                    Title = $"Bạn đã thanh toán thành công khóa học {course.Title}",
+                    Message = "Cảm ơn bạn đã tin tưởng lựa chọn eStudyHub. Hãy trải nghiệm khóa học để có kiến thức bổ ích!",
+                    ModelId = course.CourseId
                 };
                 await _notificationRepository.AddNotificationByAccountId(notification.AccountId, notification);
+
                 return new ResponeModel
                 {
                     Status = "Success",
                     Message = "Capture order success",
                     DataObject = result
-
                 };
             }
             catch (Exception ex)
@@ -199,9 +201,20 @@ namespace LMSystem.Services.Services
             }
         }
 
+        private DateTime ConvertToLocalTime(DateTime utcDateTime)
+        {
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZoneInfo);
+        }
+
         public async Task<ResponeModel> GetOrderByTransactionId(string transactionId)
         {
             return await _orderRepository.GetOrderByTransactionId(transactionId);
+        }
+
+        public async Task<PagedList<Order>> GetOrderWithFilter(PaginationParameter paginationParameter, OrderFilterParameter orderFilterParameter)
+        {
+            return await _orderRepository.GetOrderWithFilter(paginationParameter, orderFilterParameter);
         }
     }
 }

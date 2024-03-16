@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace LMSystem.Repository.Data
 {
-    public enum NotificationType
+    public class OrderFilterParameter
     {
-        Service,
-        Order,
-        System,
-        Course
+        public string? Status { get; set; } = string.Empty;
+        public string? AccountId { get; set; } = string.Empty;
     }
 }

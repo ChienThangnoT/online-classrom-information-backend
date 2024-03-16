@@ -19,10 +19,16 @@ namespace LMSystem.Repository.Repositories
     public class CourseRepository : ICourseRepository
     {
         private readonly LMOnlineSystemDbContext _context;
+        private readonly INotificationRepository _notificationRepository;
+        private readonly IAccountRepository _accountRepository;
+        private readonly IFirebaseRepository _firebaseRepository;
 
-        public CourseRepository(LMOnlineSystemDbContext context)
+        public CourseRepository(LMOnlineSystemDbContext context, IFirebaseRepository firebaseRepository, INotificationRepository notificationRepository, IAccountRepository accountRepository)
         {
             _context = context;
+            _notificationRepository = notificationRepository;
+            _accountRepository = accountRepository;
+            _firebaseRepository = firebaseRepository;
         }
 
         public async Task<ResponeModel> AddCourse(AddCourseModel addCourseModel)
@@ -161,6 +167,7 @@ namespace LMSystem.Repository.Repositories
                                          CourseCategory = string.Join(", ", c.CourseCategories.Select(cc => cc.Category.Name)),
                                          TotalDuration = c.TotalDuration,
                                          UpdateAt = c.UpdateAt,
+                                         IsPublic = c.IsPublic,
                                          CourseIsActive = c.CourseIsActive
                                      })
                                      .ToListAsync();
@@ -231,13 +238,13 @@ namespace LMSystem.Repository.Repositories
                 .ToListAsync();
 
             var courses = await _context.Courses
-                .Where(c => topCourses.Contains(c.CourseId))
+                .Where(c => topCourses.Contains(c.CourseId) && c.IsPublic==true && c.CourseIsActive==true)
                 .ToListAsync();
 
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses
-                    .Where(c => !topCourses.Contains(c.CourseId))
+                    .Where(c => !topCourses.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                     .OrderBy(c => Guid.NewGuid())
                     .Take(numberOfCourses - courses.Count)
                     .ToListAsync();
@@ -258,13 +265,13 @@ namespace LMSystem.Repository.Repositories
                 .ToListAsync();
 
             var courses = await _context.Courses
-                .Where(c => topCourses.Contains(c.CourseId))
+                .Where(c => topCourses.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                 .ToListAsync();
 
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses
-                    .Where(c => !topCourses.Contains(c.CourseId))
+                    .Where(c => !topCourses.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                     .OrderBy(c => Guid.NewGuid())
                     .Take(numberOfCourses - courses.Count)
                     .ToListAsync();
@@ -288,13 +295,13 @@ namespace LMSystem.Repository.Repositories
                 .ToListAsync();
 
             var courses = await _context.Courses
-                .Where(c => topCourseIds.Contains(c.CourseId))
+                .Where(c => topCourseIds.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                 .ToListAsync();
 
             if (courses.Count < numberOfCourses)
             {
                 var additionalCourses = await _context.Courses
-                    .Where(c => !topCourseIds.Contains(c.CourseId))
+                    .Where(c => !topCourseIds.Contains(c.CourseId) && c.IsPublic == true && c.CourseIsActive == true)
                     .OrderBy(c => Guid.NewGuid())
                     .Take(numberOfCourses - courses.Count)
                     .ToListAsync();
@@ -352,6 +359,30 @@ namespace LMSystem.Repository.Repositories
                     })
                     .FirstOrDefaultAsync();
 
+                var listAccountIds = await _accountRepository.GetListAccountIds();
+
+                foreach (var accountId in listAccountIds)
+                {
+                    Notification notification = new Notification
+                    {
+                        AccountId = accountId,
+                        SendDate = ConvertToLocalTime(DateTime.UtcNow),
+                        Type = NotificationType.Course.ToString(),
+                        Title = $"Hệ thống đã thêm khóa học mới: {response.Title}",
+                        Message = "Hãy trải nghiệm thêm các khóa học mới để có kiến thức bổ ích!",
+                        ModelId = response.CourseId
+                    };
+                    await _notificationRepository.AddNotificationByAccountId(notification.AccountId, notification);
+
+                    Notification notificationFirseBase = new Notification
+                    {
+                        Title = $"Hệ thống đã thêm khóa học mới",
+                        Message = $"Hệ thống đã thêm khóa học mới: {response.Title}",
+                    };
+                    await _firebaseRepository.PushNotificationFireBase(notificationFirseBase.Title, notificationFirseBase.Message, accountId);
+                }
+    
+
                 return new ResponeModel
                 {
                     Status = "Success",
@@ -365,6 +396,13 @@ namespace LMSystem.Repository.Repositories
                 return new ResponeModel { Status = "Error", Message = "An error occurred while update the course" };
             }
         }
+
+        private DateTime ConvertToLocalTime(DateTime utcDateTime)
+        {
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZoneInfo);
+        }
+
 
         private Course submitCourseChange(Course course, UpdateCourseModel updateCourseModel)
         {

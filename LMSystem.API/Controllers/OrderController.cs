@@ -1,5 +1,6 @@
 ﻿using LMSystem.Library;
 using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
@@ -194,6 +195,33 @@ namespace LMSystem.API.Controllers
                 return BadRequest(result);
             }
             return Ok(result);
+        }
+        [HttpGet("GetOrderWithFilter")]
+        public async Task<IActionResult> GetOrderWithFilter([FromQuery] PaginationParameter paginationParameter, [FromQuery] OrderFilterParameter orderFilterParameter)
+        {
+            try
+            {
+                var response = await _orderService.GetOrderWithFilter(paginationParameter, orderFilterParameter);
+                var metadata = new
+                {
+                    response.TotalCount,
+                    response.PageSize,
+                    response.CurrentPage,
+                    response.TotalPages,
+                    response.HasNext,
+                    response.HasPrevious
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                if (!response.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(response);
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
     }
 }

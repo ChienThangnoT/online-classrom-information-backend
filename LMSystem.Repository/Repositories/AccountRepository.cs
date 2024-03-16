@@ -73,15 +73,6 @@ namespace LMSystem.Repository.Repositories
                     .Select(a => new { a.Email, a.ParentEmail })
                     .FirstOrDefaultAsync();
 
-                if (parentAccount == null || string.IsNullOrEmpty(parentAccount.ParentEmail))
-                {
-                    return new ResponeModel
-                    {
-                        Status = "Error",
-                        Message = "No parent email associated with the provided account ID."
-                    };
-                }
-
                 // Find all child accounts where the ParentEmail matches the account's email.
                 var childAccounts = await _context.Account
                     .Where(a => a.ParentEmail == parentAccount.Email)
@@ -597,6 +588,16 @@ namespace LMSystem.Repository.Repositories
             };
         }
 
+        public async Task<List<string>> GetListAccountIds()
+        {
+            var accountList = await _context.Account
+                .Where(a => a.Status.Equals("Active"))
+                .Select(a => a.Id)
+                .ToListAsync();
+
+            return accountList;
+        }
+
         public async Task<AccountListResult> ViewAccountList(AccountFilterParameters filterParams)
         {
             var accountsQuery = _context.Users
@@ -619,6 +620,7 @@ namespace LMSystem.Repository.Repositories
                     a.PhoneNumber,
                     a.Email,
                     a.ParentEmail,
+                    a.Status,
                     a.Biography,
                     a.BirthDate,
                     a.ProfileImg,
@@ -688,11 +690,12 @@ namespace LMSystem.Repository.Repositories
                     Sex = a.Sex,
                     PhoneNumber = a.PhoneNumber,
                     Email = a.Email,
+                    ParentEmail = a.ParentEmail,
+                    Status = a.Status,
                     Role = string.Join(", ", a.Roles),
                     Biography = a.Biography,
                     BirthDate = a.BirthDate,
-                    ProfileImg = a.ProfileImg,
-                    ParentEmail = a.ParentEmail
+                    ProfileImg = a.ProfileImg
                 })
                 .ToList();
 
