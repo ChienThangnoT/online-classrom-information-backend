@@ -161,6 +161,7 @@ namespace LMSystem.Repository.Repositories
                                          CourseCategory = string.Join(", ", c.CourseCategories.Select(cc => cc.Category.Name)),
                                          TotalDuration = c.TotalDuration,
                                          UpdateAt = c.UpdateAt,
+                                         IsPublic = c.IsPublic,
                                          CourseIsActive = c.CourseIsActive
                                      })
                                      .ToListAsync();
