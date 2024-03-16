@@ -323,7 +323,35 @@ namespace LMSystem.Repository.Repositories
                 {
                     return new ResponeModel { Status = "Error", Message = "Course not found" };
                 }
+
+                if ((existingCourse.IsPublic.GetValueOrDefault(false) == false) && (updateCourseModel.IsPublic.GetValueOrDefault(false) == true))
+                {
+                    var listAccountIds = await _accountRepository.GetListAccountIds();
+
+                    foreach (var accountId in listAccountIds)
+                    {
+                        Notification notification = new Notification
+                        {
+                            AccountId = accountId,
+                            SendDate = ConvertToLocalTime(DateTime.UtcNow),
+                            Type = NotificationType.Course.ToString(),
+                            Title = $"Hệ thống đã thêm khóa học mới: {existingCourse.Title}",
+                            Message = "Hãy trải nghiệm thêm các khóa học mới để có kiến thức bổ ích!",
+                            ModelId = existingCourse.CourseId
+                        };
+                        await _notificationRepository.AddNotificationByAccountId(notification.AccountId, notification);
+
+                        Notification notificationFirseBase = new Notification
+                        {
+                            Title = $"Hệ thống đã thêm khóa học mới",
+                            Message = $"Hệ thống đã thêm khóa học mới: {existingCourse.Title}",
+                        };
+                        await _firebaseRepository.PushNotificationFireBase(notificationFirseBase.Title, notificationFirseBase.Message, accountId);
+                    }
+                }
+
                 existingCourse = submitCourseChange(existingCourse, updateCourseModel);
+
 
                 //_context.Courses.Update(existingCourse);
                 await _context.SaveChangesAsync();
@@ -358,29 +386,6 @@ namespace LMSystem.Repository.Repositories
                         }).ToList()
                     })
                     .FirstOrDefaultAsync();
-
-                var listAccountIds = await _accountRepository.GetListAccountIds();
-
-                foreach (var accountId in listAccountIds)
-                {
-                    Notification notification = new Notification
-                    {
-                        AccountId = accountId,
-                        SendDate = ConvertToLocalTime(DateTime.UtcNow),
-                        Type = NotificationType.Course.ToString(),
-                        Title = $"Hệ thống đã thêm khóa học mới: {response.Title}",
-                        Message = "Hãy trải nghiệm thêm các khóa học mới để có kiến thức bổ ích!",
-                        ModelId = response.CourseId
-                    };
-                    await _notificationRepository.AddNotificationByAccountId(notification.AccountId, notification);
-
-                    Notification notificationFirseBase = new Notification
-                    {
-                        Title = $"Hệ thống đã thêm khóa học mới",
-                        Message = $"Hệ thống đã thêm khóa học mới: {response.Title}",
-                    };
-                    await _firebaseRepository.PushNotificationFireBase(notificationFirseBase.Title, notificationFirseBase.Message, accountId);
-                }
     
 
                 return new ResponeModel
@@ -396,6 +401,7 @@ namespace LMSystem.Repository.Repositories
                 return new ResponeModel { Status = "Error", Message = "An error occurred while update the course" };
             }
         }
+
 
         private DateTime ConvertToLocalTime(DateTime utcDateTime)
         {
