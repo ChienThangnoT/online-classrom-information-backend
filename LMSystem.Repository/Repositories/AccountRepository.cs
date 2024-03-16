@@ -73,15 +73,6 @@ namespace LMSystem.Repository.Repositories
                     .Select(a => new { a.Email, a.ParentEmail })
                     .FirstOrDefaultAsync();
 
-                if (parentAccount == null || string.IsNullOrEmpty(parentAccount.ParentEmail))
-                {
-                    return new ResponeModel
-                    {
-                        Status = "Error",
-                        Message = "No parent email associated with the provided account ID."
-                    };
-                }
-
                 // Find all child accounts where the ParentEmail matches the account's email.
                 var childAccounts = await _context.Account
                     .Where(a => a.ParentEmail == parentAccount.Email)
