@@ -85,6 +85,14 @@ namespace LMSystem.Repository.Repositories
                 // Find all child accounts where the ParentEmail matches the account's email.
                 var childAccounts = await _context.Account
                     .Where(a => a.ParentEmail == parentAccount.Email)
+                    .Select(a => new
+                    {
+                        a.Id,
+                        a.FirstName, a.LastName,
+                        a.Sex,
+                        a.ProfileImg,
+                        a.Email
+                    })
                     .ToListAsync();
 
                 if (childAccounts == null || !childAccounts.Any())
