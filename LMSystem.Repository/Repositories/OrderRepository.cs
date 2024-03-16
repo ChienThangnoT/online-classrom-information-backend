@@ -14,6 +14,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using AutoMapper;
 using System.Globalization;
 using Microsoft.SqlServer.Server;
+using LMSystem.Repository.Helpers;
 
 namespace LMSystem.Repository.Repositories
 {
@@ -439,5 +440,46 @@ namespace LMSystem.Repository.Repositories
             }
         }
         #endregion
+        public async Task<PagedList<Order>> GetAllOrderByStatus(PaginationParameter paginationParameter, string status)
+        {
+            try
+            {
+                var query = _context.Orders.AsQueryable();
+
+                switch (status)
+                {
+                    case "Completed":
+                        query = query
+                            .Where(o => o.Status == OrderStatusEnum.Completed.ToString())
+                            .OrderBy(o => o.OrderId);
+                        break;
+                    case "Failed":
+                        query = query
+                            .Where(o => o.Status == OrderStatusEnum.Failed.ToString())
+                            .OrderBy(o => o.OrderId);
+                        break;
+                    case "Pending":
+                        query = query
+                            .Where(o => o.Status == OrderStatusEnum.Pending.ToString())
+                            .OrderBy(o => o.OrderId);
+                        break;
+                    default:
+                        return new PagedList<Order>(new List<Order>(), 0, 0, 0);
+                }
+
+                var orders = await query.ToListAsync();
+
+                return PagedList<Order>.ToPagedList(
+                    orders, 
+                    paginationParameter.PageNumber, 
+                    paginationParameter.PageSize
+                    );           
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                return new PagedList<Order>(new List<Order>(), 0, 0, 0);
+            }
+        }
     }
 }

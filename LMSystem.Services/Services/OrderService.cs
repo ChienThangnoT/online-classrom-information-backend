@@ -1,5 +1,6 @@
 ﻿using LMSystem.Library;
 using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Interfaces;
 using LMSystem.Repository.Models;
 using LMSystem.Repository.Repositories;
@@ -208,6 +209,11 @@ namespace LMSystem.Services.Services
         public async Task<ResponeModel> GetOrderByTransactionId(string transactionId)
         {
             return await _orderRepository.GetOrderByTransactionId(transactionId);
+        }
+
+        public async Task<PagedList<Order>> GetAllOrderByStatus(PaginationParameter paginationParameter, string status)
+        {
+            return await _orderRepository.GetAllOrderByStatus(paginationParameter, status);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using LMSystem.Repository.Data;
+using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace LMSystem.Services.Interfaces
         public Task<ResponeModel> CountTotalIncome();
         public Task<ResponeModel> CountTotalIncomeUpToDate(DateTime to);
         public Task<ResponeModel> CountTotalIncomeByMonth(int year);
-
+        public Task<PagedList<Order>> GetAllOrderByStatus(PaginationParameter paginationParameter, string status);
         #region  payment
         Task<ResponeModel> AddCourseToPayment(AddOrderPaymentModel addOrderPaymentModel);
         Task<ResponeModel> GetOrderSuccessByAccountIdAndCourseId(string accountId, int courseId);
