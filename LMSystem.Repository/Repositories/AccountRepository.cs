@@ -357,7 +357,25 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                return new ResponeModel { Status = "Success", Message = "Account profile updated successfully" };
+                var response = _context.Account
+                    .Where(a => a.Id == accountId)
+                    .Select(a => new Account
+                    {
+                        Id = a.Id,
+                        Biography = a.Biography,
+                        BirthDate = a.BirthDate,
+                        FirstName = a.FirstName,
+                        LastName = a.LastName,
+                        PhoneNumber = a.PhoneNumber,
+                        ProfileImg = a.ProfileImg,
+                        Sex = a.Sex,
+                    });
+
+                return new ResponeModel { 
+                    Status = "Success", 
+                    Message = "Account profile updated successfully" ,
+                    DataObject = response
+                };
             }
             catch (Exception ex)
             {
