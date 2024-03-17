@@ -183,6 +183,7 @@ namespace LMSystem.API.Controllers
             }
         }
         [HttpPut("UpdateProfile")]
+        [Authorize]
         public async Task<IActionResult> UpdateProfile(UpdateProfileModel updateProfileModel, string accountId)
         {
             var account = await _accountService.GetAccountById(accountId);
@@ -263,6 +264,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("ViewAccountList")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ViewAccountList([FromQuery] AccountFilterParameters filterParams)
         {
             var account = await _accountService.ViewAccountList(filterParams);
@@ -275,6 +277,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("GetAccountByParentAccountId")]
+        [Authorize]
         public async Task<IActionResult> GetAccountByParentAccountId(string accountId)
         {
             var account = await _accountService.GetAccountByParentAccountId(accountId);

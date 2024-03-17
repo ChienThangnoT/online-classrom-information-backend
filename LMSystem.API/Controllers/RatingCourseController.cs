@@ -1,6 +1,7 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Repository.Models;
 using LMSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMSystem.API.Controllers
@@ -17,6 +18,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("RatingCourse")]
+        [Authorize]
         public async Task<ActionResult> AddRating([FromQuery] AddRatingModel addRatingModel, [FromQuery] int registrationId)
         {
             var ratingCourse = new RatingCourse

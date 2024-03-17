@@ -1,6 +1,7 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMSystem.API.Controllers
@@ -17,6 +18,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("AddStep")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddStep(AddStepModel addStepModel)
         {
             var response = await _stepService.AddStep(addStepModel);
@@ -29,6 +31,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPut("UpdateStep")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStep(UpdateStepModel updateStepModel)
         {
             var response = await _stepService.UpdateStep(updateStepModel);
@@ -41,6 +44,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("LearningProgress")]
+        [Authorize]
         public async Task<IActionResult> GetCourseProgress(int registrationId)
         {
             var progress = await _stepService.CheckCourseProgress(registrationId);
@@ -64,6 +68,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpDelete("DeleteStep")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteStep(int stepId)
         {
             var response = await _stepService.DeleteStep(stepId);

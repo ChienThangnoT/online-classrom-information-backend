@@ -1,4 +1,5 @@
 ﻿using LMSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMSystem.API.Controllers
@@ -14,6 +15,7 @@ namespace LMSystem.API.Controllers
             _registrationCourseService = registrationCourseService;
         }
         [HttpGet("GetRegisterCourseListByAccountId")]
+        [Authorize]
         public async Task<IActionResult> GetRegisterCourseListByAccountId(string accountId)
         {
             var courses = await _registrationCourseService.GetRegisterCourseListByAccountId(accountId);
@@ -24,6 +26,7 @@ namespace LMSystem.API.Controllers
             return Ok(courses);
         }
         [HttpGet("GetCompletedLearningCourseListByAccountId")]
+        [Authorize]
         public async Task<IActionResult> GetCompletedLearningCourseListByAccountId(string accountId)
         {
             var courses = await _registrationCourseService.GetCompletedLearningCourseByAccountId(accountId);
@@ -35,6 +38,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("CheckRegistration")]
+        [Authorize]
         public async Task<IActionResult> CheckRegistrationCourse([FromQuery] string accountId, [FromQuery] int courseId)
         {
             var result = await _registrationCourseService.CheckRegistrationCourse(accountId, courseId);
@@ -46,6 +50,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("GetRegisterCourseListByParentAccountId")]
+        [Authorize]
         public async Task<IActionResult> GetRegisterCourseListByParentAccountId(string accountId)
         {
             var courses = await _registrationCourseService.GetRegisterCourseListByParentAccountId(accountId);
@@ -57,6 +62,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("GetCompletedLearningCourseByParentAccountId")]
+        [Authorize]
         public async Task<IActionResult> GetCompletedLearningCourseByParentAccountId(string accountId)
         {
             var courses = await _registrationCourseService.GetCompletedLearningCourseByParentAccountId(accountId);
@@ -68,6 +74,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("GetUncompletedLearningCourseByParentAccountId")]
+        [Authorize]
         public async Task<IActionResult> GetUncompletedLearningCourseByParentAccountId(string accountId)
         {
             var courses = await _registrationCourseService.GetUncompletedLearningCourseByParentAccountId(accountId);

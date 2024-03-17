@@ -3,6 +3,7 @@ using LMSystem.Repository.Helpers;
 using LMSystem.Repository.Repositories;
 using LMSystem.Services.Interfaces;
 using LMSystem.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -103,6 +104,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("AddCourse")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddCourse(AddCourseModel addCourseModel)
         {
             var response = await _courseService.AddCourse(addCourseModel);
@@ -114,6 +116,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPut("UpdateCourse")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCourse(UpdateCourseModel updateCourseModel)
         {
             var response = await _courseService.UpdateCourse(updateCourseModel);
@@ -125,6 +128,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpDelete("DeleteCourse")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCourse(int courseId)
         {
             var response = await _courseService.DeleteCourse(courseId);

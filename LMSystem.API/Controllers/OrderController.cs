@@ -26,6 +26,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("PaymentHistory")]
+        [Authorize]
         public async Task<IActionResult> GetOrderHistory([FromQuery] string accountId)
         {
             var orderHistory = await _orderService.GetOrderHistoryAsync(accountId);
@@ -36,6 +37,7 @@ namespace LMSystem.API.Controllers
             return Ok(orderHistory);
         }
         [HttpGet("TotalOrders")]
+        [Authorize]
         public async Task<IActionResult> CountTotalOrder()
         {
             var response = await _orderService.CountTotalOrder();
@@ -197,6 +199,7 @@ namespace LMSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet("GetOrderWithFilter")]
+        [Authorize]
         public async Task<IActionResult> GetOrderWithFilter([FromQuery] PaginationParameter paginationParameter, [FromQuery] OrderFilterParameter orderFilterParameter)
         {
             try

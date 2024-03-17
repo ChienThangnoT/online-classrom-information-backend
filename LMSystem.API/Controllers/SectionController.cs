@@ -1,5 +1,6 @@
 ﻿using LMSystem.Repository.Data;
 using LMSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMSystem.API.Controllers
@@ -16,6 +17,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("AddSection")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddSection(AddSectionModel addSectionModel)
         {
             var response = await _sectionService.AddSection(addSectionModel);
@@ -28,6 +30,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPut("UpdateSection")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateSection(UpdateSectionModel updateSectionModel)
         {
             var response = await _sectionService.UpdateSection(updateSectionModel);
@@ -51,6 +54,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpDelete("DeleteSection")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteSection(int sectionId)
         {
             var response = await _sectionService.DeleteSection(sectionId);

@@ -30,6 +30,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpGet("GetAllRequest")]
+        [Authorize]
         public async Task<IActionResult> GetAllRequest([FromQuery] PaginationParameter paginationParameter)
         {
             try
@@ -58,6 +59,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("SendRequest")]
+        [Authorize]
         public async Task<IActionResult> SendRequest([FromQuery] SendRequestModel model)
         {
             var report = await _reportProblemService.SendRequestAsync(model);

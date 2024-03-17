@@ -20,6 +20,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPost("AddQuestion")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddQuestion([FromQuery] AddQuestionModel model)
         {
             var response = await _questionService.AddQuestion(model);
@@ -32,6 +33,7 @@ namespace LMSystem.API.Controllers
             return Ok(response);
         }
         [HttpDelete("DeleteQuestion")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteQuestion([FromQuery] int questionId)
         {
             var response = await _questionService.DeleteQuestion(questionId);
@@ -72,6 +74,7 @@ namespace LMSystem.API.Controllers
         }
 
         [HttpPut("UpdateQuestion")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateQuestion([FromQuery] UpdateQuestionModel model)
         {
             var response = await _questionService.UpdateQuestion(model);
