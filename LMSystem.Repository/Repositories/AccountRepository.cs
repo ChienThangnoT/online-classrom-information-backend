@@ -357,19 +357,7 @@ namespace LMSystem.Repository.Repositories
 
                 await _context.SaveChangesAsync();
 
-                var response = _context.Account
-                    .Where(a => a.Id == accountId)
-                    .Select(a => new Account
-                    {
-                        Id = a.Id,
-                        Biography = a.Biography,
-                        BirthDate = a.BirthDate,
-                        FirstName = a.FirstName,
-                        LastName = a.LastName,
-                        PhoneNumber = a.PhoneNumber,
-                        ProfileImg = a.ProfileImg,
-                        Sex = a.Sex,
-                    });
+                var response = _mapper.Map<UpdateProfileModel>(existingAccount);
 
                 return new ResponeModel { 
                     Status = "Success", 
