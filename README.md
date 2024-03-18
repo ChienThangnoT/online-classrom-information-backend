@@ -3,7 +3,11 @@
 ## 1. Giới thiệu
 eStudyHub là một nền tảng học cung cấp các khóa học tin học trực tuyến chuyên dành cho học sinh trung học phổ thông, nơi mà họ có thể trải nghiệm và tiếp cận các khóa học chất lượng từ mọi nơi trên thế giới. Chúng tôi cam kết cung cấp một môi trường học tập linh hoạt, thú vị và tích hợp nhiều nguồn tài nguyên giáo dục chất lượng.
 
-Server: https://online-class-room-fe.vercel.app/
+Front-end Server: https://online-class-room-fe.vercel.app/
+
+Back-end Server: https://estudyhub.azurewebsites.net/swagger/index.html
+
+
 ## 2. Tính năng chính
 - **Đa dạng Khóa học:** Nền tảng của chúng tôi cung cấp một loạt các khóa học trong lĩnh vực Công nghệ.
 - **Thư viện Tài nguyên:** Học sinh có thể dễ dàng truy cập vào thư viện tài nguyên đa dạng, bao gồm bài giảng video, tài liệu, bài kiểm tra và bài tập.
