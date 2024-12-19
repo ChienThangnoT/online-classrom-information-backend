@@ -1,12 +1,11 @@
+
 # eStudyHub - Nền tảng cung cấp các khóa học trực tuyến cho Học Sinh Trung Học
 
 ## 1. Giới thiệu
 eStudyHub là một nền tảng học cung cấp các khóa học tin học trực tuyến chuyên dành cho học sinh trung học phổ thông, nơi mà họ có thể trải nghiệm và tiếp cận các khóa học chất lượng từ mọi nơi trên thế giới. Chúng tôi cam kết cung cấp một môi trường học tập linh hoạt, thú vị và tích hợp nhiều nguồn tài nguyên giáo dục chất lượng.
 
-Front-end Server: https://online-class-room-fe.vercel.app/
-
-Back-end Server: https://estudyhub.azurewebsites.net/swagger/index.html
-
+- **Front-end Server**: [https://online-class-room-fe.vercel.app/](https://online-class-room-fe.vercel.app/)
+- **Back-end Server**: [https://estudyhub.azurewebsites.net/swagger/index.html](https://estudyhub.azurewebsites.net/swagger/index.html)
 
 ## 2. Tính năng chính
 - **Đa dạng Khóa học:** Nền tảng của chúng tôi cung cấp một loạt các khóa học trong lĩnh vực Công nghệ.
@@ -20,14 +19,21 @@ Back-end Server: https://estudyhub.azurewebsites.net/swagger/index.html
 
 ## 4. Thành viên
 1. [Nguyễn Thành Long](https://github.com/thanhlong109) :  Front-end Developer
-1. [Lê Hoàng An](https://github.com/anlehoang6789) :  Front-end Developer
-1. [Trần Gia Thành Đạt](https://github.com/dattgt) :  Front-end Developer
-1. [Nguyễn Chiến Thắng](https://github.com/ChienThangnoT) :  Back-end Developer
-1. [Võ Ngọc Tấn Dũng](https://github.com/GnuDNaT) :  Back-end Developer
-1. [Nguyễn Phạm Quốc Thắng](https://github.com/thangnguyen8520) :  Back-end Developer
-## Liên hệ
+2. [Lê Hoàng An](https://github.com/anlehoang6789) :  Front-end Developer
+3. [Trần Gia Thành Đạt](https://github.com/dattgt) :  Front-end Developer
+4. [Nguyễn Chiến Thắng](https://github.com/ChienThangnoT) :  Back-end Developer
+5. [Võ Ngọc Tấn Dũng](https://github.com/GnuDNaT) :  Back-end Developer
+6. [Nguyễn Phạm Quốc Thắng](https://github.com/thangnguyen8520) :  Back-end Developer
+
+## 5. Các Repositories
+- [Online Classroom Information Backend](https://github.com/ChienThangnoT/online-classrom-information-backend)
+- [Online Classroom Frontend](https://github.com/thanhlong109/online-class-room-fe)
+
+## 6. Liên hệ
 - Để biết thêm thông tin hoặc hỗ trợ, vui lòng liên hệ chúng tôi qua email: chienthang014@gmail.com.
 
 Chúc bạn và người dùng của mình có những trải nghiệm học tập tuyệt vời trên eStudyHub!
 
-Copyright © 2024 eStudyHub
+---
+
+**Copyright © 2024 eStudyHub**
